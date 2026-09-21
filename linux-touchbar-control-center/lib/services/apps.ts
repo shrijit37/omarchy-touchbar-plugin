@@ -9,7 +9,7 @@ import { appIconSource } from 'omarchy-touchbar';
  * menu / application drawer is built from) in the usual priority order —
  * user-local first, system-wide last — dedupes by desktop-file id, parses
  * each entry (Name / Exec / Icon) and resolves the icon through the
- * react-drm icon theme. The scan runs once per process and is cached.
+ * omarchy-touchbar icon theme. The scan runs once per process and is cached.
  */
 
 export interface AppInfo {

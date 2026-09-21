@@ -1,10 +1,10 @@
-# react-drm
+# Omarchy Touch Bar
 
-react-drm provides a React renderer for drawing directly to Linux DRM/KMS
-displays using libdrm and Cairo. This repository includes a control center
-that replaces the standard Touch Bar interface on T2 MacBooks running Linux.
-This copy is integrated with KaiT2en and is installed through the KaiT2en
-application installer.
+Omarchy Touch Bar provides a React renderer for drawing directly to Linux
+DRM/KMS displays using libdrm and Cairo. This repository includes a control
+center that replaces the standard Touch Bar interface on T2 MacBooks running
+Linux. It is packaged as an omarchy shell plugin and installable with
+`omarchy plugin add`.
 
 The control center provides:
 
@@ -17,51 +17,38 @@ The control center provides:
 
 ## Installation
 
-react-drm replaces the existing Touch Bar interface. `tiny-dfr`,
+Omarchy Touch Bar replaces the existing Touch Bar interface. `tiny-dfr`,
 `mac-touchbar-plus` and other Touch Bar daemons must not run alongside it.
 
-From the KaiT2en repository root, install or update only react-drm with:
+Install as an omarchy plugin (clones + validates, then run the installer once):
 
 ```sh
-sudo ./scripts/fedora/install-apps.sh --react-drm-only
+omarchy plugin add https://github.com/shrijit37/react-drm-for-touchbar --enable
+~/.config/omarchy/plugins/io.github.shrijit37.omarchy-touchbar/install-omarchy.sh
 ```
 
-The react-drm directory provides an equivalent shortcut that is run as the
-desktop user:
-
-```sh
-./apps/react-drm/install.sh
-```
-
-The installer:
+The Bar Widget shows setup status and launches the installer when the daemon
+isn't built yet. The installer:
 
 - verifies that the Mac model has a T2 Touch Bar;
-- installs the Fedora build and runtime dependencies;
+- installs the Arch build and runtime dependencies;
 - removes conflicting Touch Bar daemons;
 - installs the udev rules and required user groups;
-- copies the current source to `~/react-drm` and builds it there;
+- copies the current source to `~/.local/share/omarchy-touchbar` and builds it there;
 - builds the Touch Bar configuration GUI and adds it to the application menu;
 - installs Window Monitor Pro when GNOME is active;
-- installs and starts `react-drm.service` for the invoking user.
-
-Run the same command after updating the KaiT2en repository. It rebuilds only
-react-drm; `t2-fan-control` and `t2-smc-control` are not rebuilt. The complete
-KaiT2en application installer remains available as:
-
-```sh
-sudo ./scripts/fedora/install-apps.sh
-```
+- installs and starts `omarchy-touchbar.service` for the invoking user.
 
 ### Uninstall
 
-Run the separate uninstaller as the desktop user:
+Run the separate uninstaller from the plugin directory:
 
 ```sh
-./apps/react-drm/uninstall.sh
+~/.config/omarchy/plugins/io.github.shrijit37.omarchy-touchbar/uninstall-omarchy.sh
 ```
 
-It stops and removes the react-drm user service, restores the firmware Touch
-Bar interface and removes the react-drm udev rules. Project files, npm
+It stops and removes the omarchy-touchbar user service, restores the firmware
+Touch Bar interface and removes the udev rules. Project files, npm
 dependencies, system packages and `video`/`input` group memberships are left
 unchanged.
 
@@ -70,8 +57,8 @@ unchanged.
 Check its status and log with:
 
 ```sh
-systemctl --user status react-drm.service
-journalctl --user -u react-drm.service -b
+systemctl --user status omarchy-touchbar.service
+journalctl --user -u omarchy-touchbar.service -b
 ```
 
 The service runs without root privileges. It attaches the Touch Bar when the
@@ -84,8 +71,8 @@ available before login and after logout.
 Stop the user service before running the control center manually:
 
 ```sh
-systemctl --user stop react-drm.service
-cd apps/react-drm/linux-touchbar-control-center
+systemctl --user stop omarchy-touchbar.service
+cd ~/.local/share/omarchy-touchbar/linux-touchbar-control-center
 npm run dev
 ```
 
@@ -101,7 +88,7 @@ renderer the physical Touch Bar uses), streamed over WebSocket to a
 `<canvas>`. It is not a separate HTML/DOM re-implementation of the UI:
 
 ```
-React → react-drm renderer → Cairo → in-memory framebuffer
+React → omarchy-touchbar renderer → Cairo → in-memory framebuffer
                                         ├─ production  → DRM/KMS → physical Touch Bar
                                         └─ development → WebSocket → browser <canvas>
 ```
@@ -131,7 +118,7 @@ construct a `PreviewDisplay` (an in-memory framebuffer wrapped by the same
 small HTTP + WebSocket server. It prints:
 
 ```
-[react-drm] preview server running
+[omarchy-touchbar] preview server running
   http://127.0.0.1:8787
 ```
 
@@ -224,17 +211,18 @@ Press <kbd>Esc</kbd> while it's focused to close it (it has no titlebar).
 
 ## Active window integration
 
-Application-specific controls require an active-window backend. The KaiT2en
-installer deploys the required backend and react-drm selects it automatically:
+Application-specific controls require an active-window backend. The
+installer deploys the required backend and omarchy-touchbar selects it
+automatically:
 
 - GNOME Wayland uses
   [Window Monitor Pro](https://extensions.gnome.org/extension/8549/window-monitor-pro/),
-  maintained by the react-drm developer
+  maintained by the omarchy-touchbar developer
 - KDE Plasma Wayland uses KWin scripting
 - Hyprland uses its IPC socket
 - Xorg uses `xprop`
 
-On GNOME Wayland the KaiT2en installer includes and enables Window Monitor Pro.
+On GNOME Wayland the installer includes and enables Window Monitor Pro.
 A logout and login may be required when the extension is installed for the
 first time. `xprop` must be installed for Xorg sessions. Unsupported Wayland
 desktops can still run the Touch Bar UI, but application-specific controls
@@ -254,7 +242,7 @@ active service during playback with:
 busctl --user list | grep org.mpris.MediaPlayer2
 ```
 
-react-drm recognizes `brave` and `chromium` services directly. Some other
+omarchy-touchbar recognizes `brave` and `chromium` services directly. Some other
 Chromium-based browsers do not expose MPRIS2. For those browsers, Plasma Browser
 Integration can provide an
 `org.mpris.MediaPlayer2.plasma-browser-integration` service:

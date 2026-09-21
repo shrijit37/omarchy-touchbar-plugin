@@ -1,0 +1,25 @@
+# Launches config-gui. electron isn't a standalone binary — it's the npm
+# workspace's hoisted node_modules/.bin/electron run against the config-gui
+# app directory, same as `npm start` would.
+#
+# `%h/.local/share/omarchy-touchbar` below is a PLACEHOLDER, NOT a Desktop
+# Entry field code: %h is systemd syntax and is invalid in Exec=
+# (desktop-file-validate rejects it, and launchers like Vicinae/gio won't
+# expand it). install.sh's install_config_gui_launcher() substitutes the
+# actual daemon path at install time — same reason install_user_service()
+# rewrites omarchy-touchbar.service, the daemon isn't always at that path.
+#
+# Manual install (only correct if the daemon really is at ~/.local/share/omarchy-touchbar):
+#   install -Dm644 system/omarchy-touchbar-config.desktop \
+#     ~/.local/share/applications/omarchy-touchbar-config.desktop &&
+#   sed -i "s|%h/.local/share/omarchy-touchbar|$HOME/.local/share/omarchy-touchbar|g" \
+#     ~/.local/share/applications/omarchy-touchbar-config.desktop
+[Desktop Entry]
+Type=Application
+Name=Omarchy Touch Bar Config
+Comment=Edit the touch bar's config.ts
+Exec=%h/.local/share/omarchy-touchbar/node_modules/.bin/electron %h/.local/share/omarchy-touchbar/config-gui
+TryExec=%h/.local/share/omarchy-touchbar/node_modules/electron/dist/electron
+Icon=preferences-system
+Terminal=false
+Categories=Settings;

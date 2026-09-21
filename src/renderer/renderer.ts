@@ -356,13 +356,13 @@ function watchLid(onLid: (closed: boolean) => void): () => void {
           const closed = readLidClosed(device);
           if (closed !== lastState) {
             lastState = closed;
-            console.log(`[react-drm] lid is ${closed ? 'closed' : 'open'}`);
+            console.log(`[omarchy-touchbar] lid is ${closed ? 'closed' : 'open'}`);
             onLid(closed);
           }
         } catch (e) {
           if (!stateReadWarningShown) {
             stateReadWarningShown = true;
-            console.warn('[react-drm] could not read initial lid state:', (e as Error).message);
+            console.warn('[omarchy-touchbar] could not read initial lid state:', (e as Error).message);
           }
         }
         return [device];
@@ -845,7 +845,7 @@ export function render(
   setRepaint((needsLayout = false) => container._onCommit?.(needsLayout));
 
   const root = reconciler.createContainer(
-    container, 0, null, false, null, 'react-drm',
+    container, 0, null, false, null, 'omarchy-touchbar',
     (err: Error) => log.error('recoverable error:', err),
     null,
   );

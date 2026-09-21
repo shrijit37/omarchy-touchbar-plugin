@@ -25,7 +25,7 @@ export function loadAddon(): unknown {
     dir = parent;
   }
   throw new Error(
-    'react-drm: native addon not found.\n' +
+    'omarchy-touchbar: native addon not found.\n' +
     'Run `npm run build:native` first.\n' +
     'You may need libdrm-dev and libcairo2-dev installed.'
   );

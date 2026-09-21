@@ -267,7 +267,7 @@ def default_repo_dir() -> str:
     # The script lives at <repo-root>/config-gui-python/config_gui.py — the
     # control center is its sibling <repo-root>/linux-touchbar-control-center.
     # Default to that (the repo this GUI ships with) rather than a hardcoded
-    # ~/react-drm, so a second clone doesn't get edited by accident.
+    # ~/omarchy-touchbar, so a second clone doesn't get edited by accident.
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(repo_root, 'linux-touchbar-control-center')
 
@@ -1614,7 +1614,7 @@ class BridgeClient:
     @staticmethod
     def socket_path():
         runtime = os.environ.get('XDG_RUNTIME_DIR') or os.environ.get('TMPDIR') or '/tmp'
-        return os.path.join(runtime, 'react-drm-custom-layer.sock')
+        return os.path.join(runtime, 'omarchy-touchbar-custom-layer.sock')
 
     def start(self):
         import threading
@@ -2949,7 +2949,7 @@ class ConfigGUI:
             ctx.add_class('conn-ok')
             ctx.remove_class('conn-err')
         elif self.bridge_ok is False:
-            conn.set_text('Touch Bar not reachable — is react-drm running?')
+            conn.set_text('Touch Bar not reachable — is omarchy-touchbar running?')
         container.pack_start(conn, False, False, 4)
 
         pal_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
@@ -3088,7 +3088,7 @@ class ConfigGUI:
                     c.set_text('Connected to the Touch Bar')
                     ctx.add_class('conn-ok'); ctx.remove_class('conn-err')
                 else:
-                    c.set_text('Touch Bar not reachable — is react-drm running?')
+                    c.set_text('Touch Bar not reachable — is omarchy-touchbar running?')
                     ctx.add_class('conn-err'); ctx.remove_class('conn-ok')
             return False
         if mtype == 'state':
@@ -3239,10 +3239,10 @@ class ConfigGUI:
 
     def _on_restart(self, btn):
         try:
-            r = subprocess.run(['systemctl', '--user', 'restart', 'react-drm.service'],
+            r = subprocess.run(['systemctl', '--user', 'restart', 'omarchy-touchbar.service'],
                                capture_output=True, timeout=30)
             if r.returncode == 0:
-                self.set_status('react-drm restarted', 'ok')
+                self.set_status('omarchy-touchbar restarted', 'ok')
                 self.restart_btn.set_visible(False)
             else:
                 self.set_status(f'Restart failed: {r.stderr.decode().strip()}', 'err')
@@ -3284,7 +3284,7 @@ def hf(v):
 # Hyprland, Swayfx, KDE KWin) we auto-install the rule and report True so the
 # fake frost is suppressed and the real glass shows through.
 
-LAYER_RULE_MARKER = '// react-drm config-gui layer rule (auto-installed)'
+LAYER_RULE_MARKER = '// omarchy-touchbar config-gui layer rule (auto-installed)'
 
 
 def ensure_compositor_blur():

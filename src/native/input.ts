@@ -123,11 +123,11 @@ function resolveTouchDevicePath(devicePath?: string): string {
       if (match) return `/dev/input/${match[1]}`;
     }
   } catch (e) {
-    throw new Error(`react-drm: failed to read /proc/bus/input/devices: ${e}`);
+    throw new Error(`omarchy-touchbar: failed to read /proc/bus/input/devices: ${e}`);
   }
 
   throw new Error(
-    'react-drm: Touch Bar touchpad not found in /proc/bus/input/devices.\n' +
+    'omarchy-touchbar: Touch Bar touchpad not found in /proc/bus/input/devices.\n' +
     'Is appletbdrm loaded? Try: lsmod | grep apple'
   );
 }

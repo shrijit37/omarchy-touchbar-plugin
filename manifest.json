@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.shrijit37.omarchy-touchbar",
+  "name": "Omarchy Touch Bar",
+  "version": "0.1.0",
+  "author": "shrijit37",
+  "license": "GPL-3.0-or-later",
+  "description": "React-rendered, app-aware control center for the T2 MacBook Touch Bar, drawn directly to the DRM/KMS display.",
+  "homepage": "https://github.com/shrijit37/react-drm-for-touchbar",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Omarchy Touch Bar",
+    "description": "Shows Touch Bar status and runs the installer when the daemon isn't set up.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "showLabel": true
+    },
+    "schema": [
+      { "key": "showLabel", "type": "bool", "label": "Show service name" }
+    ]
+  }
+}

@@ -33,7 +33,7 @@ function createWindow(): void {
     minWidth: 760,
     minHeight: 560,
     center: true,
-    title: 'Touch Bar Config',
+    title: 'Omarchy Touch Bar Config',
     frame: false,
     backgroundColor: '#0d0f14',
     webPreferences: {

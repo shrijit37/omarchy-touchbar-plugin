@@ -215,7 +215,7 @@ export class CustomLayerStore {
 // the bridge server started in main() keeps running against the old instance.
 // Stashing it on globalThis (with a Symbol key, immune to module re-eval) makes
 // every re-evaluated copy of this module share the one live store.
-const STORE_GLOBAL_KEY = Symbol.for('react-drm.customLayerStore');
+const STORE_GLOBAL_KEY = Symbol.for('omarchy-touchbar.customLayerStore');
 
 type GlobalWithStore = { [STORE_GLOBAL_KEY]: CustomLayerStore } & typeof globalThis;
 

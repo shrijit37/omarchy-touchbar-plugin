@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Removes the system integration installed by react-drm.
+# Removes the system integration installed by omarchy-touchbar.
 # Project files, dependencies and user group memberships are left unchanged.
 #
 # Author: André Eikmeyer (dev@deqrocks)
@@ -14,10 +14,10 @@ set -Eeuo pipefail
 shopt -s nullglob
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-SERVICE_FILE="$HOME/.config/systemd/user/react-drm.service"
-UDEV_RULE="/etc/udev/rules.d/99-react-drm.rules"
-LEGACY_UDEV_RULE="/etc/udev/rules.d/99-react-drm-uinput.rules"
-CONFIG_GUI_LAUNCHER="$HOME/.local/share/applications/react-drm-config-gui.desktop"
+SERVICE_FILE="$HOME/.config/systemd/user/omarchy-touchbar.service"
+UDEV_RULE="/etc/udev/rules.d/99-omarchy-touchbar.rules"
+LEGACY_UDEV_RULE="/etc/udev/rules.d/99-omarchy-touchbar-uinput.rules"
+CONFIG_GUI_LAUNCHER="$HOME/.local/share/applications/omarchy-touchbar-config.desktop"
 
 GUI_MODE=0
 
@@ -88,7 +88,7 @@ confirm_uninstall() {
   fi
   command -v sudo >/dev/null 2>&1 || fail "required command is missing: sudo"
   cat <<'EOF'
-This removes the react-drm user service and udev rules and restores the
+This removes the omarchy-touchbar user service and udev rules and restores the
 firmware Touch Bar interface.
 
 Project files, npm dependencies, system packages and video/input group
@@ -113,20 +113,20 @@ control_center_running() {
 
 remove_service() {
   if [[ -e "$SERVICE_FILE" ]] ||
-    systemctl --user is-active --quiet react-drm.service ||
-    systemctl --user is-enabled --quiet react-drm.service; then
-    info "Stopping and disabling react-drm.service"
-    systemctl --user disable --now react-drm.service
+    systemctl --user is-active --quiet omarchy-touchbar.service ||
+    systemctl --user is-enabled --quiet omarchy-touchbar.service; then
+    info "Stopping and disabling omarchy-touchbar.service"
+    systemctl --user disable --now omarchy-touchbar.service
   fi
-  systemctl --user is-active --quiet react-drm.service &&
-    fail "react-drm.service did not stop"
+  systemctl --user is-active --quiet omarchy-touchbar.service &&
+    fail "omarchy-touchbar.service did not stop"
   control_center_running &&
-    fail "a manually started react-drm control center is still running"
+    fail "a manually started omarchy-touchbar control center is still running"
 
   info "Restoring the firmware Touch Bar interface"
-  [[ -x "$SCRIPT_DIR/system/react-drm-tb-detach" ]] ||
-    fail "system/react-drm-tb-detach is missing or not executable"
-  "$SCRIPT_DIR/system/react-drm-tb-detach" ||
+  [[ -x "$SCRIPT_DIR/system/omarchy-touchbar-tb-detach" ]] ||
+    fail "system/omarchy-touchbar-tb-detach is missing or not executable"
+  "$SCRIPT_DIR/system/omarchy-touchbar-tb-detach" ||
     fail "unable to restore the firmware Touch Bar interface"
 
   rm -f "$SERVICE_FILE"
@@ -134,7 +134,7 @@ remove_service() {
 }
 
 remove_udev_rules() {
-  info "Removing react-drm udev rules"
+  info "Removing omarchy-touchbar udev rules"
   privileged rm -f "$UDEV_RULE" "$LEGACY_UDEV_RULE"
   privileged udevadm control --reload
   privileged udevadm trigger --action=add --subsystem-match=usb --subsystem-match=backlight

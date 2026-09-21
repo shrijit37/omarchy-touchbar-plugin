@@ -3,7 +3,7 @@ import { KeyboardContext } from 'omarchy-touchbar';
 import type { KeyboardReader } from 'omarchy-touchbar';
 import { RouteBranch } from '@/lib/routes/RouteBranch';
 
-// Root of the app/ file-based route tree (react-drm's renderHot mounts this
+// Root of the app/ file-based route tree (omarchy-touchbar's renderHot mounts this
 // component directly — see index.tsx). app/layout.tsx owns everything that
 // used to live here: boot sequence, SafeArea, the Esc-key inset.
 //

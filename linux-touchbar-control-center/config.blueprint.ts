@@ -51,7 +51,7 @@ export const ESC_KEY: {
 export const SLEEP = {
   // In-app Touch Bar lifecycle: attach at startup, quiesce before system
   // sleep (logind delay inhibitor), re-attach + resume after. Applies to
-  // every run mode — manual `npm run dev` and react-drm.service alike.
+  // every run mode — manual `npm run dev` and omarchy-touchbar.service alike.
   enabled: true,
   // How long to wait for the appletbdrm card at startup and after resume
   // (covers re-enumeration, udev permission settling and config-write retries).
@@ -292,7 +292,7 @@ export const DOCK = {
   //   'double-tap' — double-tap the key to show the dock, double-tap again to return.
   //
   // 'ralt' = Right Option/Alt on the MacBook keyboard. Swap to any KEY
-  // name from react-drm (e.g. 'rmeta', 'rctrl', 'menu') if you prefer.
+  // name from omarchy-touchbar (e.g. 'rmeta', 'rctrl', 'menu') if you prefer.
   shortcut: {
     key:      'ralt' as KeyId,
     mode:     'double-tap' as 'hold' | 'toggle' | 'double-tap',
@@ -316,7 +316,7 @@ export const FN_LAYER = {
 
 export interface FnKeyExtra {
   label: string;
-  key:   number; // raw evdev keycode — see KEY in react-drm
+  key:   number; // raw evdev keycode — see KEY in omarchy-touchbar
 }
 
 export const FN_KEYS = {

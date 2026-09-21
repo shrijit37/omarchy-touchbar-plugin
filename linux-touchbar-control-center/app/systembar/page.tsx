@@ -451,7 +451,7 @@ function ClockMod({ time }: { time: Date }) {
 
 // ── Audio Visualizer ─────────────────────────────────────────────────────────
 const CAVA_BARS = CAVA.bars;
-const CAVA_CFG  = '/tmp/.react-drm-cava.conf';
+const CAVA_CFG  = '/tmp/.omarchy-touchbar-cava.conf';
 const CAVA_MAX_HEIGHT = 34;
 
 try {

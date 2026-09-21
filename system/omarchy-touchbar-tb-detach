@@ -3,8 +3,8 @@
 # strip: return the device to config 1. Dropping out of config 2 destroys the
 # display interface, which unbinds appletbdrm automatically (the module stays
 # loaded but idle) and the firmware repaints the strip (verified 2026-06-12).
-# No root needed: 99-react-drm.rules makes bConfigurationValue group-writable
-# (video). Called from react-drm.service ExecStopPost.
+# No root needed: 99-omarchy-touchbar.rules makes bConfigurationValue group-writable
+# (video). Called from omarchy-touchbar.service ExecStopPost.
 # The config write can fail with ETIMEDOUT, after which the kernel resets the
 # device and leaves it unconfigured (observed 2026-06-12). A retry once the
 # reset settles succeeds, so keep trying instead of failing the unit.

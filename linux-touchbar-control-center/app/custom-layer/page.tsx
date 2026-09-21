@@ -177,7 +177,7 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
  * supports repositioning/removing existing widgets directly on-device
  * (long-press to enter edit mode). Purely additive: never touches
  * config.ts / config.blueprint.ts, and the store is this screen's only
- * dependency beyond existing react-drm primitives.
+ * dependency beyond existing omarchy-touchbar primitives.
  */
 export default function CustomLayerPage({ width, height }: { width: number; height: number }) {
   const [state, setState] = useState<CustomLayerState>(() => getCustomLayerStore().getState());

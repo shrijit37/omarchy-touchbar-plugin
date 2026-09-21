@@ -29,7 +29,7 @@ export interface AlphabetNavigatorProps {
  * input lives in TouchBarLauncher. The letters "wave": a translucent accent
  * pill rides the finger (growing from vertical center so the wave never
  * jumps), the glyph under it is the biggest and brightest and gets an accent
- * tick underneath, neighbors taper off in size and color. react-drm can't
+ * tick underneath, neighbors taper off in size and color. omarchy-touchbar can't
  * tween font size, so the glyph falloff is a static 3-step around the active
  * letter — indistinguishable from a true tween at this scale.
  */

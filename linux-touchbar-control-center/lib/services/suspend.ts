@@ -11,7 +11,7 @@ const TOUCHBAR_DRM_RE = new RegExp(`DRIVER=(${TOUCHBAR_DRM_DRIVERS.join('|')})`,
 
 /**
  * In-app Touch Bar lifecycle: suspend/resume handling for every run mode
- * (manual `npm run dev` and react-drm.service alike).
+ * (manual `npm run dev` and omarchy-touchbar.service alike).
  *
  * Suspend tears down the apple-bce bus (suspend-fix-t2's `rmmod -f
  * apple-bce`), the Touch Bar re-enumerates in config 1 (firmware fn strip)
@@ -72,7 +72,7 @@ export function registerSuspendHooks(key: string, h: SuspendHooks): () => void {
 //    kernel's recovery reset leaves the device unconfigured (drivers gone)
 //    and the retry can reset-then-write safely.
 // Write access to bConfigurationValue and the devnode comes from
-// system/99-react-drm.rules (group video).
+// system/99-omarchy-touchbar.rules (group video).
 
 const USB_DEVICES = '/sys/bus/usb/devices';
 
@@ -147,7 +147,7 @@ export async function attachTouchBar(): Promise<void> {
       fs.accessSync(node, fs.constants.W_OK);
       fs.accessSync(cfg, fs.constants.W_OK);
     } catch {
-      if (Date.now() > deadline) throw new Error(`no write access to ${node} — install system/99-react-drm.rules and re-trigger`);
+      if (Date.now() > deadline) throw new Error(`no write access to ${node} — install system/99-omarchy-touchbar.rules and re-trigger`);
       await sleep(250);
       continue;
     }
@@ -252,7 +252,7 @@ export async function watchSleep(cb: SleepCallbacks): Promise<void> {
   function takeLock(): void {
     if (holder) return;
     holder = spawn('systemd-inhibit', [
-      '--what=sleep', '--who=react-drm', '--mode=delay',
+      '--what=sleep', '--who=omarchy-touchbar', '--mode=delay',
       '--why=Release Touch Bar DRM fd and audio before apple-bce teardown',
       '/bin/sh', '-c', 'read _ || true',
     ], { stdio: ['pipe', 'ignore', 'inherit'] });

@@ -42,7 +42,7 @@ display frame rate.
   addon built with `node-gyp` via `binding.gyp`.
 - Touch Bar panel attached as a DRM/KMS display; the firmware function-key strip
   is replaced while the app runs.
-- Runs as a user systemd service (`react-drm.service`) via `node dist/index.js`.
+- Runs as a user systemd service (`omarchy-touchbar.service`) via `node dist/index.js`.
 - Installation/distribution distributed through `./install.sh` (analyze →
   purge → deploy) and `./uninstall.sh` (restores the firmware Touch Bar).
 - Dev-time observability without root or hardware: pixels stream over WebSocket
@@ -82,7 +82,7 @@ display frame rate.
 
 ## Brand Commitments
 
-- Name: **react-drm**. Existing wordmark: "kait2en" screen + boot logo.
+- Name: **Omarchy Touch Bar**. Wordmark: the omarchy wordmark on the boot screen.
 - License GPL-3.0-or-later, original author Muhammad Adel (upstream react-drm).
 - "Touch Bar", "control center", "Custom Layer" and "t2linux"/"kait2en" are
   consistent terminology.

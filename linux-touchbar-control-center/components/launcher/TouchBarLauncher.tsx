@@ -226,7 +226,7 @@ export function TouchBarLauncher({ width, height, offsetX }: {
     return indexAt(fPrefix, world);
   };
 
-  // ── Raw touch input (react-drm delivers layout coords) ─────────────────────
+  // ── Raw touch input (omarchy-touchbar delivers layout coords) ─────────────────────
 
   const onTouchStart = (x: number, y: number) => {
     stopTimers();

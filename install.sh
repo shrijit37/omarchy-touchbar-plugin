@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# System integration of react-drm Touch Bar
+# System integration of Omarchy Touch Bar
 #
 # Author: André Eikmeyer (dev@deqrocks)
 # Date: 2026-06-14
@@ -154,14 +154,14 @@ confirm_installation() {
     return
   fi
   cat <<'EOF'
-react-drm replaces the existing Touch Bar interface.
+omarchy-touchbar replaces the existing Touch Bar interface.
 
 The installation has three phases:
 
   1. Analysis
      Detect the distribution, desktop session, Touch Bar hardware, kernel
      modules and conflicting daemons. Dry-run the complete package transaction
-     without changing the system. Verify that react-drm can be installed and
+     without changing the system. Verify that omarchy-touchbar can be installed and
      that detected conflicting daemons can be removed. The results are shown at
      the end of this phase.
 
@@ -169,10 +169,10 @@ The installation has three phases:
      There will be an explicit confirmation prompt before removing any of your
      current services or daemons.
      It will stop, disable and remove tiny-dfr or mac-touchbar-plus if present.
-     The Touch Bar will use its firmware interface until react-drm is deployed.
+     The Touch Bar will use its firmware interface until omarchy-touchbar is deployed.
 
   3. Deploy
-     Install build and runtime dependencies, build the current local react-drm
+     Install build and runtime dependencies, build the current local omarchy-touchbar
      source, install or update its udev rules and systemd user service, and add
      your user to the video and input groups if required. If group memberships
      change, you must log out and back in after installation.
@@ -181,8 +181,8 @@ The package manager refreshes repository metadata before installing packages.
 On Arch-based systems, only the required packages are installed (no system
 upgrade — a stale package database may be refreshed first with a full update).
 
-This installer does not download react-drm source updates. To update an
-existing installation, update the local react-drm source using the same method
+This installer does not download omarchy-touchbar source updates. To update an
+existing installation, update the local omarchy-touchbar source using the same method
 used to obtain it, then run install.sh from the updated source. The current
 local source is rebuilt and the running service is restarted.
 
@@ -193,7 +193,7 @@ daemon if either check fails.
 
 If the analysis produces incorrect results or the installer behaves
 unexpectedly, stop the installation and report the problem at:
-https://github.com/dev-muhammad-adel/react-drm-for-touchbar/issues
+https://github.com/dev-muhammad-adel/omarchy-touchbar-for-touchbar/issues
 
 This installer is provided without warranty and is used entirely at your own
 risk. The author and project contributors are not responsible for data loss,
@@ -230,7 +230,7 @@ confirm_purge() {
 Analysis and package resolution completed successfully.
 
 No conflicting Touch Bar daemon was detected, so the purge phase will not
-remove anything. The next phase installs dependencies and deploys react-drm.
+remove anything. The next phase installs dependencies and deploys omarchy-touchbar.
 EOF
     while true; do
       printf '\nType CONTINUE to start deployment, or no to cancel: '
@@ -369,17 +369,17 @@ detect_user_groups() {
 check_deploy_files() {
   local file
   [[ -w "$REPO_ROOT" ]] || fail "repository is not writable: $REPO_ROOT"
-  # 99-react-drm.rules is generated (gitignored): this t2linux installer copies
+  # 99-omarchy-touchbar.rules is generated (gitignored): this t2linux installer copies
   # its profile rules file into the canonical name the service steps use.
-  cp -f "$REPO_ROOT/system/99-react-drm-t2linux.rules" "$REPO_ROOT/system/99-react-drm.rules"
-  for file in package.json package-lock.json system/99-react-drm.rules system/react-drm.service system/react-drm-tb-detach; do
+  cp -f "$REPO_ROOT/system/99-omarchy-touchbar-t2linux.rules" "$REPO_ROOT/system/99-omarchy-touchbar.rules"
+  for file in package.json package-lock.json system/99-omarchy-touchbar.rules system/omarchy-touchbar.service system/omarchy-touchbar-tb-detach; do
     [[ -r "$REPO_ROOT/$file" ]] || fail "required deployment file is missing or unreadable: $file"
   done
-  [[ -x "$REPO_ROOT/system/react-drm-tb-detach" ]] ||
-    fail "required deployment helper is not executable: system/react-drm-tb-detach"
-  udevadm verify "$REPO_ROOT/system/99-react-drm.rules" >/dev/null ||
+  [[ -x "$REPO_ROOT/system/omarchy-touchbar-tb-detach" ]] ||
+    fail "required deployment helper is not executable: system/omarchy-touchbar-tb-detach"
+  udevadm verify "$REPO_ROOT/system/99-omarchy-touchbar.rules" >/dev/null ||
     fail "the supplied udev rules are invalid"
-  if [[ -e "$HOME/.config/systemd/user/react-drm.service" ]]; then
+  if [[ -e "$HOME/.config/systemd/user/omarchy-touchbar.service" ]]; then
     DEPLOYMENT_MODE="update existing installation"
   fi
 }
@@ -485,7 +485,7 @@ check_node_version() {
       version=$(apt-cache policy nodejs | awk '/Candidate:/ { print $2; exit }')
       [[ -n "$version" && "$version" != "(none)" ]] || fail "no Node.js candidate is available"
       dpkg --compare-versions "$version" ge 20.19.0 ||
-        fail "the available Node.js version ($version) is too old; react-drm requires Node.js 20.19.0 or newer"
+        fail "the available Node.js version ($version) is too old; omarchy-touchbar requires Node.js 20.19.0 or newer"
       ;;
     pacman)
       version=$(pacman -Si nodejs 2>/dev/null | awk -F ': ' '/^Version/ { print $2; exit }')
@@ -574,7 +574,7 @@ print_analysis() {
   analysis_value "Units to disable" "${ANALYSIS_CONFLICTING_UNITS[*]:-none}"
   analysis_value "Conflicting processes" "${#ANALYSIS_CONFLICTING_PROCESSES[@]}"
 
-  [[ $NEEDS_RELOGIN -eq 0 ]] || warn "A logout and login will be required before react-drm can start"
+  [[ $NEEDS_RELOGIN -eq 0 ]] || warn "A logout and login will be required before omarchy-touchbar can start"
   if [[ ${#ANALYSIS_CONFLICTING_PROCESSES[@]} -gt 0 ]]; then
     for proc in "${ANALYSIS_CONFLICTING_PROCESSES[@]}"; do
       printf '[%s]     %s\n' "$LOG_PHASE" "$proc"
@@ -594,7 +594,7 @@ analyze() {
     exit 2
   fi
   if [[ $DESKTOP_SUPPORTED -eq 0 ]]; then
-    fail "$DESKTOP_ABORT_REASON; react-drm currently supports GNOME, Plasma, Hyprland and Niri on Wayland, plus Xorg"
+    fail "$DESKTOP_ABORT_REASON; omarchy-touchbar currently supports GNOME, Plasma, Hyprland and Niri on Wayland, plus Xorg"
   fi
   if [[ "$DISTRO_FAMILY" == fedora ]]; then
     [[ "$OS_VERSION_ID" =~ ^[0-9]+$ ]] || fail "unable to determine the Fedora version"
@@ -712,7 +712,7 @@ seed_user_config() {
 
 # This installer is the t2linux (upstream) profile. Seed the per-distro
 # hardware profile into the repo-root .env, which the systemd service loads
-# via EnvironmentFile (see system/react-drm.service). Never overwrite an
+# via EnvironmentFile (see system/omarchy-touchbar.service). Never overwrite an
 # existing .env — the app treats it as user-editable config.
 seed_distro_env() {
   local example="$REPO_ROOT/.env.example.t2linux"
@@ -730,7 +730,7 @@ build_project() {
   (cd "$REPO_ROOT" && npm ci)
   seed_user_config
   seed_distro_env
-  info "Building react-drm and the control center"
+  info "Building omarchy-touchbar and the control center"
   (cd "$REPO_ROOT/linux-touchbar-control-center" && npm run build)
   info "Building the config editor"
   (cd "$REPO_ROOT/config-gui" && npm run build)
@@ -740,17 +740,17 @@ install_config_gui_launcher() {
   info "Installing config editor launcher"
   local apps_dir="$HOME/.local/share/applications"
   install -d -m 0755 "$apps_dir"
-  # The template uses `%h/react-drm` as a placeholder (systemd-style; it is
+  # The template uses `%h/.local/share/omarchy-touchbar` as a placeholder (systemd-style; it is
   # NOT a valid Desktop Entry field code, so it must be rewritten here —
   # launchers such as Vicinae and gio otherwise fail to expand it and the
   # entry's Exec= points at a nonexistent path). Rewrite it to the actual
-  # repo path, like install_user_service() does for react-drm.service. Only
+  # repo path, like install_user_service() does for omarchy-touchbar.service. Only
   # Exec=/TryExec= lines are touched, so placeholder mentions in comments
   # stay intact.
-  sed -E '/^(Exec|TryExec)=/ s|%h/react-drm|'"$REPO_ROOT"'|g' \
-    "$REPO_ROOT/system/react-drm-config-gui.desktop" \
-    > "$apps_dir/react-drm-config-gui.desktop"
-  chmod 0644 "$apps_dir/react-drm-config-gui.desktop"
+  sed -E '/^(Exec|TryExec)=/ s|%h/.local/share/omarchy-touchbar|'"$REPO_ROOT"'|g' \
+    "$REPO_ROOT/system/omarchy-touchbar-config.desktop" \
+    > "$apps_dir/omarchy-touchbar-config.desktop"
+  chmod 0644 "$apps_dir/omarchy-touchbar-config.desktop"
 }
 
 phase_gui_bootstrap() {
@@ -806,7 +806,7 @@ configure_user_groups() {
 
 install_udev_rules() {
   info "Installing udev rules"
-  privileged install -m 0644 "$REPO_ROOT/system/99-react-drm.rules" /etc/udev/rules.d/99-react-drm.rules
+  privileged install -m 0644 "$REPO_ROOT/system/99-omarchy-touchbar.rules" /etc/udev/rules.d/99-omarchy-touchbar.rules
   privileged udevadm control --reload
   privileged udevadm trigger --action=add --subsystem-match=usb --subsystem-match=backlight
   privileged udevadm trigger --action=add --subsystem-match=misc --sysname-match=uinput
@@ -815,22 +815,22 @@ install_udev_rules() {
 install_user_service() {
   local service_dir service_file temporary_file workdir_q start_q detach_q envfile_q
   service_dir="$HOME/.config/systemd/user"
-  service_file="$service_dir/react-drm.service"
+  service_file="$service_dir/omarchy-touchbar.service"
   workdir_q=$(systemd_escape_path "$REPO_ROOT/linux-touchbar-control-center")
   start_q=$(systemd_escape_path "$REPO_ROOT/linux-touchbar-control-center/dist/index.js")
-  detach_q=$(systemd_escape_path "$REPO_ROOT/system/react-drm-tb-detach")
+  detach_q=$(systemd_escape_path "$REPO_ROOT/system/omarchy-touchbar-tb-detach")
   envfile_q=$(systemd_escape_path "$REPO_ROOT/.env")
 
   info "Installing systemd user service"
   install -d -m 0755 "$service_dir"
-  temporary_file=$(mktemp --suffix=.service "$service_dir/react-drm-install.XXXXXX")
+  temporary_file=$(mktemp --suffix=.service "$service_dir/omarchy-touchbar-install.XXXXXX")
   if ! awk -v workdir="$workdir_q" -v start="$start_q" -v detach="$detach_q" -v envfile="$envfile_q" '
     /^WorkingDirectory=/ { print "WorkingDirectory=" workdir; next }
     /^EnvironmentFile=/ { print "EnvironmentFile=-" envfile; next }
     /^ExecStart=/ { print "ExecStart=node " start; next }
     /^ExecStopPost=/ { print "ExecStopPost=-" detach; next }
     { print }
-  ' "$REPO_ROOT/system/react-drm.service" >"$temporary_file"; then
+  ' "$REPO_ROOT/system/omarchy-touchbar.service" >"$temporary_file"; then
     rm -f "$temporary_file"
     fail "unable to generate the systemd user service"
   fi
@@ -839,26 +839,26 @@ install_user_service() {
     rm -f "$temporary_file"
     fail "the generated systemd user service is invalid"
   fi
-  if systemctl --user is-active --quiet react-drm.service; then
-    info "Stopping the existing react-drm service"
-    systemctl --user stop react-drm.service
-    if systemctl --user is-active --quiet react-drm.service; then
+  if systemctl --user is-active --quiet omarchy-touchbar.service; then
+    info "Stopping the existing omarchy-touchbar service"
+    systemctl --user stop omarchy-touchbar.service
+    if systemctl --user is-active --quiet omarchy-touchbar.service; then
       rm -f "$temporary_file"
-      fail "the existing react-drm service did not stop"
+      fail "the existing omarchy-touchbar service did not stop"
     fi
   fi
   mv -f "$temporary_file" "$service_file"
   systemctl --user daemon-reload
 
   if [[ $NEEDS_RELOGIN -eq 1 ]]; then
-    systemctl --user enable react-drm.service
-    warn "react-drm is enabled but was not started; log out and back in to activate the new group memberships"
+    systemctl --user enable omarchy-touchbar.service
+    warn "omarchy-touchbar is enabled but was not started; log out and back in to activate the new group memberships"
   else
-    systemctl --user enable --now react-drm.service
+    systemctl --user enable --now omarchy-touchbar.service
     sleep 2
-    systemctl --user is-active --quiet react-drm.service ||
-      fail "react-drm failed to remain active; inspect it with 'journalctl --user -u react-drm.service -b'"
-    info "react-drm service started"
+    systemctl --user is-active --quiet omarchy-touchbar.service ||
+      fail "omarchy-touchbar failed to remain active; inspect it with 'journalctl --user -u omarchy-touchbar.service -b'"
+    info "omarchy-touchbar service started"
   fi
 }
 
@@ -876,9 +876,9 @@ phase_deploy() {
   info "Deployment completed successfully"
   if [[ $NEEDS_RELOGIN -eq 1 ]]; then
     warn "Log out of the desktop session and log back in to activate the video and input group memberships"
-    warn "react-drm will start automatically after the next login"
+    warn "omarchy-touchbar will start automatically after the next login"
   else
-    info "react-drm is active; no logout is required"
+    info "omarchy-touchbar is active; no logout is required"
   fi
   gui_phase deploy done
   if [[ $GUI_MODE -eq 1 ]]; then

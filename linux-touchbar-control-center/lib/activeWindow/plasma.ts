@@ -18,7 +18,7 @@ const SVC             = 'org.kde.KWin';
 const SCRIPTING_PATH  = '/Scripting';
 const SCRIPTING_IFACE = 'org.kde.kwin.Scripting';
 const SCRIPT_IFACE    = 'org.kde.kwin.Script';
-const PLUGIN          = 'react-drm-activewindow';
+const PLUGIN          = 'omarchy-touchbar-activewindow';
 
 // The injected KWin script: emit "<marker> class\ttitle\tpid" on the initial
 // focus and on every focus/title change. captionChanged catches terminals and
@@ -76,7 +76,7 @@ export const plasma: ActiveWindowBackend = {
       // loadScript takes a file path. KWin runs as the user, so the file must be
       // world-readable even when we're under sudo (root-owned 0600 would be
       // unreadable to KWin) — same sudo-awareness as the other backends.
-      scriptFile = path.join(os.tmpdir(), `react-drm-actwin-${process.pid}.js`);
+      scriptFile = path.join(os.tmpdir(), `omarchy-touchbar-actwin-${process.pid}.js`);
       fs.writeFileSync(scriptFile, scriptSource(marker), { mode: 0o644 });
 
       // Start following the journal *before* loading the script, anchored a

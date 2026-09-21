@@ -63,7 +63,7 @@ const SVG_TAGS = new Set([
   'switch', 'symbol', 'textPath', 'title', 'tspan', 'use', 'view',
 ]);
 
-// SVG element tags that hold text content and collide with react-drm's own
+// SVG element tags that hold text content and collide with omarchy-touchbar's own
 // element names ('text'). Treated as svg_el only inside an <svg> (see hostContext).
 const SVG_TEXT_TAGS = new Set(['text', 'tspan', 'textPath']);
 
@@ -185,7 +185,7 @@ function nodeFromProps(type: string, props: Record<string, unknown>, inSvg = fal
       children: [],
     } as SvgElementNode;
   }
-  throw new Error(`react-drm: unknown element type "${type}". Use <Box>, <Text>, or <Svg>.`);
+  throw new Error(`omarchy-touchbar: unknown element type "${type}". Use <Box>, <Text>, or <Svg>.`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -209,7 +209,7 @@ export const reconciler = ReactReconciler({
     nodeFromProps(type, props, hostContext.inSvg),
 
   createTextInstance: (text: string) => {
-    process.stderr.write(`react-drm: raw text "${text.trim()}" detected — wrap text in <Text>\n`);
+    process.stderr.write(`omarchy-touchbar: raw text "${text.trim()}" detected — wrap text in <Text>\n`);
     return { type: 'text-leaf', text, children: [] } as TextLeafNode;
   },
 

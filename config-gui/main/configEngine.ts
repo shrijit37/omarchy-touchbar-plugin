@@ -22,7 +22,7 @@ export interface ConfigPaths {
   blueprintPath: string;
 }
 
-const DEFAULT_REPO_DIR = path.join(os.homedir(), 'react-drm', 'linux-touchbar-control-center');
+const DEFAULT_REPO_DIR = path.join(os.homedir(), 'omarchy-touchbar', 'linux-touchbar-control-center');
 
 export function defaultConfigPaths(repoDir: string = DEFAULT_REPO_DIR): ConfigPaths {
   return {
@@ -396,9 +396,9 @@ function syncCompiledConfig(configPath: string): void {
 
 export function restartService(): Promise<{ ok: boolean; message: string }> {
   return new Promise(resolve => {
-    exec('systemctl --user restart react-drm.service', (err, _stdout, stderr) => {
+    exec('systemctl --user restart omarchy-touchbar.service', (err, _stdout, stderr) => {
       if (err) resolve({ ok: false, message: stderr.trim() || err.message });
-      else resolve({ ok: true, message: 'react-drm restarted' });
+      else resolve({ ok: true, message: 'omarchy-touchbar restarted' });
     });
   });
 }

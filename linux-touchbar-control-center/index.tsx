@@ -6,10 +6,10 @@ import { attachTouchBar, ensureTouchBarAttached, watchSleep } from '@/lib/servic
 import { createLogger } from 'omarchy-touchbar';
 import { startCustomLayer } from '@/lib/customLayer';
 
-const log = createLogger('react-drm');
+const log = createLogger('omarchy-touchbar');
 
 // Show what the resolved .env hardware profile produced. Import-block order
-// matters: react-drm loads the repo .env first (src/native/env.ts), so these
+// matters: omarchy-touchbar loads the repo .env first (src/native/env.ts), so these
 // values are the seeded ones, not just the compiled defaults.
 log.info('hardware profile:',
   JSON.stringify({
@@ -22,7 +22,7 @@ log.info('hardware profile:',
   }, null, 2));
 
 // The app owns the Touch Bar lifecycle in every run mode — manual `npm run
-// dev` and react-drm.service alike: attach at startup, quiesce before system
+// dev` and omarchy-touchbar.service alike: attach at startup, quiesce before system
 // sleep, re-attach + resume after. SLEEP.enabled in config.ts turns it off.
 // None of this applies to the browser preview backend — there's no physical
 // Touch Bar to attach/detach, and waiting on one would just stall startup.
