@@ -9,21 +9,23 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    background: #1b1b1d;
+    /* Dev-tool shell → the GUI palette (config-gui/install-gui tokens),
+       not the bar's; this page only blits the real framebuffer. */
+    background: #0d0f14;
     font: 13px -apple-system, system-ui, sans-serif;
-    color: #9a9a9e;
+    color: #eef0f3;
   }
   canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     background: #000;
-    border-radius: 20px;
+    border-radius: 14px; /* in the 6–14px radius band */
     touch-action: none;
     cursor: pointer;
   }
   #status { opacity: 0.8; }
-  #status.connected { color: #6fcf6f; }
-  #status.disconnected { color: #e07a5f; }
+  #status.connected { color: #4ade80; }
+  #status.disconnected { color: #fb7185; }
 </style>
 <canvas id="touchbar" width="2008" height="60" role="img" aria-label="Touch Bar preview"
   tabindex="0" aria-describedby="status"></canvas>

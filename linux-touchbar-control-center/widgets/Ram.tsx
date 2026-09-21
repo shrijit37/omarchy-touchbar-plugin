@@ -15,11 +15,11 @@ export function Ram() {
   const color = colorFor(mem.pct);
 
   return (
-    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       <Box style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
         <MdStorage style={{ width: 18, height: 18 }} fill={color} stroke="none" />
       </Box>
-      <Text style={{ color, fontSize: 14, fontWeight: '600' }}>{`${mem.pct}%`}</Text>
+      <Text style={{ color, fontSize: 13, fontWeight: '600' }}>{`${mem.pct}%`}</Text>
     </Box>
   );
 }

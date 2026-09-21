@@ -160,7 +160,7 @@ export function DinoGame({ width, height }: { width: number; height: number }) {
   const mid = Math.floor(width / 2);
 
   return (
-    <Box x={0} y={0} width={width} height={height} color="#05050c">
+    <Box x={0} y={0} width={width} height={height} color="#000000">
 
       {/* Night sky */}
       <Box x={0} y={0} width={width} height={30} color="#080815" />
@@ -197,13 +197,13 @@ export function DinoGame({ width, height }: { width: number; height: number }) {
       ))}
 
       {/* Score */}
-      <Text x={width - 190} y={9} color={STATUS.warn} fontSize={22} fontFamily="monospace">
+      <Text x={width - 190} y={9} color={STATUS.warn} fontSize={22} fontFamily="IosevkaTerm Nerd Font">
         {`${String(score).padStart(5, '0')} m`}
       </Text>
 
       {/* Start message */}
       {!running && !dead && (
-        <Text x={mid - 230} y={9} color={STATUS.idle} fontSize={26} fontFamily="monospace">
+        <Text x={mid - 230} y={9} color={STATUS.idle} fontSize={22} fontFamily="IosevkaTerm Nerd Font">
           {'TAP OR PRESS ANY KEY TO START'}
         </Text>
       )}
@@ -211,8 +211,8 @@ export function DinoGame({ width, height }: { width: number; height: number }) {
       {/* Crash screen */}
       {dead && (
         <>
-          <Text x={mid - 95} y={9} color={STATUS.danger} fontSize={26} fontFamily="monospace">CRASHED!</Text>
-          <Text x={mid + 35} y={9} color={STATUS.idle} fontSize={22} fontFamily="monospace">— TAP TO RETRY</Text>
+          <Text x={mid - 95} y={9} color={STATUS.danger} fontSize={22} fontFamily="IosevkaTerm Nerd Font">CRASHED!</Text>
+          <Text x={mid + 35} y={9} color={STATUS.idle} fontSize={22} fontFamily="IosevkaTerm Nerd Font">— TAP TO RETRY</Text>
         </>
       )}
 

@@ -52,7 +52,7 @@ export function Clipboard() {
   const display = text.length > MAX_LEN ? text.slice(0, MAX_LEN) + '...' : text;
 
   return (
-    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       <Box style={{ width: 16, height: 16, alignItems: 'center', justifyContent: 'center' }}>
         <FaClipboard style={{ width: 14, height: 14 }} fill={SELECTED_THEME.textSecondary} stroke="none" />
       </Box>

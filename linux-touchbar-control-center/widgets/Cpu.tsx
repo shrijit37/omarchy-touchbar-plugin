@@ -15,11 +15,11 @@ export function Cpu() {
   const color = pct === null ? STATUS.idle : colorFor(pct);
 
   return (
-    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       <Box style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
         <MdMemory style={{ width: 18, height: 18 }} fill={color} stroke="none" />
       </Box>
-      <Text style={{ color, fontSize: 14, fontWeight: '600' }}>
+      <Text style={{ color, fontSize: 13, fontWeight: '600' }}>
         {pct === null ? '--%' : `${pct}%`}
       </Text>
     </Box>

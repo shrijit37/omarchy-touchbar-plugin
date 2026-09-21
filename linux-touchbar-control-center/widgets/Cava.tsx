@@ -2,20 +2,10 @@ import React from 'react';
 import { Box } from 'react-drm';
 import { useCavaBars } from '@/lib/hooks/useCavaBars';
 import { CAVA } from '@/config.blueprint';
+import { SELECTED_THEME } from '@/lib/theme';
 
-const BAR_W = 5;
 const GAP = 2;
-const MAX_H = 20;
 
-// Same orange (bass) → cyan (treble) gradient as systembar's visualizer.
-function colorFor(i: number, n: number): string {
-  const t = n > 1 ? i / (n - 1) : 0;
-  const r = Math.round(249 - t * 215);
-  const g = Math.round(115 + t * 96);
-  const b = Math.round(22 + t * 216);
-  const hex = (v: number) => Math.min(255, Math.max(0, v)).toString(16).padStart(2, '0');
-  return `#${hex(r)}${hex(g)}${hex(b)}`;
-}
 const CAVA_BARS = CAVA.bars;
 
 export function Cava({width}:{width:number}) {
@@ -29,7 +19,7 @@ export function Cava({width}:{width:number}) {
     <Box style={{ alignItems: 'flex-end',width, paddingHorizontal: 8}}>
           <Box ref={barsRef} style={{ alignItems: 'flex-end', gap: GAP }}>
             {bars.map((h: any, i: number ) => (
-              <Box key={i} style={{width:((width - 2*(CAVA_BARS -1) - 16)/CAVA_BARS) , height: h, backgroundColor: isActive ? BAR_COLORS[i] : '#1e293b' }} />
+              <Box key={i} style={{width:((width - 2*(CAVA_BARS -1) - 16)/CAVA_BARS) , height: h, backgroundColor: isActive ? BAR_COLORS[i] : SELECTED_THEME.divider }} />
             ))}
           </Box>
         </Box>

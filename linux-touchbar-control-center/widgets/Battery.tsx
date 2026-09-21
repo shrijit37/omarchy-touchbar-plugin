@@ -15,11 +15,11 @@ export function Battery() {
 
   if (!bat) {
     return (
-      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         <Box style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
           <MdBatteryUnknown style={{ width: 18, height: 18 }} fill={STATUS.idle} stroke="none" />
         </Box>
-        <Text style={{ color: STATUS.idle, fontSize: 14, fontWeight: '600' }}>--%</Text>
+        <Text style={{ color: STATUS.idle, fontSize: 13, fontWeight: '600' }}>--%</Text>
       </Box>
     );
   }
@@ -30,11 +30,11 @@ export function Battery() {
     : BARS[Math.round((bat.pct / 100) * 6)];
 
   return (
-    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       <Box style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
         <Icon style={{ width: 18, height: 18 }} fill={color} stroke="none" />
       </Box>
-      <Text style={{ color, fontSize: 14, fontWeight: '600' }}>{`${bat.pct}%`}</Text>
+      <Text style={{ color, fontSize: 13, fontWeight: '600' }}>{`${bat.pct}%`}</Text>
     </Box>
   );
 }
