@@ -34,13 +34,13 @@ KeyInjector::KeyInjector(const Napi::CallbackInfo& info)
   ioctl(fd_, UI_SET_EVBIT, EV_SYN);
   // Register EVERY Linux key code so any key chosen in the config is actually
   // injected. uinput only emits events for keys whose UI_SET_KEYBIT was set at
-  // setup, so a fixed whitelist silently dropped everything else ("react-drm
+  // setup, so a fixed whitelist silently dropped everything else ("omarchy-touchbar
   // doesn't support that key"). KEY_MAX (0x2ff) is the last defined constant.
   for (int k = 1; k <= KEY_MAX; ++k)
     ioctl(fd_, UI_SET_KEYBIT, k);
 
   struct uinput_setup usetup{};
-  strncpy(usetup.name, "react-drm-fkeys", UINPUT_MAX_NAME_SIZE);
+  strncpy(usetup.name, "omarchy-touchbar-fkeys", UINPUT_MAX_NAME_SIZE);
   usetup.id.bustype = BUS_USB;
   usetup.id.vendor  = 0x1d6b;
   usetup.id.product = 0x0001;

@@ -23,8 +23,8 @@ pnpm-debug.log*
 linux-touchbar-control-center/config.ts
 
 # Generated at install time by the distro installers — each copies its own
-# 99-react-drm-<distro>.rules into this canonical name.
-system/99-react-drm.rules
+# 99-omarchy-touchbar-<distro>.rules into this canonical name.
+system/99-omarchy-touchbar.rules
 
 # Custom Layer prototype's own storage — written by config-gui, watched by
 # the Touch Bar app. Separate from config.ts; never tracked.

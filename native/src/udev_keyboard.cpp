@@ -12,7 +12,7 @@
 
 static struct udev* make_udev(Napi::Env env) {
   struct udev* u = udev_new();
-  if (!u) Napi::Error::New(env, "react-drm: failed to create udev context")
+  if (!u) Napi::Error::New(env, "omarchy-touchbar: failed to create udev context")
             .ThrowAsJavaScriptException();
   return u;
 }
@@ -61,7 +61,7 @@ static std::vector<std::string> enumerate_input(
 // path — and it broke keyboard recovery after suspend on MacBookPro15,1.
 //
 // The syspath alone distinguishes everything we need:
-//   • virtual nodes (ydotoold / our own react-drm-fkeys injector) live under
+//   • virtual nodes (ydotoold / our own omarchy-touchbar-fkeys injector) live under
 //     /devices/virtual/ and must never be bound.
 //   • the built-in T2 keyboard always sits on the apple-bce/bce-vhci bridge
 //     upstream, or t2bce on KaiT2en forks (a renamed "t2bce-vhci"). The bridge
@@ -95,7 +95,7 @@ static int score_keyboard(struct udev_device* dev) {
 
   if (sp.find("/devices/virtual/") != std::string::npos) return -100; // injector — exclude
   int score = 10;                                                     // real hardware path
-if (bridge_matches(sp)) score += 50;                               // built-in T2 keyboard
+  if (bridge_matches(sp)) score += 50;                               // built-in T2 keyboard
   return score;
 }
 
@@ -136,7 +136,7 @@ Napi::Value FindKeyboardDevice(const Napi::CallbackInfo& info) {
 
   if (node.empty()) {
     Napi::Error::New(env,
-      "react-drm: no real keyboard found on seat0 (only virtual devices). "
+      "omarchy-touchbar: no real keyboard found on seat0 (only virtual devices). "
       "The built-in keyboard may still be enumerating.")
       .ThrowAsJavaScriptException();
     return env.Undefined();
@@ -200,7 +200,7 @@ Napi::Value FindLidDevice(const Napi::CallbackInfo& info) {
   udev_unref(udev);
 
   if (found.empty()) {
-    Napi::Error::New(env, "react-drm: no lid switch found via udev")
+    Napi::Error::New(env, "omarchy-touchbar: no lid switch found via udev")
       .ThrowAsJavaScriptException();
     return env.Undefined();
   }
@@ -211,7 +211,7 @@ Napi::Value ReadLidClosed(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() < 1 || !info[0].IsString()) {
-    Napi::TypeError::New(env, "react-drm: lid device path must be a string")
+    Napi::TypeError::New(env, "omarchy-touchbar: lid device path must be a string")
       .ThrowAsJavaScriptException();
     return env.Undefined();
   }
@@ -219,7 +219,7 @@ Napi::Value ReadLidClosed(const Napi::CallbackInfo& info) {
   const std::string path = info[0].As<Napi::String>().Utf8Value();
   int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC);
   if (fd < 0) {
-    Napi::Error::New(env, "react-drm: failed to open lid switch " + path)
+    Napi::Error::New(env, "omarchy-touchbar: failed to open lid switch " + path)
       .ThrowAsJavaScriptException();
     return env.Undefined();
   }
@@ -228,7 +228,7 @@ Napi::Value ReadLidClosed(const Napi::CallbackInfo& info) {
   int ret = ioctl(fd, EVIOCGSW(sizeof(switches)), switches);
   close(fd);
   if (ret < 0) {
-    Napi::Error::New(env, "react-drm: failed to read lid switch " + path)
+    Napi::Error::New(env, "omarchy-touchbar: failed to read lid switch " + path)
       .ThrowAsJavaScriptException();
     return env.Undefined();
   }
