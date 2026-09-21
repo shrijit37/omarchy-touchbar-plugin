@@ -95,7 +95,7 @@ static int score_keyboard(struct udev_device* dev) {
 
   if (sp.find("/devices/virtual/") != std::string::npos) return -100; // injector — exclude
   int score = 10;                                                     // real hardware path
-  if (bridge_matches(sp)) score += 50;                               // built-in T2 keyboard
+if (bridge_matches(sp)) score += 50;                               // built-in T2 keyboard
   return score;
 }
 
