@@ -1,5 +1,5 @@
 {
-  "name": "react-drm",
+  "name": "omarchy-touchbar",
   "version": "0.1.0",
   "private": true,
   "description": "React renderer targeting Linux DRM/KMS via libdrm + Cairo",

@@ -10,7 +10,7 @@ import path from 'node:path';
  */
 export function customLayerSocketPath(): string {
   const runtimeDir = process.env.XDG_RUNTIME_DIR || os.tmpdir();
-  return path.join(runtimeDir, 'react-drm-custom-layer.sock');
+  return path.join(runtimeDir, 'omarchy-touchbar-custom-layer.sock');
 }
 
 /** Encodes one message as a newline-delimited JSON frame. */

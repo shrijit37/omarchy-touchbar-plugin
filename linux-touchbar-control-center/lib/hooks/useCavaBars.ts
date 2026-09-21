@@ -1,13 +1,13 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { spawn } from 'child_process';
 import { writeFileSync } from 'fs';
-import { LayoutContext, NativeDrawContext, DisplaySizeContext, BoxNode } from 'react-drm';
+import { LayoutContext, NativeDrawContext, DisplaySizeContext, BoxNode } from 'omarchy-touchbar';
 import { CAVA } from '@/config.blueprint';
 import { SELECTED_THEME } from '@/lib/theme';
 
 // ── Audio Visualizer ─────────────────────────────────────────────────────────
 const CAVA_BARS = CAVA.bars;
-const CAVA_CFG  = '/tmp/.react-drm-cava.conf';
+const CAVA_CFG  = '/tmp/.omarchy-touchbar-cava.conf';
 const CAVA_MAX_HEIGHT = 34;
 
 try {

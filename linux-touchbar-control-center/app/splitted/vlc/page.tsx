@@ -2,8 +2,8 @@ import React, { useRef, useContext, useState } from 'react';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
 
 export const layerConfig: LayerConfig = { animation: 'fade' };
-import { Box, Text, Button, LayoutContext } from 'react-drm';
-import type { BoxNode } from 'react-drm';
+import { Box, Text, Button, LayoutContext } from 'omarchy-touchbar';
+import type { BoxNode } from 'omarchy-touchbar';
 import { MdPlayArrow, MdPause } from 'react-icons/md';
 import { useVlc } from '@/lib/hooks/useVlc';
 import { FONT } from '@/components/launcher/theme';

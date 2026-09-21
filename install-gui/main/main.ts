@@ -23,12 +23,12 @@ let child: ChildProcessWithoutNullStreams | null = null;
 
 // install-gui is the t2linux (upstream) front-end, so on install it seeds the
 // t2linux profile into the generated assets, exactly as install.sh does: the
-// gitignored 99-react-drm.rules and the repo-root .env. Only fills targets
+// gitignored 99-omarchy-touchbar.rules and the repo-root .env. Only fills targets
 // that are absent — an existing .env/rules are user-editable and left alone.
 function seedT2linuxAssets(): void {
   if (MODE !== 'install') return;
-  const rulesSrc = path.join(REPO_ROOT, 'system', '99-react-drm-t2linux.rules');
-  const rulesDst = path.join(REPO_ROOT, 'system', '99-react-drm.rules');
+  const rulesSrc = path.join(REPO_ROOT, 'system', '99-omarchy-touchbar-t2linux.rules');
+  const rulesDst = path.join(REPO_ROOT, 'system', '99-omarchy-touchbar.rules');
   const envSrc = path.join(REPO_ROOT, '.env.example.t2linux');
   const envDst = path.join(REPO_ROOT, '.env');
   try {
@@ -51,7 +51,7 @@ function createWindow(): void {
     minWidth: 640,
     minHeight: 480,
     center: true,
-    title: MODE === 'uninstall' ? 'Uninstall react-drm' : 'Install react-drm',
+    title: MODE === 'uninstall' ? 'Uninstall omarchy-touchbar' : 'Install omarchy-touchbar',
     frame: false,
     backgroundColor: '#0d0f14',
     webPreferences: {

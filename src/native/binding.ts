@@ -77,7 +77,7 @@ export interface Display {
  * USBDEVFS_RESET ioctl on a USB device node (`/dev/bus/usb/BBB/DDD`).
  * Wakes the Touch Bar firmware's display interface out of its idle sleep —
  * the state where every transfer (including config switches) fails with
- * ETIMEDOUT. Needs write access to the node (see system/99-react-drm.rules).
+ * ETIMEDOUT. Needs write access to the node (see system/99-omarchy-touchbar.rules).
  */
 export function usbReset(devnode: string): void {
   loadNative().usbReset(devnode);

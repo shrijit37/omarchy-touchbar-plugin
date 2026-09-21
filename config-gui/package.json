@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "electron": "^43.4.0",
-    "react-drm": "file:..",
     "ts-morph": "^28.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "omarchy-touchbar": "file:.."
   },
   "devDependencies": {
     "@types/node": "^25.9.1"

@@ -1,5 +1,5 @@
 /**
- * CSS-like style inheritance pass for react-drm.
+ * CSS-like style inheritance pass for omarchy-touchbar.
  *
  * Walks the scene tree top-down and stamps `_inherited` on each TextNode
  * so that measureText and serialize can resolve the effective fontFamily,

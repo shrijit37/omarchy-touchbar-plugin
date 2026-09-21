@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Omarchy entry point for the react-drm Touch Bar installer.
+# Omarchy entry point for the Omarchy Touch Bar installer.
 #
 # Omarchy routes system upgrades through `omarchy update` and blocks direct
 # `pacman -Syu` with an ALPM pre-transaction hook (00-omarchy-update-guard,

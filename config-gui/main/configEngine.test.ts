@@ -183,6 +183,6 @@ test('writeConfig refreshes dist/config.js so production (node dist/index.js) se
     const compiledText = fs.readFileSync(path.join(distDir, 'config.js'), 'utf8');
     assert.match(compiledText, /dimSecs:\s*222/);
     assert.match(compiledText, /"use strict"/); // real CommonJS output, not a raw copy of config.ts
-    assert.match(compiledText, /require\(["']react-drm["']\)/); // KEY import compiled, not left as ESM
+    assert.match(compiledText, /require\(["']omarchy-touchbar["']\)/); // KEY import compiled, not left as ESM
   });
 });

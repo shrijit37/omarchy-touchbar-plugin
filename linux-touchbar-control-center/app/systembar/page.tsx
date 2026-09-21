@@ -7,8 +7,8 @@ import {
 } from '@/store/pomodoro';
 import { readFileSync, readdirSync, writeFileSync } from 'fs';
 import { spawn } from 'child_process';
-import { Box, Text, Button, LayoutContext, NativeDrawContext, DisplaySizeContext } from 'react-drm';
-import type { BoxNode } from 'react-drm';
+import { Box, Text, Button, LayoutContext, NativeDrawContext, DisplaySizeContext } from 'omarchy-touchbar';
+import type { BoxNode } from 'omarchy-touchbar';
 import { MdArrowDownward, MdArrowUpward, MdCancel, MdDeveloperBoard, MdDeviceHub, MdMemory, MdReplay, MdRouter, MdThermostat, MdWhatshot, MdWifi } from 'react-icons/md';
 import type { IconType } from 'react-icons';
 import { CAVA, SYSTEMBAR } from '@/lib/utils/configLoader';
@@ -451,7 +451,7 @@ function ClockMod({ time }: { time: Date }) {
 
 // ── Audio Visualizer ─────────────────────────────────────────────────────────
 const CAVA_BARS = CAVA.bars;
-const CAVA_CFG  = '/tmp/.react-drm-cava.conf';
+const CAVA_CFG  = '/tmp/.omarchy-touchbar-cava.conf';
 const CAVA_MAX_HEIGHT = 34;
 
 try {

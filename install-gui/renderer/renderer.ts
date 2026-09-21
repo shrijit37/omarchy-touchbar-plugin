@@ -37,18 +37,18 @@ const STEPS: Record<Mode, { id: string; label: string }[]> = {
 
 const WELCOME_COPY: Record<Mode, { title: string; paragraphs: string[]; beginLabel: string; danger?: boolean }> = {
   install: {
-    title: 'Install react-drm',
+    title: 'Install omarchy-touchbar',
     paragraphs: [
-      'This replaces the existing Touch Bar interface. It analyzes your system, removes any conflicting tiny-dfr or mac-touchbar-plus installation (with your explicit confirmation), then builds and deploys react-drm.',
+      'This replaces the existing Touch Bar interface. It analyzes your system, removes any conflicting tiny-dfr or mac-touchbar-plus installation (with your explicit confirmation), then builds and deploys omarchy-touchbar.',
       'If your user needs to be added to the video or input groups, you will need to log out and back in afterward.',
       'Provided without warranty — used entirely at your own risk.',
     ],
     beginLabel: 'Begin Installation',
   },
   uninstall: {
-    title: 'Uninstall react-drm',
+    title: 'Uninstall omarchy-touchbar',
     paragraphs: [
-      'This removes the react-drm user service and udev rules and restores the firmware Touch Bar interface.',
+      'This removes the omarchy-touchbar user service and udev rules and restores the firmware Touch Bar interface.',
       'Project files, npm dependencies, system packages and video/input group memberships are not removed.',
     ],
     beginLabel: 'Uninstall',
@@ -59,13 +59,13 @@ const WELCOME_COPY: Record<Mode, { title: string; paragraphs: string[]; beginLab
 const QUESTION_COPY: Record<string, { title: string; body: string; confirmLabel: string; confirmValue: string; danger?: boolean }> = {
   continue: {
     title: 'Ready to deploy',
-    body: 'No conflicting Touch Bar daemon was found. Continue installing dependencies and deploying react-drm?',
+    body: 'No conflicting Touch Bar daemon was found. Continue installing dependencies and deploying omarchy-touchbar?',
     confirmLabel: 'Continue',
     confirmValue: 'CONTINUE',
   },
   purge: {
     title: 'Remove the existing Touch Bar daemon',
-    body: 'A conflicting tiny-dfr or mac-touchbar-plus installation was found. It will be stopped, disabled and removed before react-drm is deployed. This cannot be undone automatically.',
+    body: 'A conflicting tiny-dfr or mac-touchbar-plus installation was found. It will be stopped, disabled and removed before omarchy-touchbar is deployed. This cannot be undone automatically.',
     confirmLabel: 'Purge and continue',
     confirmValue: 'PURGE',
     danger: true,
@@ -203,11 +203,11 @@ function handleEvent(event: WizardEvent): void {
       break;
     case 'done':
       if (mode === 'install' && event.needsRelogin) {
-        showResult(true, 'Installed — log out required', 'react-drm is enabled but was not started. Log out and back in to activate the new group memberships.');
+        showResult(true, 'Installed — log out required', 'omarchy-touchbar is enabled but was not started. Log out and back in to activate the new group memberships.');
       } else if (mode === 'install') {
-        showResult(true, 'Installation complete', 'react-drm is active. No logout is required.');
+        showResult(true, 'Installation complete', 'omarchy-touchbar is active. No logout is required.');
       } else {
-        showResult(true, 'Uninstalled', 'react-drm has been removed. The firmware Touch Bar interface is restored.');
+        showResult(true, 'Uninstalled', 'omarchy-touchbar has been removed. The firmware Touch Bar interface is restored.');
       }
       break;
   }

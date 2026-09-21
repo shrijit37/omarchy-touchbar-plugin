@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef, useContext } from 'react';
 import { spawn } from 'child_process';
 import fs from 'fs';
-import { Box, Button, Text, LayoutContext } from 'react-drm';
-import type { BoxNode } from 'react-drm';
+import { Box, Button, Text, LayoutContext } from 'omarchy-touchbar';
+import type { BoxNode } from 'omarchy-touchbar';
 import { registerSuspendHooks } from '@/lib/services/suspend';
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 
 const log = createLogger('piano');
 

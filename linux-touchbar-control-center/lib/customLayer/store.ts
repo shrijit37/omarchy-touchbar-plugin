@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   CUSTOM_WIDGET_WIDTHS, CUSTOM_WIDGET_MIN_WIDTH, CUSTOM_WIDGET_MAX_WIDTH, snapToGrid, createLogger,
-} from 'react-drm';
-import type { CustomWidget, CustomWidgetType, CustomLayerDragGhost } from 'react-drm';
+} from 'omarchy-touchbar';
+import type { CustomWidget, CustomWidgetType, CustomLayerDragGhost } from 'omarchy-touchbar';
 
 const log = createLogger('custom-layer-store');
 
@@ -215,7 +215,7 @@ export class CustomLayerStore {
 // the bridge server started in main() keeps running against the old instance.
 // Stashing it on globalThis (with a Symbol key, immune to module re-eval) makes
 // every re-evaluated copy of this module share the one live store.
-const STORE_GLOBAL_KEY = Symbol.for('react-drm.customLayerStore');
+const STORE_GLOBAL_KEY = Symbol.for('omarchy-touchbar.customLayerStore');
 
 type GlobalWithStore = { [STORE_GLOBAL_KEY]: CustomLayerStore } & typeof globalThis;
 

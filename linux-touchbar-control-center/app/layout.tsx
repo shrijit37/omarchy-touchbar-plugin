@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, easings, motion } from 'react-drm';
+import { Box, easings, motion } from 'omarchy-touchbar';
 import { ESC_KEY, DOCK, FN_LAYER, CUSTOM_LAYER, THEME } from '@/lib/utils/configLoader';
 import { EscKey } from '@/components/EscKey';
 import { SafeArea } from '@/components/SafeArea';

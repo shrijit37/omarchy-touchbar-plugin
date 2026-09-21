@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { Box, Button, Text, motion } from 'react-drm';
+import { Box, Button, Text, motion } from 'omarchy-touchbar';
 import { getInstalledApps } from '@/lib/services/apps';
 import type { AppInfo } from '@/lib/services/apps';
 import { launch } from '@/lib/services/launch';
@@ -226,7 +226,7 @@ export function TouchBarLauncher({ width, height, offsetX }: {
     return indexAt(fPrefix, world);
   };
 
-  // ── Raw touch input (react-drm delivers layout coords) ─────────────────────
+  // ── Raw touch input (omarchy-touchbar delivers layout coords) ─────────────────────
 
   const onTouchStart = (x: number, y: number) => {
     stopTimers();

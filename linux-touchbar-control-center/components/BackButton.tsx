@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'react-drm';
+import { Button } from 'omarchy-touchbar';
 import { MdCancel } from 'react-icons/md';
 import { useLayers } from '@/layers';
 import type { LayerAnimation, SwitchOptions } from '@/layers';

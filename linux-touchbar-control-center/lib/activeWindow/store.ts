@@ -8,7 +8,7 @@ import { plasma } from './plasma';
 import { xorg } from './xorg';
 import { detectSession } from './detect';
 import { ACTIVE_WINDOW } from '@/lib/utils/configLoader';
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 
 const log = createLogger('activeWindow');
 

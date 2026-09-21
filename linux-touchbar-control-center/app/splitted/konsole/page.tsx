@@ -2,7 +2,7 @@
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
 
 export const layerConfig: LayerConfig = { animation: 'fade' };
-import { Box, Button, Text } from 'react-drm';
+import { Box, Button, Text } from 'omarchy-touchbar';
 import {
   MdAdd, MdClose, MdChevronLeft, MdChevronRight,
 } from 'react-icons/md';

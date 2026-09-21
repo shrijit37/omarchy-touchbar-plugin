@@ -1,6 +1,6 @@
 import React from 'react';
 import { readFileSync, existsSync } from 'fs';
-import { Box, Svg } from 'react-drm';
+import { Box, Svg } from 'omarchy-touchbar';
 import { Loader } from './Loader';
 
 interface BootScreenProps {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'react-drm';
+import { Box, Text } from 'omarchy-touchbar';
 import {
   MdBatteryChargingFull, MdBatteryAlert, MdBatteryUnknown,
   MdBattery0Bar, MdBattery1Bar, MdBattery2Bar, MdBattery3Bar,

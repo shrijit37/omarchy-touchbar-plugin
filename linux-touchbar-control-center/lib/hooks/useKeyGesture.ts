@@ -1,6 +1,6 @@
 import { useEffect, useContext, useRef } from 'react';
-import { KeyboardContext, resolveKeyCode } from 'react-drm';
-import type { KeyId } from 'react-drm';
+import { KeyboardContext, resolveKeyCode } from 'omarchy-touchbar';
+import type { KeyId } from 'omarchy-touchbar';
 
 export interface KeyGestureHandlers {
   /** Two quick presses within `doubleMs`. */

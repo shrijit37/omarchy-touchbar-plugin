@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Box, Svg, motion } from 'react-drm';
+import { Box, Svg, motion } from 'omarchy-touchbar';
 import { BackButton } from '@/components/BackButton';
 import { useActiveWindow } from '@/lib/hooks/useActiveWindow';
 import { launchApp } from '@/lib/services/launch';
-import { appIconSource } from 'react-drm';
+import { appIconSource } from 'omarchy-touchbar';
 import { DOCK, type DockApp } from '@/lib/utils/configLoader';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
 
@@ -26,7 +26,7 @@ const BOUNCE = { tension: 600, friction: 8 };
 // `initial` and `animate` forever via repeat/repeatType, all icons using the
 // same duration so they breathe in sync (matches the previous shared-value
 // version's look without sharing a value).
-const PULSE: import('react-drm').MotionTransition = { duration: 1100, repeat: Infinity, repeatType: 'reverse' };
+const PULSE: import('omarchy-touchbar').MotionTransition = { duration: 1100, repeat: Infinity, repeatType: 'reverse' };
 
 interface DockIconProps {
   app: DockApp;

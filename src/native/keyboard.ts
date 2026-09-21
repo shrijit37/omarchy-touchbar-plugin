@@ -57,7 +57,7 @@ export function resolveKeyCode(key: KeyId): number {
   const n = Number(key);
   if (!isNaN(n)) return n;
   const found = KEY_NAMES[key.toLowerCase()];
-  if (found === undefined) throw new Error(`react-drm: unknown key name "${key}"`);
+  if (found === undefined) throw new Error(`omarchy-touchbar: unknown key name "${key}"`);
   return found;
 }
 

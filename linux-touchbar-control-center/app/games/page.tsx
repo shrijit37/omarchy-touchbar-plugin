@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Text } from 'react-drm';
+import { Box, Button, Text } from 'omarchy-touchbar';
 import { MdCancel, MdSportsEsports, MdPiano, MdSportsTennis } from 'react-icons/md';
 import { useLayers } from '@/layers';
 import { go } from '@/lib/routes/router-registry';

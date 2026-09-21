@@ -1,4 +1,4 @@
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 import { SystemLockWatcher } from './watcher';
 import { createLogindAdapter } from './logind';
 import type { LogindAdapter } from './logind';

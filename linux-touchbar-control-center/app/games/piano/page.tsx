@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from 'react-drm';
+import { Box } from 'omarchy-touchbar';
 import { Piano } from '@/others/piano';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
 

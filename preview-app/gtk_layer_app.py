@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Standalone panel window for the react-drm browser preview. On a Wayland
+Standalone panel window for the omarchy-touchbar browser preview. On a Wayland
 compositor with layer-shell (niri, Sway, Hyprland, River, ...) it docks to the
 bottom of the screen with reserved space via the wayland layer-shell protocol —
 the same mechanism waybar uses. Where layer-shell is unavailable (GNOME/KDE

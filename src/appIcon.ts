@@ -20,7 +20,7 @@ const ICON_BASES = [
   '/usr/local/share/icons',
 ];
 const PIXMAPS = '/usr/share/pixmaps';
-const TMP_DIR = '/tmp/.react-drm-icons';
+const TMP_DIR = '/tmp/.omarchy-touchbar-icons';
 
 /** Read `Theme=` from a named section of a simple INI file. */
 function iniValue(file: string, section: string, key: string): string | null {

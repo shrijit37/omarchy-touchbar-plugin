@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from 'react';
-import { Box, Text, Button, FKEY_CODES, KEY, DisplaySizeContext } from 'react-drm';
+import { Box, Text, Button, FKEY_CODES, KEY, DisplaySizeContext } from 'omarchy-touchbar';
 import { BackButton } from '@/components/BackButton';
 import { SELECTED_THEME } from '@/lib/theme';
 import { keys } from '@/lib/services/keyInjector';

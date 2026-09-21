@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from 'react-drm';
+import { Box } from 'omarchy-touchbar';
 import { SELECTED_THEME } from '@/lib/theme';
 
 // Real macOS Touch Bar OSD slider: a thin line with a large gray knob that

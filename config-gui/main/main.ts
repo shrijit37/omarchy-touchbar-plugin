@@ -6,7 +6,7 @@ import {
 } from './configEngine';
 import type { ConfigData, ConfigPaths } from './configEngine';
 import { pathToFileURL } from 'node:url';
-import { KEY, appIconSource, setIconTheme } from 'react-drm';
+import { KEY, appIconSource, setIconTheme } from 'omarchy-touchbar';
 import { ICON_CHOICES } from './iconList';
 import { DOM_CODE_TO_KEY_NAME } from './keyNames';
 import { listDesktopApps } from './desktopApps';
@@ -33,7 +33,7 @@ function createWindow(): void {
     minWidth: 760,
     minHeight: 560,
     center: true,
-    title: 'Touch Bar Config',
+    title: 'Omarchy Touch Bar Config',
     frame: false,
     backgroundColor: '#0d0f14',
     webPreferences: {

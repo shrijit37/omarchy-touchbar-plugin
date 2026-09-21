@@ -1,5 +1,5 @@
 ---
-name: react-drm
+name: omarchy-touchbar
 description: Touch Bar control center and DRM/KMS React renderer for T2 MacBooks on Linux
 colors:
   background: "#000000"
@@ -68,13 +68,13 @@ components:
     rounded: "{rounded.sm}"
 ---
 
-# Design System: react-drm
+# Design System: Omarchy Touch Bar
 
 ## Overview
 
 **Creative North Star: "The Slim Black Module"**
 
-react-drm is a dense, dark, glass-and-token system that lives on two canvases: the physical **Touch Bar** (a 2008–2170 px by ~60 px DRM panel) and the desktop **GUI shells** (config-gui, install-gui) that configure it. On the bar, the identity is **black glass over the machine**: `#000000` backgrounds, subtly graded `#373737`/`#474747` module surfaces, a single crisp `2px` hairline border, and one restrained blue `#5b8def` accent for interactivity. Every pixel is accounted for — the bar has almost no room, so the system buys legibility through contrast between a true-black field and stepped mid-dark surfaces, and buys motion through springs that overshoot ("ring") like macOS.
+Omarchy Touch Bar is a dense, dark, glass-and-token system that lives on two canvases: the physical **Touch Bar** (a 2008–2170 px by ~60 px DRM panel) and the desktop **GUI shells** (config-gui, install-gui) that configure it. On the bar, the identity is **black glass over the machine**: `#000000` backgrounds, subtly graded `#373737`/`#474747` module surfaces, a single crisp `2px` hairline border, and one restrained blue `#5b8def` accent for interactivity. Every pixel is accounted for — the bar has almost no room, so the system buys legibility through contrast between a true-black field and stepped mid-dark surfaces, and buys motion through springs that overshoot ("ring") like macOS.
 
 The GUI shells are the bar's control room and share its DNA without pretending to be the hardware: a near-black indigo (`#0d0f14`) canvas with translucent **glass panels** (`rgba(23,26,33,0.55)` + `blur(18px)`) over faint cyan/violet ambient gradients, and a single bright cyan-to-violet **accent gradient** (`#7dd3fc` → `#a78bfa`) reserved for primary action blocks and the active state. Both canvases speak the same grammar — dark module on darker field, hairline dividers, one bright accent, radius in the 6–14px band — so the suite reads as one product family.
 

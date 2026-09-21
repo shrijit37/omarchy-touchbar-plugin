@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useRef, useMemo, useImperativeHandle, forwardRef } from 'react';
-import { Box, KeyboardContext, useTouchLock, animated, useTransition, easings } from 'react-drm';
-import type { Style, KeyboardReader, LayerAnimation, Layer, FromLayerSwitch, ToLayerSwitch, SwitchOptions, SpringValue } from 'react-drm';
+import { Box, KeyboardContext, useTouchLock, animated, useTransition, easings } from 'omarchy-touchbar';
+import type { Style, KeyboardReader, LayerAnimation, Layer, FromLayerSwitch, ToLayerSwitch, SwitchOptions, SpringValue } from 'omarchy-touchbar';
 import { LAYER_TRANSITION } from '@/lib/utils/configLoader';
 
 export type { LayerAnimation, Layer, FromLayerSwitch, ToLayerSwitch, SwitchOptions };

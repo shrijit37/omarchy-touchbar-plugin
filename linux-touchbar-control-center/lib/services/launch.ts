@@ -1,14 +1,14 @@
 import { spawn } from 'child_process';
 import { readdirSync } from 'fs';
 import type { DockApp } from '@/lib/utils/configLoader';
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 
 const log = createLogger('dock');
 
 /**
  * Launch a desktop app from the Touch Bar process.
  *
- * The control center usually runs as root (react-drm.service / sudo), but GUI
+ * The control center usually runs as root (omarchy-touchbar.service / sudo), but GUI
  * apps must start inside the real user's graphical session. When SUDO_USER is
  * set we drop to that user with `runuser` and reconstruct the session env
  * (XDG_RUNTIME_DIR, the user D-Bus bus, and the Wayland/X display) so the app

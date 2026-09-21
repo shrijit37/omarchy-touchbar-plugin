@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'react-drm';
+import { Box, Text } from 'omarchy-touchbar';
 import { MdKeyboardCapslock } from 'react-icons/md';
 import { useCapsLock } from '@/lib/hooks/useCapsLock';
 import { STATUS } from '@/lib/statusColors';

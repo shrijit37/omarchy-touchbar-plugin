@@ -1,15 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import { KeyboardReader, PreviewDisplay, createDisplay, renderHot, resolveKeyCode, startPreviewServer, TB_BACKLIGHT_NAMES, DISPLAY_BACKLIGHT_NAMES, TOUCHBAR_DRM_DRIVERS, TOUCHBAR_USB_VENDOR_ID, TOUCHBAR_USB_PRODUCT_ID, TOUCHBAR_USB_BRIDGE } from 'react-drm';
+import { KeyboardReader, PreviewDisplay, createDisplay, renderHot, resolveKeyCode, startPreviewServer, TB_BACKLIGHT_NAMES, DISPLAY_BACKLIGHT_NAMES, TOUCHBAR_DRM_DRIVERS, TOUCHBAR_USB_VENDOR_ID, TOUCHBAR_USB_PRODUCT_ID, TOUCHBAR_USB_BRIDGE } from 'omarchy-touchbar';
 import { DISPLAY, SCREENSHOT, SLEEP, ESC_KEY } from './lib/utils/configLoader';
 import { attachTouchBar, ensureTouchBarAttached, watchSleep } from '@/lib/services/suspend';
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 import { startCustomLayer } from '@/lib/customLayer';
 
-const log = createLogger('react-drm');
+const log = createLogger('omarchy-touchbar');
 
 // Show what the resolved .env hardware profile produced. Import-block order
-// matters: react-drm loads the repo .env first (src/native/env.ts), so these
+// matters: omarchy-touchbar loads the repo .env first (src/native/env.ts), so these
 // values are the seeded ones, not just the compiled defaults.
 log.info('hardware profile:',
   JSON.stringify({
@@ -22,7 +22,7 @@ log.info('hardware profile:',
   }, null, 2));
 
 // The app owns the Touch Bar lifecycle in every run mode — manual `npm run
-// dev` and react-drm.service alike: attach at startup, quiesce before system
+// dev` and omarchy-touchbar.service alike: attach at startup, quiesce before system
 // sleep, re-attach + resume after. SLEEP.enabled in config.ts turns it off.
 // None of this applies to the browser preview backend — there's no physical
 // Touch Bar to attach/detach, and waiting on one would just stall startup.

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { useKeyPressed } from 'react-drm';
-import type { KeyId } from 'react-drm';
+import { useKeyPressed } from 'omarchy-touchbar';
+import type { KeyId } from 'omarchy-touchbar';
 import { useKeyGesture } from '@/lib/hooks/useKeyGesture';
 import { go, routerAt } from '@/lib/routes/router-registry';
 

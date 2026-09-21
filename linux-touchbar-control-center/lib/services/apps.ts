@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { appIconSource } from 'react-drm';
+import { appIconSource } from 'omarchy-touchbar';
 
 /**
  * Installed-app discovery for the launcher.
@@ -9,7 +9,7 @@ import { appIconSource } from 'react-drm';
  * menu / application drawer is built from) in the usual priority order —
  * user-local first, system-wide last — dedupes by desktop-file id, parses
  * each entry (Name / Exec / Icon) and resolves the icon through the
- * react-drm icon theme. The scan runs once per process and is cached.
+ * omarchy-touchbar icon theme. The scan runs once per process and is cached.
  */
 
 export interface AppInfo {

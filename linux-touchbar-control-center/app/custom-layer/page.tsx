@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Text, Button, snapToGrid } from 'react-drm';
-import type { CustomWidget } from 'react-drm';
-import { CUSTOM_WIDGET_LABELS, CUSTOM_WIDGET_WIDTHS, CUSTOM_WIDGET_MIN_WIDTH, CUSTOM_WIDGET_MAX_WIDTH } from 'react-drm';
+import { Box, Text, Button, snapToGrid } from 'omarchy-touchbar';
+import type { CustomWidget } from 'omarchy-touchbar';
+import { CUSTOM_WIDGET_LABELS, CUSTOM_WIDGET_WIDTHS, CUSTOM_WIDGET_MIN_WIDTH, CUSTOM_WIDGET_MAX_WIDTH } from 'omarchy-touchbar';
 import { MdCheck } from 'react-icons/md';
 import { FaTrash } from 'react-icons/fa';
 import { BackButton } from '@/components/BackButton';
@@ -177,7 +177,7 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
  * supports repositioning/removing existing widgets directly on-device
  * (long-press to enter edit mode). Purely additive: never touches
  * config.ts / config.blueprint.ts, and the store is this screen's only
- * dependency beyond existing react-drm primitives.
+ * dependency beyond existing omarchy-touchbar primitives.
  */
 export default function CustomLayerPage({ width, height }: { width: number; height: number }) {
   const [state, setState] = useState<CustomLayerState>(() => getCustomLayerStore().getState());

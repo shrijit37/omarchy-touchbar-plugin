@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
 
 export const layerConfig: LayerConfig = { animation: 'fade' };
-import { Box, Button, Text } from 'react-drm';
+import { Box, Button, Text } from 'omarchy-touchbar';
 import {
   MdChevronLeft, MdChevronRight, MdZoomIn, MdZoomOut,
   MdRotateLeft, MdRotateRight, MdSlideshow, MdDelete, MdCheck,

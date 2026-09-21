@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Text, Button } from 'react-drm';
+import { Box, Text, Button } from 'omarchy-touchbar';
 import { MdBrightness4, MdBrightness6, MdBrightness7, MdKeyboard } from 'react-icons/md';
 import { BackButton } from '@/components/BackButton';
 import { SliderTrack } from '@/components/SliderTrack';
