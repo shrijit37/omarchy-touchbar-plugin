@@ -1,7 +1,7 @@
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
 import type React from 'react';
-import type { Layer, LayerAnimation, FromLayerSwitch, ToLayerSwitch } from 'react-drm';
+import type { Layer, LayerAnimation, FromLayerSwitch, ToLayerSwitch } from 'omarchy-touchbar';
 
 // Next.js-style file-based routes under app/. A folder's page.tsx is a leaf
 // layer's component (default export) plus an optional `layerConfig` export

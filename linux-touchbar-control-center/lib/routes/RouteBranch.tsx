@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import type { Layer } from 'react-drm';
+import type { Layer } from 'omarchy-touchbar';
 import { LayerHost, type LayerHostHandle } from '@/layers';
 import { useAppRoutes } from '@/lib/hooks/useAppRoutes';
 import { useAppLayout } from '@/lib/hooks/useAppLayout';

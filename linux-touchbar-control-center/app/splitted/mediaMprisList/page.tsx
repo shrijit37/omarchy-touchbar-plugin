@@ -2,14 +2,14 @@ import React, { useEffect, useMemo, useState, useRef, useContext } from 'react';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
 
 export const layerConfig: LayerConfig = { animation: 'fade' };
-import { Box, Text, Button, Svg, LayoutContext, animated, useSpringValue } from 'react-drm';
-import type { BoxNode } from 'react-drm';
+import { Box, Text, Button, Svg, LayoutContext, animated, useSpringValue } from 'omarchy-touchbar';
+import type { BoxNode } from 'omarchy-touchbar';
 import {
   MdSkipPrevious, MdPlayArrow, MdPause, MdSkipNext,
 } from 'react-icons/md';
 import { useMediaPlayers } from '@/lib/hooks/useMediaPlayers';
 import { useAlbumArt } from '@/lib/hooks/useAlbumArt';
-import { appIconSource } from 'react-drm';
+import { appIconSource } from 'omarchy-touchbar';
 import { FONT } from '@/components/launcher/theme';
 import { SELECTED_THEME, withAlpha } from '@/lib/theme';
 import { BsBorderWidth } from 'react-icons/bs';

@@ -2,8 +2,8 @@ import net from 'node:net';
 import fs from 'node:fs';
 import {
   customLayerSocketPath, encodeMessage, createMessageReader, createLogger,
-} from 'react-drm';
-import type { CustomLayerClientMessage, CustomLayerServerMessage } from 'react-drm';
+} from 'omarchy-touchbar';
+import type { CustomLayerClientMessage, CustomLayerServerMessage } from 'omarchy-touchbar';
 import { getCustomLayerStore } from './store';
 import { go } from '@/lib/routes/router-registry';
 

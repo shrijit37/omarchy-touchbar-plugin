@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { KeyboardReader, PreviewDisplay, createDisplay, renderHot, resolveKeyCode, startPreviewServer, TB_BACKLIGHT_NAMES, DISPLAY_BACKLIGHT_NAMES, TOUCHBAR_DRM_DRIVERS, TOUCHBAR_USB_VENDOR_ID, TOUCHBAR_USB_PRODUCT_ID, TOUCHBAR_USB_BRIDGE } from 'react-drm';
+import { KeyboardReader, PreviewDisplay, createDisplay, renderHot, resolveKeyCode, startPreviewServer, TB_BACKLIGHT_NAMES, DISPLAY_BACKLIGHT_NAMES, TOUCHBAR_DRM_DRIVERS, TOUCHBAR_USB_VENDOR_ID, TOUCHBAR_USB_PRODUCT_ID, TOUCHBAR_USB_BRIDGE } from 'omarchy-touchbar';
 import { DISPLAY, SCREENSHOT, SLEEP, ESC_KEY } from './lib/utils/configLoader';
 import { attachTouchBar, ensureTouchBarAttached, watchSleep } from '@/lib/services/suspend';
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 import { startCustomLayer } from '@/lib/customLayer';
 
 const log = createLogger('react-drm');

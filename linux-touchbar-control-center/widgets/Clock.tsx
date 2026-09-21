@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text } from 'react-drm';
+import { Text } from 'omarchy-touchbar';
 import { STATUS } from '@/lib/statusColors';
 
 /**

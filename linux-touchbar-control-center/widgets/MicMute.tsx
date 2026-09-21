@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'react-drm';
+import { Button } from 'omarchy-touchbar';
 import { MdMic, MdMicOff } from 'react-icons/md';
 import { useMicMute } from '@/lib/hooks/useMicMute';
 import { STATUS } from '@/lib/statusColors';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Box, Text, TouchReader, useKeyPressed } from 'react-drm';
+import { Box, Text, TouchReader, useKeyPressed } from 'omarchy-touchbar';
 import { SELECTED_THEME } from '@/lib/theme';
 import { STATUS } from '@/lib/statusColors';
 

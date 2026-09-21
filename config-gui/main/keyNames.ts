@@ -1,4 +1,4 @@
-import { KEY } from 'react-drm';
+import { KEY } from 'omarchy-touchbar';
 
 /** code -> KEY constant name (e.g. 56 -> "LEFTALT"), for reading arrays back as named refs. */
 export const CODE_TO_KEY_NAME: ReadonlyMap<number, string> = new Map(

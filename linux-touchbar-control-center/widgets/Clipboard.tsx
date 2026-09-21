@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Text } from 'react-drm';
+import { Box, Text } from 'omarchy-touchbar';
 import { FaClipboard } from 'react-icons/fa';
 import { execFile } from 'child_process';
 import { SELECTED_THEME } from '@/lib/theme';

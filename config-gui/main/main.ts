@@ -6,7 +6,7 @@ import {
 } from './configEngine';
 import type { ConfigData, ConfigPaths } from './configEngine';
 import { pathToFileURL } from 'node:url';
-import { KEY, appIconSource, setIconTheme } from 'react-drm';
+import { KEY, appIconSource, setIconTheme } from 'omarchy-touchbar';
 import { ICON_CHOICES } from './iconList';
 import { DOM_CODE_TO_KEY_NAME } from './keyNames';
 import { listDesktopApps } from './desktopApps';

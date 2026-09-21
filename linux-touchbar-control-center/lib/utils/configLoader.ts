@@ -9,7 +9,7 @@
  * is rethrown rather than silently falling back, so broken edits fail loudly.
  */
 
-import { createLogger, setIconTheme } from 'react-drm';
+import { createLogger, setIconTheme } from 'omarchy-touchbar';
 
 // require() is `any`; typing it as the blueprint module keeps `keyof typeof
 // blueprint` (used by cfg below) resolved to real config keys instead of the

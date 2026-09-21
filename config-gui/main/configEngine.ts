@@ -5,7 +5,7 @@ import { exec } from 'node:child_process';
 import { Project, Node, SyntaxKind } from 'ts-morph';
 import * as ts from 'typescript';
 import type { ArrayLiteralExpression, ObjectLiteralExpression, SourceFile } from 'ts-morph';
-import { KEY } from 'react-drm';
+import { KEY } from 'omarchy-touchbar';
 import { CODE_TO_KEY_NAME } from './keyNames';
 
 const SECTION_NAMES = [

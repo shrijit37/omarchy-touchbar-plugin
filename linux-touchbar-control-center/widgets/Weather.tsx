@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'react-drm';
+import { Box, Text } from 'omarchy-touchbar';
 import { WiDaySunny, WiCloud, WiFog, WiRain, WiSnow, WiThunderstorm, WiNa } from 'react-icons/wi';
 import { useWeather } from '@/lib/hooks/useWeather';
 import { STATUS, WEATHER_ACCENTS } from '@/lib/statusColors';

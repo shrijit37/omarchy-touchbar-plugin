@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'react-drm';
+import { Box, Text } from 'omarchy-touchbar';
 import { MdStorage } from 'react-icons/md';
 import { useMemUsage } from '@/lib/hooks/useMemUsage';
 import { STATUS } from '@/lib/statusColors';

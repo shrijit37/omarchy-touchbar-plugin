@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from 'react-drm';
+import { Box } from 'omarchy-touchbar';
 import { BackButton } from '@/components/BackButton';
 import { TouchBarLauncher } from '@/components/launcher/TouchBarLauncher';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';

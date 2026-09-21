@@ -1,5 +1,5 @@
 import type { LayerHostHandle } from '@/layers';
-import type { LayerAnimation, SwitchOptions } from 'react-drm';
+import type { LayerAnimation, SwitchOptions } from 'omarchy-touchbar';
 import { getSystemLock } from '@/lib/lock/store';
 
 // Every mounted RouteBranch registers its own nested LayerHost here, keyed by

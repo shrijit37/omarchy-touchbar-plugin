@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Box, Text, Svg, TouchReader, useKeyPressed } from 'react-drm';
+import { Box, Text, Svg, TouchReader, useKeyPressed } from 'omarchy-touchbar';
 import { FaTruckMonster } from 'react-icons/fa6';
 import { SELECTED_THEME } from '@/lib/theme';
 import { STATUS } from '@/lib/statusColors';

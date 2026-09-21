@@ -3,12 +3,12 @@ import path from 'path';
 import { execFile } from 'child_process';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { keys } from '@/lib/services/keyInjector';
-import { KEY } from 'react-drm';
+import { KEY } from 'omarchy-touchbar';
 import dbus, { MessageBus, ClientInterface } from 'dbus-next';
 import { Fzf, byLengthAsc } from 'fzf';
 import { useActiveWindow } from './useActiveWindow';
 import { KONSOLE } from '@/lib/utils/configLoader';
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 
 const log = createLogger('konsole');
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Gif, Svg, Text } from 'react-drm';
+import { Box, Gif, Svg, Text } from 'omarchy-touchbar';
 import { useAnimate, ease } from '@/lib/hooks/useAnimate';
 import { readFileSync } from 'fs';
 

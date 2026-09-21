@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   CUSTOM_WIDGET_WIDTHS, CUSTOM_WIDGET_MIN_WIDTH, CUSTOM_WIDGET_MAX_WIDTH, snapToGrid, createLogger,
-} from 'react-drm';
-import type { CustomWidget, CustomWidgetType, CustomLayerDragGhost } from 'react-drm';
+} from 'omarchy-touchbar';
+import type { CustomWidget, CustomWidgetType, CustomLayerDragGhost } from 'omarchy-touchbar';
 
 const log = createLogger('custom-layer-store');
 

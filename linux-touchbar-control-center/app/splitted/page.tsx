@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, Button, Gif } from 'react-drm';
+import { Box, Text, Button, Gif } from 'omarchy-touchbar';
 import { useLayers } from '@/layers';
 import { useActiveWindow } from '@/lib/hooks/useActiveWindow';
 import path from 'path';

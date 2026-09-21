@@ -1,6 +1,6 @@
 import React from 'react';
 import path from 'path';
-import { Box, Button, KEY, Svg } from 'react-drm';
+import { Box, Button, KEY, Svg } from 'omarchy-touchbar';
 import {
   MdClose,
   MdBrightness4, MdBrightness7,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, Button } from 'react-drm';
+import { Box, Text, Button } from 'omarchy-touchbar';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
 
 export const layerConfig: LayerConfig = { animation: 'fade' };

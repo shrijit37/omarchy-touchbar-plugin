@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button } from 'react-drm';
+import { Box, Button } from 'omarchy-touchbar';
 import { MdCancel } from 'react-icons/md';
 import { useLayers } from '@/layers';
 import type { LayoutChildren, LayerConfig } from '@/lib/routes/loadRoutes';

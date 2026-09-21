@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, easings, motion, MotionValues, Text, useSpringValue, addFluidObserver, removeFluidObserver } from 'react-drm';
-import type { FluidEvent, MotionTransitionProp } from 'react-drm';
+import { Box, easings, motion, MotionValues, Text, useSpringValue, addFluidObserver, removeFluidObserver } from 'omarchy-touchbar';
+import type { FluidEvent, MotionTransitionProp } from 'omarchy-touchbar';
 import { useUnlockStatus } from '@/lib/hooks/useUnlockStatus';
 import { FaArrowRightLong } from 'react-icons/fa6';
 import { MdOutlineFingerprint } from 'react-icons/md';

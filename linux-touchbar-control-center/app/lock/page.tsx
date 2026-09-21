@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import path from 'path';
-import { Box, Button, KEY, Svg, Text, motion, easings, MotionValues } from 'react-drm';
+import { Box, Button, KEY, Svg, Text, motion, easings, MotionValues } from 'omarchy-touchbar';
 import {
   MdClose,
   MdBrightness4, MdBrightness7,

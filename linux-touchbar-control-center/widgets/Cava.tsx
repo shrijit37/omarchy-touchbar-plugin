@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from 'react-drm';
+import { Box } from 'omarchy-touchbar';
 import { useCavaBars } from '@/lib/hooks/useCavaBars';
 import { CAVA } from '@/config.blueprint';
 import { SELECTED_THEME } from '@/lib/theme';

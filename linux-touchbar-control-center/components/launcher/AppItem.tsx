@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Box, Svg, Text } from 'react-drm';
+import { Box, Svg, Text } from 'omarchy-touchbar';
 import {
   ACCENT, FONT, PILL_BG, PILL_BORDER, PILL_BORDER_PRESSED, PILL_PRESSED, PILL_RADIUS, PILL_TEXT,
 } from './theme';

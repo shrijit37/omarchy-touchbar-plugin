@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { appIconSource } from 'react-drm';
+import { appIconSource } from 'omarchy-touchbar';
 
 /**
  * Installed-app discovery for the launcher.

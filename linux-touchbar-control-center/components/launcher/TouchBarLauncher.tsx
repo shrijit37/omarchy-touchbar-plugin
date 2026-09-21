@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { Box, Button, Text, motion } from 'react-drm';
+import { Box, Button, Text, motion } from 'omarchy-touchbar';
 import { getInstalledApps } from '@/lib/services/apps';
 import type { AppInfo } from '@/lib/services/apps';
 import { launch } from '@/lib/services/launch';

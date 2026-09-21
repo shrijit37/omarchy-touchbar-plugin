@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { spawn } from 'child_process';
 import { writeFileSync } from 'fs';
-import { LayoutContext, NativeDrawContext, DisplaySizeContext, BoxNode } from 'react-drm';
+import { LayoutContext, NativeDrawContext, DisplaySizeContext, BoxNode } from 'omarchy-touchbar';
 import { CAVA } from '@/config.blueprint';
 import { SELECTED_THEME } from '@/lib/theme';
 

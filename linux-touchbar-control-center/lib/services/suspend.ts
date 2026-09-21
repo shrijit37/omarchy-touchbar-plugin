@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import dbus from 'dbus-next';
-import { usbReset, TOUCHBAR_DRM_DRIVERS, TOUCHBAR_USB_VENDOR_ID, TOUCHBAR_USB_PRODUCT_ID, createLogger } from 'react-drm';
+import { usbReset, TOUCHBAR_DRM_DRIVERS, TOUCHBAR_USB_VENDOR_ID, TOUCHBAR_USB_PRODUCT_ID, createLogger } from 'omarchy-touchbar';
 import { SLEEP } from '@/lib/utils/configLoader';
 
 const log = createLogger('suspend');

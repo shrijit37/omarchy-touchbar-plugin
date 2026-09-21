@@ -1,6 +1,6 @@
 import { execFile, execFileSync } from 'child_process';
 import fs from 'fs';
-import { DISPLAY_BACKLIGHT_NAMES } from 'react-drm';
+import { DISPLAY_BACKLIGHT_NAMES } from 'omarchy-touchbar';
 
 // Device names vary by hardware: the panel backlight is gmux_backlight on
 // dual-GPU Macs but intel_backlight on single-GPU ones (e.g. 2020 13" Intel),

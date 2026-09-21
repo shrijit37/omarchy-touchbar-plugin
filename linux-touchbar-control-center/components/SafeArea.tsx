@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, SAFE_INSET_X, SAFE_INSET_Y } from 'react-drm';
+import { Box, SAFE_INSET_X, SAFE_INSET_Y } from 'omarchy-touchbar';
 
 interface SafeAreaProps {
   width: number;

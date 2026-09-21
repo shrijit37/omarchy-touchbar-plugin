@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process';
 import process from 'node:process';
-import { KEY } from 'react-drm';
-import type { KeyId } from 'react-drm';
+import { KEY } from 'omarchy-touchbar';
+import type { KeyId } from 'omarchy-touchbar';
 import type { IconType } from 'react-icons';
 import {
   FaFolder, FaTerminal, FaFirefoxBrowser, FaCode, FaMusic, FaGithub, FaGear,
@@ -138,7 +138,7 @@ export const CAVA = {
 /**
  * Each value is an array of Linux keycodes pressed simultaneously,
  * listed in the order they should be held down.
- * All available codes are in the KEY object from 'react-drm'.
+ * All available codes are in the KEY object from 'omarchy-touchbar'.
  */
 export type BrowserKeymap = {
   back:     number[];

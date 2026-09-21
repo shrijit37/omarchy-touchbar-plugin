@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, Button, KEY } from 'react-drm';
+import { Box, Text, Button, KEY } from 'omarchy-touchbar';
 import { keys } from '@/lib/services/keyInjector';
 import { SELECTED_THEME } from '@/lib/theme';
 

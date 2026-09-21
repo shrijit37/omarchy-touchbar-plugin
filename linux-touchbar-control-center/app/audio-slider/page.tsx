@@ -1,12 +1,12 @@
 import React, { useRef, useEffect } from 'react';
 import { spawn } from 'child_process';
-import { Box, Text, Button } from 'react-drm';
+import { Box, Text, Button } from 'omarchy-touchbar';
 import { useAtomValue } from 'jotai';
 import { MdVolumeOff, MdVolumeDown, MdVolumeUp } from 'react-icons/md';
 import { BackButton } from '@/components/BackButton';
 import { SliderTrack } from '@/components/SliderTrack';
 import { useLayers } from '@/layers';
-import { createLogger } from 'react-drm';
+import { createLogger } from 'omarchy-touchbar';
 import { useVolumeControl, readVolume, TRACK_W, clampVolume } from '@/lib/hooks/useVolume';
 import { PW_ENV } from '@/lib/services/volume';
 import { audioTrackAnchorAtom, ANCHOR_TRACK_W } from '@/store/audioTrackAnchor';

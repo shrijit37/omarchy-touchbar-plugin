@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, motion } from 'react-drm';
+import { Box, Text, motion } from 'omarchy-touchbar';
 import { ALPHABET } from '@/lib/launcher/alphabet';
 import {
   ACCENT, ACCENT_NONE, ACCENT_SOFT, FONT, LETTER_ACTIVE, LETTER_DIM, LETTER_SOFT,
