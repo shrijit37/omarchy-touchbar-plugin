@@ -12,7 +12,7 @@
   --border-soft: #20242e;
   --text:      #eef0f3;
   --text-muted: #939bad;
-  --text-faint: #5c6377;
+  --text-faint: #8a90a3;
   --cyan:      #7dd3fc;
   --violet:    #a78bfa;
   --accent:    var(--cyan);
@@ -21,6 +21,14 @@
   --danger:    #fb7185;
   --danger-dim: #fb718522;
   --ok:        #4ade80;
+
+  /* Ambient glow alphas under the glass — the same cyan/violet of the accent,
+     at the fixed opacities the original design committed to. */
+  --ambient-cyan:   #7dd3fc14;
+  --ambient-violet: #a78bfa12;
+  /* Text on the bright gradient / filled picks — near-black, so the gradient
+     (cyan → violet, itself bright) stays legible. */
+  --on-gradient: #0b0f14;
 
   /* Glass — translucent + blurred, so the ambient background gradient reads
      through panels instead of flat solid fills or drop shadows for depth. */
@@ -42,11 +50,20 @@
   *, *::before, *::after { transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; }
 }
 
+/* The shell piles several glass panels with backdrop blur (sidebar, cards,
+   preview, picker). Respect the user's preference for less transparency —
+   flat tonal fills list cleanly over the ambient gradient without blur. */
+@media (prefers-reduced-transparency: reduce) {
+  --glass: rgba(23, 26, 33, 0.92);
+  --glass-hi: rgba(33, 38, 47, 0.92);
+  #sidebar, .app-card, .touchbar-preview, .override-block, fieldset, .picker-overlay, .picker-panel { backdrop-filter: none; }
+}
+
 body {
   margin: 0;
   background:
-    radial-gradient(900px 500px at 14% -8%, #7dd3fc14, transparent 60%),
-    radial-gradient(700px 460px at 100% 0%, #a78bfa12, transparent 55%),
+    radial-gradient(900px 500px at 14% -8%, var(--ambient-cyan), transparent 60%),
+    radial-gradient(700px 460px at 100% 0%, var(--ambient-violet), transparent 55%),
     var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
@@ -200,7 +217,7 @@ button, input, select { font-family: inherit; font-size: inherit; }
 
 button {
   background: var(--gradient);
-  color: #0b0f14;
+  color: var(--on-gradient);
   border: none;
   box-shadow: none;
   border-radius: var(--radius-sm);
@@ -317,7 +334,7 @@ button:disabled { opacity: 0.5; cursor: default; filter: none; }
   justify-content: center;
   font-size: 42%;
   font-weight: 700;
-  color: #0c1116;
+  color: var(--on-gradient);
 }
 .tb-indicator {
   border-radius: 50%;
@@ -350,7 +367,7 @@ legend {
   margin-bottom: 10px;
   transition: border-color 0.15s var(--ease);
 }
-.app-card:hover { border-color: #3a4152; }
+.app-card:hover { border-color: var(--panel-hi); }
 .app-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .app-card-header select { background: var(--bg); }
 .app-card-header input[type="text"] { flex: 1; width: auto; font-family: var(--font-mono); text-align: left; }

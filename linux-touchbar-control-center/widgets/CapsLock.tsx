@@ -2,10 +2,11 @@ import React from 'react';
 import { Box, Text } from 'react-drm';
 import { MdKeyboardCapslock } from 'react-icons/md';
 import { useCapsLock } from '@/lib/hooks/useCapsLock';
+import { STATUS } from '@/lib/statusColors';
 
 export function CapsLock() {
   const on = useCapsLock();
-  const color = on ? '#fde047' : '#64748b';
+  const color = on ? STATUS.warn : STATUS.idle;
 
   return (
     <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>

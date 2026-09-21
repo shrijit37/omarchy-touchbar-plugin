@@ -178,8 +178,8 @@ The installation has three phases:
      change, you must log out and back in after installation.
 
 The package manager refreshes repository metadata before installing packages.
-On Arch-based systems, pacman performs a full system upgrade because partial
-upgrades are unsupported.
+On Arch-based systems, only the required packages are installed (no system
+upgrade — a stale package database may be refreshed first with a full update).
 
 This installer does not download react-drm source updates. To update an
 existing installation, update the local react-drm source using the same method
@@ -695,7 +695,7 @@ install_dependencies() {
       privileged apt-get update
       privileged apt-get install -y "${NEEDED_PACKAGES[@]}"
       ;;
-    pacman) privileged pacman -Syu --needed --noconfirm "${NEEDED_PACKAGES[@]}" ;;
+    pacman) privileged pacman -S --needed --noconfirm "${NEEDED_PACKAGES[@]}" ;;
   esac
   command -v node >/dev/null 2>&1 || fail "Node.js is unavailable after package installation"
   command -v npm >/dev/null 2>&1 || fail "npm is unavailable after package installation"
@@ -740,7 +740,17 @@ install_config_gui_launcher() {
   info "Installing config editor launcher"
   local apps_dir="$HOME/.local/share/applications"
   install -d -m 0755 "$apps_dir"
-  install -m 0644 "$REPO_ROOT/system/react-drm-config-gui.desktop" "$apps_dir/react-drm-config-gui.desktop"
+  # The template uses `%h/react-drm` as a placeholder (systemd-style; it is
+  # NOT a valid Desktop Entry field code, so it must be rewritten here —
+  # launchers such as Vicinae and gio otherwise fail to expand it and the
+  # entry's Exec= points at a nonexistent path). Rewrite it to the actual
+  # repo path, like install_user_service() does for react-drm.service. Only
+  # Exec=/TryExec= lines are touched, so placeholder mentions in comments
+  # stay intact.
+  sed -E '/^(Exec|TryExec)=/ s|%h/react-drm|'"$REPO_ROOT"'|g' \
+    "$REPO_ROOT/system/react-drm-config-gui.desktop" \
+    > "$apps_dir/react-drm-config-gui.desktop"
+  chmod 0644 "$apps_dir/react-drm-config-gui.desktop"
 }
 
 phase_gui_bootstrap() {

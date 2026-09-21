@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Text, TouchReader, useKeyPressed } from 'react-drm';
+import { SELECTED_THEME } from '@/lib/theme';
+import { STATUS } from '@/lib/statusColors';
 
 const FPS        = 60;
 const TICK_MS    = 1000 / FPS;
@@ -216,7 +218,7 @@ export function PongGame({ width, height }: { width: number; height: number }) {
       ))}
 
       {/* Score */}
-      <Text x={mid - 22} y={2} color="#334155" fontSize={14} fontFamily="monospace">
+      <Text x={mid - 22} y={2} color={SELECTED_THEME.textSecondary} fontSize={14} fontFamily="monospace">
         {`${scoreL}  ${scoreR}`}
       </Text>
 
@@ -226,7 +228,7 @@ export function PongGame({ width, height }: { width: number; height: number }) {
         y={Math.round(leftY - PADDLE_H / 2)}
         width={PADDLE_W}
         height={PADDLE_H}
-        color="#4ade80"
+        color={STATUS.ok}
       />
 
       {/* Right paddle (AI) */}
@@ -235,7 +237,7 @@ export function PongGame({ width, height }: { width: number; height: number }) {
         y={Math.round(rightY - PADDLE_H / 2)}
         width={PADDLE_W}
         height={PADDLE_H}
-        color="#f87171"
+        color={STATUS.danger}
       />
 
       {/* Ball */}
@@ -245,13 +247,13 @@ export function PongGame({ width, height }: { width: number; height: number }) {
           y={Math.round(ballY)}
           width={BALL_S}
           height={BALL_S}
-          color="#facc15"
+          color={STATUS.warn}
         />
       )}
 
       {/* Idle prompt */}
       {phase === 'idle' && (
-        <Text x={mid - 250} y={9} color="#a78bfa" fontSize={26} fontFamily="monospace">
+        <Text x={mid - 250} y={9} color={STATUS.idle} fontSize={26} fontFamily="monospace">
           TAP OR ↑↓ ARROWS TO START
         </Text>
       )}
@@ -261,7 +263,7 @@ export function PongGame({ width, height }: { width: number; height: number }) {
         <Text
           x={mid - 165}
           y={9}
-          color={winner === 'YOU' ? '#4ade80' : '#f87171'}
+          color={winner === 'YOU' ? STATUS.ok : STATUS.danger}
           fontSize={26}
           fontFamily="monospace"
         >

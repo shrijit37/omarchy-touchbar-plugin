@@ -3,7 +3,7 @@ export { render } from './renderer/renderer';
 export type { RenderResult } from './renderer/renderer';
 export { Box } from './components/Box';
 export { Text } from './components/Text';
-export { Button, useButtonGesture } from './components/Button';
+export { Button, useButtonGesture, DEFAULT_BUTTON_COLOR, DEFAULT_BUTTON_ACTIVE } from './components/Button';
 export { Svg } from './components/Svg';
 export { Gif, toPremultBGRA } from './components/Gif';
 export { SwipeZone } from './components/SwipeZone';

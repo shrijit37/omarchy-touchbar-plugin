@@ -25,8 +25,9 @@
   #status.connected { color: #6fcf6f; }
   #status.disconnected { color: #e07a5f; }
 </style>
-<canvas id="touchbar" width="2008" height="60"></canvas>
-<div id="status">connecting…</div>
+<canvas id="touchbar" width="2008" height="60" role="img" aria-label="Touch Bar preview"
+  tabindex="0" aria-describedby="status"></canvas>
+<div id="status" role="status" aria-live="polite">connecting…</div>
 <script>
   // Displays the ACTUAL Cairo-rendered Touch Bar framebuffer streamed from
   // native/src/binding.cpp's PreviewDisplay — this page draws no UI of its
@@ -63,13 +64,27 @@
   // 2px in one place and 4px in another. Snapping to the largest integer
   // scale that fits the viewport keeps every source pixel mapped to exactly
   // the same number of display pixels, so spacing stays true to the data.
+  // The DPR multiplier lets a HiDPI screen take the crisper 2× step rather
+  // than stopping a whole scale short.
   function applyIntegerScale() {
-    const budget = Math.min(window.innerWidth * 0.9, 1600);
+    const dpr = window.devicePixelRatio || 1;
+    const budget = Math.min(window.innerWidth * 0.9, 1600) * dpr;
     const scale = Math.max(1, Math.floor(budget / canvas.width));
     canvas.style.width  = `${canvas.width * scale}px`;
     canvas.style.height = `${canvas.height * scale}px`;
   }
   window.addEventListener('resize', applyIntegerScale);
+
+  // Keyboard path for the preview's interactive canvas — Enter/Space sends a
+  // tap at center, matching the pointer flow, so the panel is reachable
+  // without a mouse.
+  canvas.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    sendTouch('touchstart', rect.left + rect.width / 2, rect.top + rect.height / 2);
+    sendTouch('touchend',   rect.left + rect.width / 2, rect.top + rect.height / 2);
+  });
 
   function onFrame(ev) {
     if (!(ev.data instanceof ArrayBuffer) || ev.data.byteLength < HEADER_BYTES) return;

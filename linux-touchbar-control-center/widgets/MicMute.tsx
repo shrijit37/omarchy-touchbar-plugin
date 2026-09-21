@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'react-drm';
 import { MdMic, MdMicOff } from 'react-icons/md';
 import { useMicMute } from '@/lib/hooks/useMicMute';
+import { STATUS } from '@/lib/statusColors';
 
 /**
  * The one widget here that's a control, not just a readout — tap to toggle.
@@ -12,7 +13,7 @@ import { useMicMute } from '@/lib/hooks/useMicMute';
  */
 export function MicMute() {
   const { muted, toggle } = useMicMute();
-  const color = muted ? '#ef4444' : '#4ade80';
+  const color = muted ? STATUS.danger : STATUS.ok;
   const Icon = muted ? MdMicOff : MdMic;
 
   return (

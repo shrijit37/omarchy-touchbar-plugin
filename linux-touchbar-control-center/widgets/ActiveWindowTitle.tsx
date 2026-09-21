@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text } from 'react-drm';
 import { useActiveWindow } from '@/lib/hooks/useActiveWindow';
+import { STATUS } from '@/lib/statusColors';
 
 /**
  * Custom Layer's Active Window widget — shows the focused window's title
@@ -13,7 +14,7 @@ export function ActiveWindowTitle() {
   const label = title || windowClass || '—';
 
   return (
-    <Text style={{ color: '#e5e7eb', fontSize: 13 }}>
+    <Text style={{ color: STATUS.normal, fontSize: 13 }}>
       {label}
     </Text>
   );

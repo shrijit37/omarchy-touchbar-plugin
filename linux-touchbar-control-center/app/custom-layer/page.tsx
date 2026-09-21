@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Text, Button, snapToGrid, SAFE_INSET_X, SAFE_INSET_Y } from 'react-drm';
+import { Box, Text, Button, snapToGrid } from 'react-drm';
 import type { CustomWidget } from 'react-drm';
 import { CUSTOM_WIDGET_LABELS, CUSTOM_WIDGET_WIDTHS, CUSTOM_WIDGET_MIN_WIDTH, CUSTOM_WIDGET_MAX_WIDTH } from 'react-drm';
-import { MdCheck, MdDelete } from 'react-icons/md';
+import { MdCheck } from 'react-icons/md';
 import { FaTrash } from 'react-icons/fa';
 import { BackButton } from '@/components/BackButton';
 import type { LayerConfig } from '@/lib/routes/loadRoutes';
@@ -12,8 +12,9 @@ import { Clock } from '@/widgets/Clock';
 import { CapsLock } from '@/widgets/CapsLock';
 import { ActiveWindowTitle } from '@/widgets/ActiveWindowTitle';
 import { Clipboard } from '@/widgets/Clipboard';
-import { DiRackspace } from 'react-icons/di';
-import { RiDragMove2Fill, RiDragMove2Line, RiDragMoveFill } from "react-icons/ri";
+import { RiDragMove2Line } from "react-icons/ri";
+import { SELECTED_THEME, withAlpha } from '@/lib/theme';
+import { STATUS } from '@/lib/statusColors';
 
 export const layerConfig: LayerConfig = {
   leaving:  { outAnim: 'slide-down' },
@@ -73,9 +74,9 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
   return (
     <Button
       x={x + leftInset} y={0} width={renderWidth} height={barHeight}
-      color={pastEdge ? '#ef444455' : editing ? '#3b4354' : '#00000000'}
-      activeColor="#57606f"
-      borderColor={pastEdge ? '#ef4444' : editing ? '#575757' : '#00000000'}
+      color={pastEdge ? withAlpha(STATUS.danger, 0.33) : editing ? withAlpha(SELECTED_THEME.surfaceVariant, 0.55) : '#00000000'}
+      activeColor={withAlpha(SELECTED_THEME.surfaceVariant, 0.8)}
+      borderColor={pastEdge ? STATUS.danger : editing ? withAlpha(SELECTED_THEME.textSecondary, 0.6) : '#00000000'}
       borderWidth={editing ? 1.5 : 1}
       opacity={dragging ? (pastEdge ? 0.4 : 0.6) : 1}
       style={{ alignItems: 'center', justifyContent: 'center'  , borderRadius:8}}
@@ -127,8 +128,8 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
         : widget.type === 'separator' ? (
             // Hairline divider spanning the bar's inner height.
             <Box style={{ width: 2, height: barHeight - 12, borderRadius: 1,
-                          backgroundColor: '#6b7280' }} />)
-        : <Text style={{ color: '#e5e7eb', fontSize: 14 }}>{CUSTOM_WIDGET_LABELS[widget.type]}</Text>}
+                          backgroundColor: withAlpha(SELECTED_THEME.textSecondary, 0.45) }} />)
+        : <Text style={{ color: withAlpha(SELECTED_THEME.textPrimary, 0.85), fontSize: 14 }}>{CUSTOM_WIDGET_LABELS[widget.type]}</Text>}
       {editing && (
         // A drag handle, not a tap target — grabbing it grows/shrinks the
         // widget from its right edge without moving it. Registers as a
@@ -138,7 +139,7 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
         <Box style={{ position: 'absolute', right: 0, top: 0 }}>
           <Button
             width={14} height={barHeight}
-            color="#57606f66" activeColor="#57606f"
+            color={withAlpha(SELECTED_THEME.surfaceVariant, 0.4)} activeColor={withAlpha(SELECTED_THEME.surfaceVariant, 0.8)}
             style={{ alignItems: 'center', justifyContent: 'center' }}
             onTouchStart={(tx) => {
               resizingRef.current = true;
@@ -162,7 +163,7 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
             }}
             onTouchCancel={() => { resizingRef.current = false; setLiveWidth(null); }}
           >
-            <Text style={{ color: '#cbd5e1', fontSize: 12 }}>⋮</Text>
+            <Text style={{ color: withAlpha(SELECTED_THEME.textSecondary, 0.9), fontSize: 12 }}>⋮</Text>
           </Button>
         </Box>
       )}
@@ -193,15 +194,10 @@ export default function CustomLayerPage({ width, height }: { width: number; heig
 
   return (
     <Box style={{ width, height }}>
-      <Box style={{
-        backgroundColor:"red"
-      }}>
-
       <BackButton animation="slide-down" />
-      </Box>
-      <Box style={{ position: 'absolute' , borderRadius:10, zIndex:-2, left: 0, top: 0, backgroundColor: editing ? '#ffffff22' : 'transparent', width: width, height: height  }}/>
+      <Box style={{ position: 'absolute' , borderRadius:10, zIndex:-2, left: 0, top: 0, backgroundColor: editing ? withAlpha(SELECTED_THEME.textPrimary, 0.13) : 'transparent', width: width, height: height  }}/>
  { editing && (state.widgets.length > 0 || state.ghost !== null) && <Box style={{ position: 'absolute' , zIndex:-1, left:( width/2) - 16, top: (height/2) - 16, width: 32, height: 32}}>
-      <RiDragMove2Line style={{ width: 32, height: 32 }} fill="#575757" stroke="none" />
+      <RiDragMove2Line style={{ width: 32, height: 32 }} fill={withAlpha(SELECTED_THEME.textSecondary, 0.6)} stroke="none" />
       </Box>
 }
       {state.widgets.map(w => (
@@ -227,16 +223,17 @@ export default function CustomLayerPage({ width, height }: { width: number; heig
         <Box
           x={state.ghost.x + state.leftInset} y={0}
           width={CUSTOM_WIDGET_WIDTHS[state.ghost.widgetType]} height={height}
-          color="#3b4354" borderColor="#575757" borderWidth={1.5}
+          color={withAlpha(SELECTED_THEME.surfaceVariant, 0.55)}
+          borderColor={withAlpha(SELECTED_THEME.textSecondary, 0.6)} borderWidth={1.5}
           style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 8 }}
         >
-          <Text style={{ color: '#e5e7eb', fontSize: 14 }}>{CUSTOM_WIDGET_LABELS[state.ghost.widgetType]}</Text>
+          <Text style={{ color: withAlpha(SELECTED_THEME.textPrimary, 0.85), fontSize: 14 }}>{CUSTOM_WIDGET_LABELS[state.ghost.widgetType]}</Text>
         </Box>
       )}
 
       {state.widgets.length === 0 && !state.ghost && (
         <Box style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ color: '#475569', fontSize: 14 }}>
+          <Text style={{ color: withAlpha(SELECTED_THEME.textSecondary, 0.7), fontSize: 14 }}>
             No custom widgets yet — drag one in from the Config GUI
           </Text>
         </Box>
@@ -250,13 +247,13 @@ export default function CustomLayerPage({ width, height }: { width: number; heig
         <Box style={{ position: 'absolute', left: 0, top: 0 , width,height }}>
           <Button
             width={92} height={height}
-            color="#373737" activeColor="#474747"
-            borderColor="#474747" borderWidth={1}
+            color={SELECTED_THEME.surface} activeColor={SELECTED_THEME.surfaceVariant}
+            borderColor={SELECTED_THEME.surfaceVariant} borderWidth={1}
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: 8 }}
             onClick={() => setEditingLocally(false)}
           >
-            <MdCheck style={{ width: 16, height: 16 }} fill="#fff" stroke="none" />
-            <Text style={{ color: '#fff', fontSize: 13 }}>Done</Text>
+            <MdCheck style={{ width: 16, height: 16 }} fill={SELECTED_THEME.textPrimary} stroke="none" />
+            <Text style={{ color: SELECTED_THEME.textPrimary, fontSize: 13 }}>Done</Text>
           </Button>
         </Box>
       )}
@@ -270,10 +267,9 @@ export default function CustomLayerPage({ width, height }: { width: number; heig
           position: 'absolute', right: 0, top: 0,
           width: 44, height,
           alignItems: 'center', justifyContent: 'center',
-          // backgroundColor: '#ef4444d9', borderColor: '#fecaca55', borderWidth: 1,
           borderRadius: 8,
         }}>
-          <FaTrash style={{ width: 18, height: 18 }} fill="#ef4444d9" stroke="none" />
+          <FaTrash style={{ width: 18, height: 18 }} fill={withAlpha(STATUS.danger, 0.85)} stroke="none" />
         </Box>
       )}
 

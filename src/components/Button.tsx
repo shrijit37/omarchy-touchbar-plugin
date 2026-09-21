@@ -3,7 +3,6 @@ import React, {
   useLayoutEffect,
   useRef,
   useContext,
-  useCallback,
 } from 'react';
 import { Box } from './Box';
 import { TouchRegistryContext } from '../input/touch-registry';
@@ -116,6 +115,15 @@ export function useButtonGesture({
   return { active, nodeRef };
 }
 
+/**
+ * Fallback fill for a Button that sets no color of its own. Exported so apps
+ * with their own theme (e.g. the control center's macos/adwaitadark palettes)
+ * can read the same neutral defaults instead of re-declaring them, and so the
+ * one place these two values live is here rather than inline in the signature.
+ */
+export const DEFAULT_BUTTON_COLOR = '#2a2a3e';
+export const DEFAULT_BUTTON_ACTIVE = '#4a90d9';
+
 export interface ButtonProps {
   x?: number;
   y?: number;
@@ -150,8 +158,8 @@ export function Button({
   y,
   width,
   height,
-  color = '#2a2a3e',
-  activeColor = '#4a90d9',
+  color = DEFAULT_BUTTON_COLOR,
+  activeColor = DEFAULT_BUTTON_ACTIVE,
   borderColor,
   activeBorderColor,
   borderWidth,

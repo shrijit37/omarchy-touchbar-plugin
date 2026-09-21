@@ -9,13 +9,19 @@
   --border-soft: #20242e;
   --text:      #eef0f3;
   --text-muted: #939bad;
-  --text-faint: #5c6377;
+  --text-faint: #8a90a3;
   --cyan:      #7dd3fc;
   --violet:    #a78bfa;
+  --accent-dim: #7dd3fc22;
   --gradient:  linear-gradient(135deg, var(--cyan), var(--violet));
   --danger:    #fb7185;
   --danger-dim: #fb718522;
   --ok:        #4ade80;
+  --warning:   #fde047;
+
+  --ambient-cyan:   #7dd3fc14;
+  --ambient-violet: #a78bfa12;
+  --on-gradient: #0b0f14;
 
   --glass: rgba(23, 26, 33, 0.55);
   --blur: blur(18px);
@@ -29,11 +35,18 @@
 
 * { box-sizing: border-box; }
 
+/* Prefer flat surfaces when the user asks for less transparency — the glass
+   panels read as near-solid over the ambient gradient, no blur cost. */
+@media (prefers-reduced-transparency: reduce) {
+  --glass: rgba(23, 26, 33, 0.92);
+  .overlay, .overlay-panel { backdrop-filter: none; }
+}
+
 body {
   margin: 0;
   background:
-    radial-gradient(900px 500px at 14% -8%, #7dd3fc14, transparent 60%),
-    radial-gradient(700px 460px at 100% 0%, #a78bfa12, transparent 55%),
+    radial-gradient(900px 500px at 14% -8%, var(--ambient-cyan), transparent 60%),
+    radial-gradient(700px 460px at 100% 0%, var(--ambient-violet), transparent 55%),
     var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
@@ -49,7 +62,7 @@ button { font-family: inherit; font-size: inherit; }
 
 button {
   background: var(--gradient);
-  color: #0b0f14;
+  color: var(--on-gradient);
   border: none;
   box-shadow: none;
   border-radius: var(--radius-sm);
@@ -160,9 +173,9 @@ button.danger { background: var(--danger); color: #1a0a0a; }
   transition: all 0.2s var(--ease);
 }
 #stepper li.active { color: var(--text); }
-#stepper li.active .dot { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 0 3px var(--danger-dim, transparent); }
+#stepper li.active .dot { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 0 3px var(--accent-dim, transparent); }
 #stepper li.done { color: var(--text-muted); }
-#stepper li.done .dot { background: var(--gradient); border-color: transparent; color: #0b0f14; }
+#stepper li.done .dot { background: var(--gradient); border-color: transparent; color: var(--on-gradient); }
 #stepper li:not(:last-child)::after {
   content: "";
   flex: 1;
@@ -185,7 +198,7 @@ button.danger { background: var(--danger); color: #1a0a0a; }
   line-height: 1.65;
 }
 .log-line { color: var(--text-muted); white-space: pre-wrap; word-break: break-word; }
-.log-line.warn { color: #fbbf24; }
+.log-line.warn { color: var(--warning); }
 .log-line.error { color: var(--danger); }
 .log-line.phase { color: var(--cyan); font-weight: 650; margin-top: 6px; }
 

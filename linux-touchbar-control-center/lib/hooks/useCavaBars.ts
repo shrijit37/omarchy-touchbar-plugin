@@ -3,6 +3,7 @@ import { spawn } from 'child_process';
 import { writeFileSync } from 'fs';
 import { Box, Text, Button, LayoutContext, NativeDrawContext, DisplaySizeContext, BoxNode } from 'react-drm';
 import { CAVA } from '@/config.blueprint';
+import { SELECTED_THEME } from '@/lib/theme';
 
 // ── Audio Visualizer ─────────────────────────────────────────────────────────
 const CAVA_BARS = CAVA.bars;
@@ -43,7 +44,7 @@ const hexRgb = (hex: string): [number, number, number] => {
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 };
 const BAR_RGB      = BAR_COLORS.flatMap(hexRgb);                              // flat r,g,b per bar (active)
-const INACTIVE_RGB = Array.from({ length: CAVA_BARS }, () => hexRgb('#1e293b')).flat();
+const INACTIVE_RGB = Array.from({ length: CAVA_BARS }, () => hexRgb(SELECTED_THEME.divider)).flat();
 
 /** Live bar levels, 0-1 each, BARS entries. Flat (all-zero) if cava isn't installed. */
 export function useCavaBars(): any {

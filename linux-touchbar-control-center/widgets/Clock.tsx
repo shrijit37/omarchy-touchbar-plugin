@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text } from 'react-drm';
+import { STATUS } from '@/lib/statusColors';
 
 /**
  * Custom Layer's Clock widget — the one placeholder given real content
@@ -16,7 +17,7 @@ export function Clock() {
   }, []);
 
   return (
-    <Text style={{ color: '#e5e7eb', fontSize: 15 }}>
+    <Text style={{ color: STATUS.normal, fontSize: 15 }}>
       {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
     </Text>
   );

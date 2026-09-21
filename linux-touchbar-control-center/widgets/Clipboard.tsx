@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Box, Text } from 'react-drm';
 import { FaClipboard } from 'react-icons/fa';
 import { execFile } from 'child_process';
+import { SELECTED_THEME } from '@/lib/theme';
+import { STATUS } from '@/lib/statusColors';
 
 const POLL_MS = 2_000;
 const MAX_LEN = 30;
@@ -52,9 +54,9 @@ export function Clipboard() {
   return (
     <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
       <Box style={{ width: 16, height: 16, alignItems: 'center', justifyContent: 'center' }}>
-        <FaClipboard style={{ width: 14, height: 14 }} fill="#94a3b8" stroke="none" />
+        <FaClipboard style={{ width: 14, height: 14 }} fill={SELECTED_THEME.textSecondary} stroke="none" />
       </Box>
-      <Text style={{ color: '#e5e7eb', fontSize: 13 }}>
+      <Text style={{ color: STATUS.normal, fontSize: 13 }}>
         {display || 'Empty'}
       </Text>
     </Box>

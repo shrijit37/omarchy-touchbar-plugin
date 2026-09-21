@@ -6,6 +6,7 @@ import {
   MdBattery4Bar, MdBattery5Bar, MdBattery6Bar,
 } from 'react-icons/md';
 import { useBattery, batteryColor } from '@/lib/hooks/useBattery';
+import { STATUS } from '@/lib/statusColors';
 
 const BARS = [MdBattery0Bar, MdBattery1Bar, MdBattery2Bar, MdBattery3Bar, MdBattery4Bar, MdBattery5Bar, MdBattery6Bar];
 
@@ -16,9 +17,9 @@ export function Battery() {
     return (
       <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
         <Box style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
-          <MdBatteryUnknown style={{ width: 18, height: 18 }} fill="#64748b" stroke="none" />
+          <MdBatteryUnknown style={{ width: 18, height: 18 }} fill={STATUS.idle} stroke="none" />
         </Box>
-        <Text style={{ color: '#64748b', fontSize: 14, fontWeight: '600' }}>--%</Text>
+        <Text style={{ color: STATUS.idle, fontSize: 14, fontWeight: '600' }}>--%</Text>
       </Box>
     );
   }

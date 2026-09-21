@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Text, Svg, TouchReader, useKeyPressed } from 'react-drm';
 import { FaTruckMonster } from 'react-icons/fa6';
+import { SELECTED_THEME } from '@/lib/theme';
+import { STATUS } from '@/lib/statusColors';
 
 // ── SVG assets ───────────────────────────────────────────────────────────────
 
+// The boulder's internal shading is baked into this markup string (it can't
+// read JS tokens at render time), so its greys stay literal by design.
 const BOULDER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 22">
   <ellipse cx="13" cy="16" rx="11" ry="5.5" fill="#1e293b"/>
   <ellipse cx="8"  cy="12" rx="7"  ry="5.5" fill="#334155"/>
@@ -145,7 +149,7 @@ export function DinoGame({ width, height }: { width: number; height: number }) {
   // ── Render ────────────────────────────────────────────────────────────────
   const { truckY, obstacles, score, dead, running, tick } = state;
 
-  const truckColor = dead ? '#ef4444' : '#f59e0b';
+  const truckColor = dead ? STATUS.danger : STATUS.warn;
   const dashScroll = Math.round(tick * 6) % 120;
 
   const roadDashes: number[] = [];
@@ -163,7 +167,7 @@ export function DinoGame({ width, height }: { width: number; height: number }) {
 
       {/* Stars */}
       {STARS.filter(s => s.x < width).map((s, i) => (
-        <Box key={i} x={s.x} y={s.y} width={s.w} height={s.w} color="#cbd5e1" />
+        <Box key={i} x={s.x} y={s.y} width={s.w} height={s.w} color={SELECTED_THEME.textSecondary} />
       ))}
 
       {/* Horizon glow */}
@@ -193,13 +197,13 @@ export function DinoGame({ width, height }: { width: number; height: number }) {
       ))}
 
       {/* Score */}
-      <Text x={width - 190} y={9} color="#f59e0b" fontSize={22} fontFamily="monospace">
+      <Text x={width - 190} y={9} color={STATUS.warn} fontSize={22} fontFamily="monospace">
         {`${String(score).padStart(5, '0')} m`}
       </Text>
 
       {/* Start message */}
       {!running && !dead && (
-        <Text x={mid - 230} y={9} color="#a78bfa" fontSize={26} fontFamily="monospace">
+        <Text x={mid - 230} y={9} color={STATUS.idle} fontSize={26} fontFamily="monospace">
           {'TAP OR PRESS ANY KEY TO START'}
         </Text>
       )}
@@ -207,8 +211,8 @@ export function DinoGame({ width, height }: { width: number; height: number }) {
       {/* Crash screen */}
       {dead && (
         <>
-          <Text x={mid - 95} y={9} color="#ef4444" fontSize={26} fontFamily="monospace">CRASHED!</Text>
-          <Text x={mid + 35} y={9} color="#64748b" fontSize={22} fontFamily="monospace">— TAP TO RETRY</Text>
+          <Text x={mid - 95} y={9} color={STATUS.danger} fontSize={26} fontFamily="monospace">CRASHED!</Text>
+          <Text x={mid + 35} y={9} color={STATUS.idle} fontSize={22} fontFamily="monospace">— TAP TO RETRY</Text>
         </>
       )}
 

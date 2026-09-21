@@ -4,12 +4,14 @@
   "private": true,
   "description": "Graphical wizard for install.sh / uninstall.sh",
   "main": "dist/main/main.js",
+  "dependencies": {
+    "electron": "^43.4.0"
+  },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json && tsc -p tsconfig.renderer.json && mkdir -p dist/renderer && cp renderer/index.html renderer/renderer.css dist/renderer/",
     "start": "electron ."
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
-    "electron": "^43.4.0"
+    "@types/node": "^25.9.1"
   }
 }

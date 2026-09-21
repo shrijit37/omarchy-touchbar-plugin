@@ -102,6 +102,7 @@ function renderWelcome(): void {
 function renderStepper(): void {
   const stepper = $('stepper');
   stepper.innerHTML = '';
+  // <ol> — the ordered progress of the install, marked up semantically.
   for (const step of STEPS[mode]) {
     const li = document.createElement('li');
     li.id = `step-${step.id}`;
@@ -120,11 +121,15 @@ function setStepState(stepId: string, state: 'active' | 'done'): void {
     li.classList.remove('active', 'done');
     if (i < idx || (i === idx && state === 'done')) li.classList.add('done');
     else if (i === idx) li.classList.add('active');
+    // The current step is the one AT is should focus as the install advances.
+    if (i === idx) li.setAttribute('aria-current', 'step');
+    else li.removeAttribute('aria-current');
   });
 }
 
 function appendLog(text: string, kind: 'info' | 'warn' | 'error' | 'phase' = 'info'): void {
   const log = $('log');
+  log.setAttribute('role', 'log');
   const line = document.createElement('div');
   line.className = `log-line ${kind}`;
   line.textContent = text;

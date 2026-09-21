@@ -22,7 +22,6 @@ export function Cava({width}:{width:number}) {
   const {
     barsRef , bars,isActive,BAR_COLORS
   } = useCavaBars();
-  console.log(width)
   return (
     // Fixed height, not auto — bar heights change every frame, and letting
     // the container re-size with them would make the whole widget jitter

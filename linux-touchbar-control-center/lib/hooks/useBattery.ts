@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import dbus from 'dbus-next';
+import { STATUS } from '@/lib/statusColors';
 
 // Same /sys/class/power_supply reads as app/systembar/page.tsx's readBattery,
 // polled instead of read once — battery state changes slowly, so a long
@@ -24,12 +25,12 @@ function parseBatteryState(stateNum: any): BatteryState {
 }
 
 export function batteryColor(bat: BatteryInfo): string {
-  if (bat.state === 'Charging') return '#4ade80';
-  if (bat.state === 'Full') return '#34d399';
-  if (bat.pct <= 10) return '#ef4444';
-  if (bat.pct <= 25) return '#f87171';
-  if (bat.pct <= 50) return '#fde047';
-  return '#e5e7eb';
+  if (bat.state === 'Charging') return STATUS.ok;
+  if (bat.state === 'Full') return STATUS.ok;
+  if (bat.pct <= 10) return STATUS.danger;
+  if (bat.pct <= 25) return STATUS.danger;
+  if (bat.pct <= 50) return STATUS.warn;
+  return STATUS.normal;
 }
 
 const POLL_MS = 30_000;
