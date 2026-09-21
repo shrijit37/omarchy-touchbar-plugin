@@ -26,3 +26,18 @@ export const STATUS = {
 export function statusAlpha(hex: string, a: number): string {
   return withAlpha(hex, a);
 }
+
+/**
+ * Documented weather accents — a small shell-world palette distinct from the
+ * traffic-light STATUS slots, so conditions stay distinguishable without
+ * colliding with the theme's state colors. Values are literal by design
+ * (weather is content, not state); rain/snow/fog keep their own hue family.
+ */
+export const WEATHER_ACCENTS = {
+  clear:  STATUS.warn,                 // sunny → the theme's warm warning slot
+  cloud:  STATUS.idle,                 // overcast → muted disabled-slate
+  storm:  SELECTED_THEME.info,         // thunderstorm → info blue
+  fog:    '#cbd5e1',
+  rain:   '#60a5fa',
+  snow:   '#e0f2fe',
+} as const;

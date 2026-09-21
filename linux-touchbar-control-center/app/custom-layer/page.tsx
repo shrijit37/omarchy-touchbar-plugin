@@ -79,7 +79,7 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
       borderColor={pastEdge ? STATUS.danger : editing ? withAlpha(SELECTED_THEME.textSecondary, 0.6) : '#00000000'}
       borderWidth={editing ? 1.5 : 1}
       opacity={dragging ? (pastEdge ? 0.4 : 0.6) : 1}
-      style={{ alignItems: 'center', justifyContent: 'center'  , borderRadius:8}}
+      style={{ alignItems: 'center', justifyContent: 'center'  , borderRadius:10}} // module tier (10px), not the off-token 8
       longPressDelay={500}
       onLongPress={() => {
         draggingRef.current = true;
@@ -127,7 +127,7 @@ function DraggableWidget({ widget, editing, barWidth, barHeight, leftInset, onEn
         : widget.type === 'clipboard' ? <Clipboard />
         : widget.type === 'separator' ? (
             // Hairline divider spanning the bar's inner height.
-            <Box style={{ width: 2, height: barHeight - 12, borderRadius: 1,
+            <Box style={{ width: 2, height: barHeight - 12, borderRadius: 2,
                           backgroundColor: withAlpha(SELECTED_THEME.textSecondary, 0.45) }} />)
         : <Text style={{ color: withAlpha(SELECTED_THEME.textPrimary, 0.85), fontSize: 14 }}>{CUSTOM_WIDGET_LABELS[widget.type]}</Text>}
       {editing && (
@@ -225,7 +225,7 @@ export default function CustomLayerPage({ width, height }: { width: number; heig
           width={CUSTOM_WIDGET_WIDTHS[state.ghost.widgetType]} height={height}
           color={withAlpha(SELECTED_THEME.surfaceVariant, 0.55)}
           borderColor={withAlpha(SELECTED_THEME.textSecondary, 0.6)} borderWidth={1.5}
-          style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 8 }}
+          style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 10 }}
         >
           <Text style={{ color: withAlpha(SELECTED_THEME.textPrimary, 0.85), fontSize: 14 }}>{CUSTOM_WIDGET_LABELS[state.ghost.widgetType]}</Text>
         </Box>
@@ -249,7 +249,7 @@ export default function CustomLayerPage({ width, height }: { width: number; heig
             width={92} height={height}
             color={SELECTED_THEME.surface} activeColor={SELECTED_THEME.surfaceVariant}
             borderColor={SELECTED_THEME.surfaceVariant} borderWidth={1}
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: 8 }}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: 10 }}
             onClick={() => setEditingLocally(false)}
           >
             <MdCheck style={{ width: 16, height: 16 }} fill={SELECTED_THEME.textPrimary} stroke="none" />
@@ -267,7 +267,7 @@ export default function CustomLayerPage({ width, height }: { width: number; heig
           position: 'absolute', right: 0, top: 0,
           width: 44, height,
           alignItems: 'center', justifyContent: 'center',
-          borderRadius: 8,
+          borderRadius: 10,
         }}>
           <FaTrash style={{ width: 18, height: 18 }} fill={withAlpha(STATUS.danger, 0.85)} stroke="none" />
         </Box>

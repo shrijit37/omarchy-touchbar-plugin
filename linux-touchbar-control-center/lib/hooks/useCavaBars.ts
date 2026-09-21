@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { spawn } from 'child_process';
 import { writeFileSync } from 'fs';
-import { Box, Text, Button, LayoutContext, NativeDrawContext, DisplaySizeContext, BoxNode } from 'react-drm';
+import { LayoutContext, NativeDrawContext, DisplaySizeContext, BoxNode } from 'react-drm';
 import { CAVA } from '@/config.blueprint';
 import { SELECTED_THEME } from '@/lib/theme';
 
@@ -27,8 +27,10 @@ try {
   ].join('\n'));
 } catch { /**/ }
 
-// orange (bass) → cyan (treble)
-const BAR_COLORS = Array.from({ length: CAVA_BARS }, (_, i) => {
+// orange (bass) → cyan (treble) — the ONE visualizer ramp. widgets/Cava and
+// the systembar's AudioVisSection consume this so every cava surface draws
+// the same bars (the widget used to re-derive it inline, which drifted).
+export const BAR_COLORS = Array.from({ length: CAVA_BARS }, (_, i) => {
   const t = i / (CAVA_BARS - 1);
   const r = Math.round(249 - t * 215);
   const g = Math.round(115 + t *  96);

@@ -24,10 +24,11 @@ function parseBatteryState(stateNum: any): BatteryState {
     : 'Unknown';
 }
 
+// Mirrors app/systembar/page.tsx's batteryRange (10 critical / 25 low / 50
+// medium): ≤25 reads danger, ≤50 warn, above that normal. The old duplicate
+// ≤10/≤25-both-danger branch is gone — warn between 25 and 50.
 export function batteryColor(bat: BatteryInfo): string {
-  if (bat.state === 'Charging') return STATUS.ok;
-  if (bat.state === 'Full') return STATUS.ok;
-  if (bat.pct <= 10) return STATUS.danger;
+  if (bat.state === 'Charging' || bat.state === 'Full') return STATUS.ok;
   if (bat.pct <= 25) return STATUS.danger;
   if (bat.pct <= 50) return STATUS.warn;
   return STATUS.normal;

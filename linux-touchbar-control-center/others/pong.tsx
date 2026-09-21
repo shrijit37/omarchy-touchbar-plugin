@@ -210,7 +210,7 @@ export function PongGame({ width, height }: { width: number; height: number }) {
   const ballVis = phase !== 'idle' && (phase !== 'pause' || pauseTick % 8 < 5);
 
   return (
-    <Box x={0} y={0} width={width} height={height} color="#030309">
+    <Box x={0} y={0} width={width} height={height} color="#000000">
 
       {/* Center dashes */}
       {[5, 22, 39].map(y => (
@@ -218,7 +218,7 @@ export function PongGame({ width, height }: { width: number; height: number }) {
       ))}
 
       {/* Score */}
-      <Text x={mid - 22} y={2} color={SELECTED_THEME.textSecondary} fontSize={14} fontFamily="monospace">
+      <Text x={mid - 22} y={2} color={SELECTED_THEME.textSecondary} fontSize={14} fontFamily="IosevkaTerm Nerd Font">
         {`${scoreL}  ${scoreR}`}
       </Text>
 
@@ -253,7 +253,7 @@ export function PongGame({ width, height }: { width: number; height: number }) {
 
       {/* Idle prompt */}
       {phase === 'idle' && (
-        <Text x={mid - 250} y={9} color={STATUS.idle} fontSize={26} fontFamily="monospace">
+        <Text x={mid - 250} y={9} color={STATUS.idle} fontSize={22} fontFamily="IosevkaTerm Nerd Font">
           TAP OR ↑↓ ARROWS TO START
         </Text>
       )}
@@ -264,8 +264,8 @@ export function PongGame({ width, height }: { width: number; height: number }) {
           x={mid - 165}
           y={9}
           color={winner === 'YOU' ? STATUS.ok : STATUS.danger}
-          fontSize={26}
-          fontFamily="monospace"
+          fontSize={22}
+          fontFamily="IosevkaTerm Nerd Font"
         >
           {winner === 'YOU' ? 'YOU WIN!  TAP TO REPLAY' : 'AI WINS!  TAP TO REPLAY'}
         </Text>
