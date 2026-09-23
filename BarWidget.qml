@@ -119,20 +119,16 @@ BarWidget {
     onExited: function() { root.refresh() }
   }
 
-  // The config editor (config-gui), launched exactly like the desktop entry's
-  // Exec (electron shim + app dir) — a GUI app, so no terminal wrapper, just
-  // uwsm-app for session integration. The repo checkout's node_modules is
-  // wiped by finalize_plugin_folder after every install, so it is never the
-  // launch source. Editing config.ts takes effect on the next service restart;
+  // Open the installed config editor (config-gui) via its desktop entry.
+  // Quickshell.execDetached is the sibling-widget pattern for launching
+  // outside processes (shrijit.bluetooth, local.sysinfo…) — it detaches from
+  // the widget's lifecycle so the GUI actually appears; a Process{} started by
+  // a click can silently no-op. The entry's Exec points at the install-time
+  // $INSTALL_DIR electron + config-gui (the checkout's node_modules is wiped
+  // every install). Editing config.ts takes effect on the next service restart;
   // we deliberately do not restart here.
-  Process {
-    id: configProc
-    // Launch the installed config editor via its desktop entry (gtk-launch):
-    // the entry's Exec already points at $INSTALL_DIR electron + config-gui,
-    // and gtk-launch is mock-proof/detaches cleanly — the setsid/uwsm-app
-    // wrapper around direct electron turns out to swallow GUI launch.
-    command: ["/usr/bin/gtk-launch", "omarchy-touchbar-config.desktop"]
-    onExited: function() { root.refresh() }
+  function openConfig() {
+    Quickshell.execDetached(["gtk-launch", "omarchy-touchbar-config.desktop"])
   }
 
   Timer {
@@ -171,7 +167,7 @@ BarWidget {
       if (b === Qt.RightButton) root.refresh()
       else if (!root.installed) root.install()
       else if (!root.running) starter.running = true
-      else configProc.running = true  // running → open the config editor
+      else root.openConfig()  // running → open the config editor
     }
 
     Column {
