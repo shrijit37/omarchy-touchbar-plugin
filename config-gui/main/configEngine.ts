@@ -22,7 +22,11 @@ export interface ConfigPaths {
   blueprintPath: string;
 }
 
-const DEFAULT_REPO_DIR = path.join(os.homedir(), 'omarchy-touchbar', 'linux-touchbar-control-center');
+// The installed control center lives under ~/.local/share/omarchy-touchbar
+// (install.sh's INSTALL_DIR). The older ~/omarchy-touchbar default pointed at
+// a nonexistent dir and the editor showed "Couldn't find … at the default
+// install path"; REACT_DRM_REPO_DIR still overrides this for the installer GUI.
+const DEFAULT_REPO_DIR = path.join(os.homedir(), '.local', 'share', 'omarchy-touchbar', 'linux-touchbar-control-center');
 
 export function defaultConfigPaths(repoDir: string = DEFAULT_REPO_DIR): ConfigPaths {
   return {
