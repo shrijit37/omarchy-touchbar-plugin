@@ -127,12 +127,11 @@ BarWidget {
   // we deliberately do not restart here.
   Process {
     id: configProc
-    readonly property string installRoot: Quickshell.env("HOME") + "/.local/share/omarchy-touchbar"
-    command: [
-      "/usr/bin/setsid", "/usr/bin/uwsm-app", "--",
-      Quickshell.env("HOME") + "/.local/share/omarchy-touchbar/node_modules/.bin/electron",
-      Quickshell.env("HOME") + "/.local/share/omarchy-touchbar/config-gui"
-    ]
+    // Launch the installed config editor via its desktop entry (gtk-launch):
+    // the entry's Exec already points at $INSTALL_DIR electron + config-gui,
+    // and gtk-launch is mock-proof/detaches cleanly — the setsid/uwsm-app
+    // wrapper around direct electron turns out to swallow GUI launch.
+    command: ["/usr/bin/gtk-launch", "omarchy-touchbar-config.desktop"]
     onExited: function() { root.refresh() }
   }
 
