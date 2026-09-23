@@ -74,11 +74,11 @@ components:
 
 **Creative North Star: "The Slim Black Module"**
 
-Omarchy Touch Bar is a dense, dark, glass-and-token system that lives on two canvases: the physical **Touch Bar** (a 2008–2170 px by ~60 px DRM panel) and the desktop **GUI shells** (config-gui, install-gui) that configure it. On the bar, the identity is **black glass over the machine**: `#000000` backgrounds, subtly graded `#373737`/`#474747` module surfaces, a single crisp `2px` hairline border, and one restrained blue `#5b8def` accent for interactivity. Every pixel is accounted for — the bar has almost no room, so the system buys legibility through contrast between a true-black field and stepped mid-dark surfaces, and buys motion through springs that overshoot ("ring") like macOS.
+Omarchy Touch Bar is a dense, dark, glass-and-token system on two canvases: the physical **Touch Bar** (2008–2170 px × ~60 px DRM panel) and the desktop **GUI shells** (config-gui, install-gui) that configure it. On the bar the identity is **black glass over the machine**: `#000000` backgrounds, stepped `#373737`/`#474747` module surfaces, a crisp `2px` hairline border, and one restrained blue `#5b8def` accent for interactivity. There is almost no room, so the system buys legibility through contrast between a true-black field and stepped mid-dark surfaces, and motion through springs that overshoot ("ring") like macOS.
 
-The GUI shells are the bar's control room and share its DNA without pretending to be the hardware: a near-black indigo (`#0d0f14`) canvas with translucent **glass panels** (`rgba(23,26,33,0.55)` + `blur(18px)`) over faint cyan/violet ambient gradients, and a single bright cyan-to-violet **accent gradient** (`#7dd3fc` → `#a78bfa`) reserved for primary action blocks and the active state. Both canvases speak the same grammar — dark module on darker field, hairline dividers, one bright accent, radius in the 6–14px band — so the suite reads as one product family.
+The GUI shells are the bar's control room and share its DNA without pretending to be the hardware: a near-black indigo (`#0d0f14`) canvas with translucent **glass panels** (`rgba(23,26,33,0.55)` + `blur(18px)`) over faint cyan/violet ambient gradients, and a single cyan-to-violet **accent gradient** (`#7dd3fc` → `#a78bfa`) reserved for primary actions and the active state. Both canvases speak the same grammar — dark module on darker field, hairline dividers, one bright accent, radius in the 6–14px band.
 
-The system is fundamentally **tonal, not shadowed**: depth on the bar comes from layered mid-greys over black (no drop shadows in production), and in the GUI from translucent tint + backdrop blur, never hard shadows. Text is a three-tier slate scale (`#cccccc` → `#94a3b8` → `#64748b` on the bar; `#eef0f3` → `#939bad` → `#5c6377` in the GUI). Status is a single consistent traffic-light of semantic accents — success/warning/error/info — used identically across both worlds so battery, temperature, network, and system health read at a glance.
+The system is **tonal, not shadowed**: depth on the bar comes from layered mid-greys over black (no drop shadows in production), and in the GUI from translucent tint + backdrop blur, never hard shadows. Text is a three-tier slate scale (`#cccccc` → `#94a3b8` → `#64748b` on the bar; `#eef0f3` → `#939bad` → `#5c6377` in the GUI). Status is one traffic-light set — success/warning/error/info — used identically across both worlds.
 
 **Key Characteristics:**
 - True-black hardware canvas with stepped mid-dark module surfaces — contrast through layering, not light.
@@ -145,7 +145,7 @@ The Touch Bar is a fixed horizontal canvas (~60px tall) on Yoga flexbox via the 
 
 A dedicated `SafeArea` wrapper reserves **`11px` horizontal / `2px` vertical** (`SAFE_INSET_X`/`Y`) against pixel-shift clipping. On **wide bars** (`≥2170px`) with no physical Esc, a fixed-width Esc key (`110px` + `8px` gap) occupies the far left; the layer area insets by exactly that width. The Touch ID gate deducts its block width from the live layer area mid-animation, so re-layout is continuous rather than snapping.
 
-**Priority design of the layers / route tree** (`app/fnkeys`, `dock`, `media`, `launcher`, `lock`, `splitted`, `systembar`, `custom-layer`, plus overlays): layers are full-bleed `(w × h)`, content is a horizontal flex row, and layers slide/fade with a `200ms` out / `350ms` in transition. The GUIs use a `240px` sidebar + `1fr` main grid, glass panels, and the same `10px` / `6px` radius tiers.
+**Priority design of the layers / route tree** (`app/fnkeys`, `dock`, `media`, `launcher`, `lock`, `splitted`, `systembar`, `custom-layer`, `games`, plus overlays): layers are full-bleed `(w × h)`, content is a horizontal flex row, and layers slide/fade with a `200ms` out / `350ms` in transition. The GUIs use a `240px` sidebar + `1fr` main grid, glass panels, and the same `10px` / `6px` radius tiers.
 
 ## Elevation & Depth
 
@@ -218,3 +218,5 @@ Slots are `iconSize 48px` on a `14px`-radius slot in a `6px`-gap row. Running ap
 - **Don't** invent a new accent or a new semantic status color beyond the traffic-light set — one accent and one status language, everywhere.
 - **Don't** wrap button press feedback in a slow fade; press feedback is a `surfaceVariant` color swap with a ~`100ms` flash, and scroll-passing must never light a key.
 - **Don't** use radius outside the 6–14px band for bounding surfaces, or apply the GUI gradient as a text/border treatment on the bar's `#000000` keys.
+
+_Last updated: 2026-09-24_

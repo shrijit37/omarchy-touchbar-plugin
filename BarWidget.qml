@@ -22,21 +22,27 @@ BarWidget {
   property bool running: false
   property bool installed: false
   property bool statusParsed: false
+  property bool devMode: false
 
   readonly property string serviceName: "omarchy-touchbar.service"
   readonly property string daemonBin: Quickshell.env("HOME") + "/.local/share/omarchy-touchbar/linux-touchbar-control-center/dist/index.js"
+  // dev.sh touches this marker while a dev build is running; the service never does.
+  readonly property string devMarker: Quickshell.env("HOME") + "/.local/state/omarchy-touchbar/dev.indicator"
   readonly property string installPath: Qt.resolvedUrl("install-omarchy.sh").toString().replace(/^file:\/\//, "")
   readonly property bool showLabel: setting("showLabel", true) !== false
 
   readonly property string icon: installed
     ? (running ? "󰊪" : "󰊖")   // filled screen = running, dim = stopped
     : "󰊪"                       // setup state
-  readonly property string label: !installed ? "Touch Bar · setup"
+  readonly property string label: devMode ? "Touch Bar · dev"
+    : !installed ? "Touch Bar · setup"
     : !running ? "Touch Bar · off"
     : "Touch Bar"
 
   readonly property string displayText: showLabel && !vertical ? icon + "  " + label : icon
-  readonly property string tooltip: !installed
+  readonly property string tooltip: devMode
+    ? "Touch Bar · running a dev build (not the installed service)\nLeft: open config editor"
+    : !installed
     ? "Install the Omarchy Touch Bar daemon"
     : !running ? "Touch Bar daemon is not running (click to start)"
     : "Touch Bar · running\nLeft: open config editor"
@@ -46,6 +52,7 @@ BarWidget {
 
   function refresh() {
     if (!installCheck.running && !statusProbe.running) installCheck.running = true
+    if (!devProbe.running) devProbe.running = true
   }
 
   function install() {
@@ -93,6 +100,16 @@ BarWidget {
     onExited: function(exitCode) {
       root.installed = true
       if (!root.statusParsed) root.running = false
+    }
+  }
+
+  Process {
+    id: devProbe
+    // -f on a marker file dev.sh creates for the lifetime of a dev run —
+    // the installed service never touches it, so this is dev-mode only.
+    command: ["/usr/bin/test", "-f", root.devMarker]
+    onExited: function(exitCode) {
+      root.devMode = (exitCode === 0)
     }
   }
 
@@ -144,6 +161,7 @@ BarWidget {
     function refresh(): void { root.refresh() }
     function status(): string { return root.label }
     function start(): void {
+      if (root.devMode) return  // dev owns the DRM card — starting the service would fight it
       if (!root.installed) root.install()
       else if (!root.running) starter.running = true
     }
@@ -159,12 +177,13 @@ BarWidget {
     horizontalMargin: 8.75
     verticalPadding: 8.75
     tooltipText: root.tooltip
-    active: !root.installed || !root.running
+    active: !root.installed || (!root.running && !root.devMode)
     activeColor: Color.accent
     foreground: root.bar ? root.bar.barForeground : Color.foreground
 
     onPressed: function(b) {
       if (b === Qt.RightButton) root.refresh()
+      else if (root.devMode) root.openConfig()  // dev build — config editor only, never start the service
       else if (!root.installed) root.install()
       else if (!root.running) starter.running = true
       else root.openConfig()  // running → open the config editor
@@ -182,6 +201,26 @@ BarWidget {
         fontSize: button.fontSize
         color: button.foreground
       }
+    }
+  }
+
+  // Dev-build indicator — blinking red dot while a dev run holds the marker.
+  // Plain Rectangle takes no pointer events, so clicks still hit the button.
+  Rectangle {
+    visible: root.devMode
+    x: root.width - width - 3
+    y: (root.height - height) / 2
+    width: 6
+    height: 6
+    radius: 3
+    color: "#f87171"
+
+    NumberAnimation on opacity {
+      from: 1
+      to: 0.15
+      duration: 700
+      loops: Animation.Infinite
+      running: root.devMode
     }
   }
 }

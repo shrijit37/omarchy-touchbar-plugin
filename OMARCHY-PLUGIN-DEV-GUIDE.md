@@ -1,6 +1,6 @@
 # Development: Develop a Custom Plugin
 
-**Updated:** 13 Aug 2026  
+**Updated:** 24 Sep 2026  
 **Read time:** 12 min  
 **Status:** Stable
 

@@ -52,7 +52,7 @@ The control center is the live proof and primary consumer of that renderer. On t
 | Arch package policy | Only missing required packages are installed (`pacman -S --needed`): no repository refresh, no system upgrade. On a stale-db resolve failure the installer directs the user to `omarchy update` (Omarchy's ALPM hook blocks direct `pacman -Syu`). |
 | Installation | `./install.sh install` — analyze → purge → deploy; `--yes` skips typed confirmations, `--profile t2linux|kait2en` pins the driver stack, `analyze` subcommand is a read-only pre-flight |
 | Uninstallation | `./uninstall.sh uninstall` (Omarchy: `uninstall-omarchy.sh`) — stops/removes the service (incl. legacy `react-drm.service`), udev rules, launcher and the installed copy; restores the firmware Touch Bar. Checkout, system packages and group memberships untouched. |
-| Preview backend | WebSocket pixel stream via `dev/preview-server.ts` + `preview-page.html` |
+| Preview backend | WebSocket pixel stream via `src/dev/preview-server.ts` + `src/dev/preview-page.html` |
 | GTK preview | `preview-app/gtk_layer_app.py` |
 | Backend switch | `REACT_DRM_BACKEND=preview` |
 
@@ -60,7 +60,7 @@ The control center is the live proof and primary consumer of that renderer. On t
 
 Observability is available without root access or physical Touch Bar hardware:
 
-1. **Browser preview:** pixels stream over WebSocket through `dev/preview-server.ts` and `preview-page.html`.
+1. **Browser preview:** pixels stream over WebSocket through `src/dev/preview-server.ts` and `src/dev/preview-page.html`.
 2. **GTK preview:** `preview-app/gtk_layer_app.py` renders through a GTK layer-shell window.
 3. Set `REACT_DRM_BACKEND=preview` to switch the application to the preview backend.
 
@@ -107,7 +107,7 @@ The control center includes:
 - dock;
 - weather, clock, and system widgets;
 - audio visualization via `cava`;
-- focus timer;
+- Pomodoro timer;
 - small games; and
 - a custom-layer bridge to GUI tools.
 
@@ -225,4 +225,6 @@ No product-specific accessibility requirement has been established in a confirme
 The control center does expose:
 
 - standard display-brightness controls; and
-- a high-contrast theme: `darkhighcontrast` in `THEME.theme`.
+- a high-contrast theme: `darkhighcontrast` in `THEME.theme` (`lib/themes.ts`).
+
+_Last updated: 2026-09-24_

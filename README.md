@@ -12,7 +12,7 @@ The control center provides:
 - Media controls, volume and display brightness
 - Application-aware controls for browsers, media players and file managers
 - CPU, memory, temperature, network and battery information
-- Audio visualization, a focus timer and small games
+- Audio visualization (cava), a Pomodoro timer and small games
 - Automatic detach and re-attach during suspend and resume
 
 ## Installation
@@ -95,10 +95,24 @@ available before login and after logout.
 
 ## Manual start
 
-Stop the user service, then run the control center from the repository
-checkout (development happens here, not in `~/.local/share/omarchy-touchbar`;
-the installer removes the checkout's `node_modules` after each install, so run
-`npm ci` first if there is none):
+Or just run the dev script from the repository root — it stops the user
+service (it holds the DRM card), builds the native addon if missing, syncs the
+bar widget into the plugin clone, and launches the dev build with the red
+"dev mode" blinker active (a blinking red border around the Touch Bar and a
+blinking red dot on the desktop bar's Touch Bar pill):
+
+```sh
+./dev.sh
+```
+
+The blinker is dev-only: it is gated on `REACT_DRM_DEV_INDICATOR=1`, which
+`dev.sh` sets and the installed service never does. The script removes its
+dev-mode marker on exit, including on Ctrl-C.
+
+To do the same by hand — stop the user service, then run the control center
+from the repository checkout (development happens here, not in
+`~/.local/share/omarchy-touchbar`; the installer removes the checkout's
+`node_modules` after each install, so run `npm ci` first if there is none):
 
 ```sh
 systemctl --user stop omarchy-touchbar.service
@@ -126,7 +140,7 @@ React → omarchy-touchbar renderer → Cairo → in-memory framebuffer
 
 **Dependencies**: the same native build dependencies as DRM mode (Node.js,
 a C++ compiler and the libdrm/Cairo/librsvg/pango development headers — see
-[Manual installation](#manual-installation)). A DRM device, root and Touch Bar
+[Manual start](#manual-start)). A DRM device, root and Touch Bar
 hardware are only needed to compile the native addon once, not to *run*
 preview mode.
 
@@ -139,8 +153,9 @@ npm run build
 **Run** — from `linux-touchbar-control-center`:
 
 ```sh
-npm run dev          # real Touch Bar over DRM/KMS
-npm run dev:preview  # browser preview instead
+npm run dev            # real Touch Bar over DRM/KMS
+npm run dev:preview    # browser preview instead (dev/tsx)
+npm run start:preview  # browser preview instead (compiled production build)
 ```
 
 `dev:preview` sets `REACT_DRM_BACKEND=preview`, which makes `createDisplay()`
@@ -199,7 +214,7 @@ or X11-only sessions; there's no equivalent protocol there for a
 non-compositor app to reserve screen space.
 
 It draws no HTML/DOM UI and doesn't embed a browser engine at all: it speaks
-`preview-server.ts`'s WebSocket protocol directly (a small hand-rolled RFC
+`src/dev/preview-server.ts`'s WebSocket protocol directly (a small hand-rolled RFC
 6455 client — see the comment at the top of `gtk_layer_app.py` for why it
 doesn't use libsoup's client) and paints the received RGBA bytes straight
 onto a `GtkImage` via `GdkPixbuf`, which matches the wire format byte-for-byte
@@ -237,7 +252,7 @@ Press <kbd>Esc</kbd> while it's focused to close it (it has no titlebar).
 - The control center still opens a real keyboard device for global shortcuts
   (e.g. the screenshot combo) even in preview mode — this needs the same
   `video`/`input` group membership and fresh login session as
-  [Manual installation](#manual-installation) already describes. Touch Bar
+  [Manual start](#manual-start) already describes. Touch Bar
   hardware and a DRM device are not needed either way.
 
 ## Active window integration
@@ -341,3 +356,5 @@ continues running while any window remains open.
 Command suggestions use read-only D-Bus methods and work without this setting.
 Enabling the security-sensitive API allows any process on the session bus to
 send text and commands to open Konsole sessions.
+
+_Last updated: 2026-09-24_

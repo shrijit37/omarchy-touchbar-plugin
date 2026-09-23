@@ -3,8 +3,8 @@ import os from 'os';
 import { Worker } from 'worker_threads';
 import React from 'react';
 import { reconciler } from './reconciler';
-import { setRepaint } from './invalidate';
-import { serializeScene, frameSignature, damageRects, toBinaryBuffer } from '../scene/serialize';
+import { setRepaint, invalidate } from './invalidate';
+import { serializeScene, frameSignature, damageRects, toBinaryBuffer, parseColor } from '../scene/serialize';
 import type { DrawCommand } from '../scene/serialize';
 import { computeLayoutYoga, loadYogaEngine, yogaReady } from '../scene/layout-yoga';
 import { resolveInheritance } from '../scene/inherit';
@@ -825,6 +825,25 @@ export function render(
   if (dimMs > 0) startIdleTimers();
   // ──────────────────────────────────────────────────────────────────────────
 
+  // Dev-mode blinker (set by dev.sh via REACT_DRM_DEV_INDICATOR=1; never set by
+  // the production service). A red border around the true framebuffer edge, on
+  // top of every layer including the boot screen — full-edge coords, so SafeArea
+  // padding can't clip it. Lives in the renderer, not the React tree, so hot
+  // reload's full remount never resets the blink phase.
+  const DEV_INDICATOR = process.env.REACT_DRM_DEV_INDICATOR === '1';
+  const DEV_COLOR = parseColor('#f87171'); // design-system error red, 0..1 like every other command color
+  let devBlinkOn = true;
+  let devBlinkTimer: ReturnType<typeof setInterval> | null = null;
+  if (DEV_INDICATOR) {
+    devBlinkTimer = setInterval(() => {
+      if (suspended || state === 'off') return; // nothing on screen to mark
+      devBlinkOn = !devBlinkOn;
+      // invalidate() is the out-of-band repaint hook: re-serializes with the
+      // layout cache intact and lets the changed alpha defeat the blit dedup.
+      invalidate(false);
+    }, 700);
+  }
+
   container._onCommit = (needsLayout = true) => {
     if (!yogaReady()) return; // pre-engine commits are re-rendered once yoga loads
     resolveInheritance(container);  // CSS-like font/color cascade before layout + draw
@@ -838,6 +857,14 @@ export function render(
     }
     const t1 = PROFILE ? performance.now() : 0;
     const commands = serializeScene(container, layoutRef.current);
+    if (DEV_INDICATOR) {
+      // drawn last → on top of every child
+      commands.push({
+        cmd: 'stroke_rect', x: 0, y: 0, w: display.width, h: display.height,
+        r: DEV_COLOR[0], g: DEV_COLOR[1], b: DEV_COLOR[2], a: devBlinkOn ? 1 : 0.12,
+        tl: 0, tr: 0, br: 0, bl: 0, lineWidth: 3, borderStyle: 'solid',
+      });
+    }
     if (PROFILE) { prof.commits++; prof.layoutMs += t1 - t0; prof.serMs += performance.now() - t1; }
     lastCmds = commands;
     renderCurrent(); // respects current dim/off state
@@ -962,6 +989,7 @@ export function render(
       if (pendingFlush) { clearTimeout(pendingFlush); pendingFlush = null; }
       clearTimers();
       stopShiftTimer();
+      if (devBlinkTimer) { clearInterval(devBlinkTimer); devBlinkTimer = null; }
       stopLid();
       stopPointer();
       stopKeyboard();
