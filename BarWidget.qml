@@ -54,7 +54,10 @@ BarWidget {
 
   Process {
     id: installCheck
-    command: ["/usr/bin/test", "-x", root.daemonBin]
+    // -f, not -x: the deployed entry is a require()'d CommonJS file (0644 —
+    // tsc output); systemd runs it via `node <path>`, so the executable bit
+    // never exists on a healthy install. Existence IS the deployed marker.
+    command: ["/usr/bin/test", "-f", root.daemonBin]
     running: true
     onExited: function(exitCode) {
       if (exitCode !== 0) {
