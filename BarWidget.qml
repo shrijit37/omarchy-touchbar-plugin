@@ -39,7 +39,7 @@ BarWidget {
   readonly property string tooltip: !installed
     ? "Install the Omarchy Touch Bar daemon"
     : !running ? "Touch Bar daemon is not running (click to start)"
-    : "Touch Bar · running\nLeft: restart service"
+    : "Touch Bar · running\nLeft: open config editor"
 
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
@@ -119,6 +119,23 @@ BarWidget {
     onExited: function() { root.refresh() }
   }
 
+  // The config editor (config-gui), launched exactly like the desktop entry's
+  // Exec (electron shim + app dir) — a GUI app, so no terminal wrapper, just
+  // uwsm-app for session integration. The repo checkout's node_modules is
+  // wiped by finalize_plugin_folder after every install, so it is never the
+  // launch source. Editing config.ts takes effect on the next service restart;
+  // we deliberately do not restart here.
+  Process {
+    id: configProc
+    readonly property string installRoot: Quickshell.env("HOME") + "/.local/share/omarchy-touchbar"
+    command: [
+      "/usr/bin/setsid", "/usr/bin/uwsm-app", "--",
+      Quickshell.env("HOME") + "/.local/share/omarchy-touchbar/node_modules/.bin/electron",
+      Quickshell.env("HOME") + "/.local/share/omarchy-touchbar/config-gui"
+    ]
+    onExited: function() { root.refresh() }
+  }
+
   Timer {
     interval: 4000
     running: true
@@ -155,7 +172,7 @@ BarWidget {
       if (b === Qt.RightButton) root.refresh()
       else if (!root.installed) root.install()
       else if (!root.running) starter.running = true
-      else starter.running = true  // restart — cheap and idempotent
+      else configProc.running = true  // running → open the config editor
     }
 
     Column {

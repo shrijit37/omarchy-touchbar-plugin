@@ -871,11 +871,21 @@ deploy_to_install_dir() {
   rsync -a --delete "$REPO_ROOT/dist/" "$INSTALL_DIR/node_modules/omarchy-touchbar/dist/"
   rsync -a --delete "$REPO_ROOT/build/" "$INSTALL_DIR/node_modules/omarchy-touchbar/build/"
   cp -f "$REPO_ROOT/package.json" "$INSTALL_DIR/node_modules/omarchy-touchbar/package.json"
+  # The config editor: install the built app so the desktop entry and the bar
+  # widget can launch it (configEngine resolves config.ts under
+  # $INSTALL_DIR/linux-touchbar-control-center by default). electron's real
+  # binary ships inside the node_modules mirror via build_project's install
+  # step; the .bin/electron shim in the mirror runs this app dir.
+  rsync -a --delete "$REPO_ROOT/config-gui/" "$INSTALL_DIR/config-gui/"
 }
 
 build_project() {
   info "Installing npm dependencies"
   (cd "$REPO_ROOT" && npm ci)
+  # electron's dist/ binary is filled by its postinstall; ensure it ran (npm may
+  # skip scripts or a network hiccup), so the node_modules mirror ships a real
+  # binary instead of the placeholder package.
+  (cd "$REPO_ROOT" && node node_modules/electron/install.js) 2>/dev/null || true
   info "Building omarchy-touchbar and the control center"
   (cd "$REPO_ROOT/linux-touchbar-control-center" && npm run build)
   info "Building the config editor"
