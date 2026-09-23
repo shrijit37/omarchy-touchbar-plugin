@@ -17,8 +17,9 @@ The control center provides:
 
 ## Installation
 
-Omarchy Touch Bar replaces the existing Touch Bar interface. `tiny-dfr`,
-`mac-touchbar-plus` and other Touch Bar daemons must not run alongside it.
+Omarchy Touch Bar replaces the existing Touch Bar interface. `tiny-dfr` and
+`mac-touchbar-plus` must not run alongside it — the installer's purge phase
+detects and removes exactly those two daemons and nothing else.
 
 Install as an omarchy plugin (clones + validates, then run the installer once):
 
@@ -31,13 +32,37 @@ The Bar Widget shows setup status and launches the installer when the daemon
 isn't built yet. The installer:
 
 - verifies that the Mac model has a T2 Touch Bar;
-- installs the Arch build and runtime dependencies;
-- removes conflicting Touch Bar daemons;
+- installs the Arch build and runtime dependencies (only the ones missing — the
+  package database is never refreshed and no system upgrade is run; if package
+  resolution fails because the system is stale, run `omarchy update` first and
+  then re-run the installer);
+- removes conflicting Touch Bar daemons (only `tiny-dfr` / `mac-touchbar-plus`);
 - installs the udev rules and required user groups;
-- copies the current source to `~/.local/share/omarchy-touchbar` and builds it there;
+- builds the source in the checkout, then deploys the built tree — including a
+  full `node_modules` mirror and a real `omarchy-touchbar` vendor package — to
+  `~/.local/share/omarchy-touchbar`, which is where the service, config editor
+  and Bar Widget all run from (never from the checkout itself);
 - builds the Touch Bar configuration GUI and adds it to the application menu;
 - installs Window Monitor Pro when GNOME is active;
-- installs and starts `omarchy-touchbar.service` for the invoking user.
+- installs and starts `omarchy-touchbar.service` for the invoking user;
+- cleans build-time `node_modules` out of the checkout and gates the install on
+  `omarchy plugin validate`, so `omarchy plugin update` keeps working.
+
+The installer auto-detects the Touch Bar driver stack (`t2linux` or KaiT2en's
+`t2bdrm`) and seeds the matching environment/udev profile. It accepts:
+
+- `--yes, -y` — skip the interactive `yes` / `CONTINUE` / `PURGE` confirmations;
+- `--profile t2linux|kait2en` — force a driver stack instead of auto-detecting.
+
+Command-line install (equivalent to the omarchy flow):
+
+```sh
+./install.sh install --yes
+```
+
+`./install.sh analyze` runs only the read-only detection pass (distribution,
+session, hardware, driver stack, conflicting daemons, package transaction) and
+changes nothing — useful to vet a machine before installing.
 
 ### Uninstall
 
@@ -47,10 +72,12 @@ Run the separate uninstaller from the plugin directory:
 ~/.config/omarchy/plugins/io.github.shrijit37.omarchy-touchbar/uninstall-omarchy.sh
 ```
 
-It stops and removes the omarchy-touchbar user service, restores the firmware
-Touch Bar interface and removes the udev rules. Project files, npm
-dependencies, system packages and `video`/`input` group memberships are left
-unchanged.
+It stops and removes the omarchy-touchbar user service (including the legacy
+pre-rebrand `react-drm.service` unit), restores the firmware Touch Bar
+interface, removes the udev rules and the config-editor launcher, and deletes
+the installed copy at `~/.local/share/omarchy-touchbar`. The checkout/plugin
+files, system packages and `video`/`input` group memberships are left
+unchanged. Outside Omarchy, run `./uninstall.sh uninstall` directly.
 
 ### Service status
 
@@ -68,11 +95,15 @@ available before login and after logout.
 
 ## Manual start
 
-Stop the user service before running the control center manually:
+Stop the user service, then run the control center from the repository
+checkout (development happens here, not in `~/.local/share/omarchy-touchbar`;
+the installer removes the checkout's `node_modules` after each install, so run
+`npm ci` first if there is none):
 
 ```sh
 systemctl --user stop omarchy-touchbar.service
-cd ~/.local/share/omarchy-touchbar/linux-touchbar-control-center
+cd ~/.config/omarchy/plugins/io.github.shrijit37.omarchy-touchbar  # or your clone
+npm ci
 npm run dev
 ```
 

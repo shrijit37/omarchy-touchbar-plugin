@@ -4,12 +4,12 @@
 #
 # Omarchy routes system upgrades through `omarchy update` and blocks direct
 # `pacman -Syu` with an ALPM pre-transaction hook (00-omarchy-update-guard,
-# AbortOnFail). install.sh's Arch branch installs dependencies with plain
-# `pacman -S --needed`, which the guard ignores — this installer never
-# triggers a system upgrade.
+# AbortOnFail). install.sh's Arch branch installs only missing dependencies
+# with plain `pacman -S --needed`, which the guard ignores — this installer
+# never triggers a system upgrade.
 #
-# If the dependency transaction fails to resolve because the system is stale,
-# run `omarchy update` first, then re-run this script.
+# If the dependency transaction fails to resolve because the package database
+# is stale, install.sh prints the pacman error and points at `omarchy update`.
 
 set -Eeuo pipefail
 

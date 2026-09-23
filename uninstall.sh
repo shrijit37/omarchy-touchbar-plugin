@@ -15,6 +15,8 @@ shopt -s nullglob
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 SERVICE_FILE="$HOME/.config/systemd/user/omarchy-touchbar.service"
+LEGACY_SERVICE_FILE="$HOME/.config/systemd/user/react-drm.service"  # pre-rebrand name, same daemon
+INSTALL_DIR="$HOME/.local/share/omarchy-touchbar"
 UDEV_RULE="/etc/udev/rules.d/99-omarchy-touchbar.rules"
 LEGACY_UDEV_RULE="/etc/udev/rules.d/99-omarchy-touchbar-uinput.rules"
 CONFIG_GUI_LAUNCHER="$HOME/.local/share/applications/omarchy-touchbar-config.desktop"
@@ -130,6 +132,8 @@ remove_service() {
     fail "unable to restore the firmware Touch Bar interface"
 
   rm -f "$SERVICE_FILE"
+  # The pre-rebrand unit is the same daemon under the old name; drop it too.
+  rm -f "$LEGACY_SERVICE_FILE"
   systemctl --user daemon-reload
 }
 
@@ -139,6 +143,15 @@ remove_udev_rules() {
   privileged udevadm control --reload
   privileged udevadm trigger --action=add --subsystem-match=usb --subsystem-match=backlight
   privileged udevadm trigger --action=add --subsystem-match=misc --sysname-match=uinput
+}
+
+remove_install_dir() {
+  if [[ ! -e "$INSTALL_DIR" ]]; then
+    info "No installed files at $INSTALL_DIR"
+    return
+  fi
+  info "Removing the installed copy at $INSTALL_DIR (project/repo files are kept)"
+  rm -rf "$INSTALL_DIR"
 }
 
 remove_config_gui_launcher() {
@@ -164,6 +177,7 @@ main() {
       remove_service
       remove_udev_rules
       remove_config_gui_launcher
+      remove_install_dir
       info "Uninstallation completed successfully"
       gui_phase uninstall done
       [[ $GUI_MODE -eq 1 ]] && printf '{"type":"done"}\n'

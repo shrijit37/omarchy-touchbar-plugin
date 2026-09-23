@@ -7,10 +7,10 @@ import qs.Ui
 // The Omarchy Touch Bar's seat in the Omarchy bar.
 //
 // This plugin is a thin supervisor over the omarchy-touchbar Touch Bar daemon.
-// The daemon is a Node + native DRM app built by
-// install-omarchy.sh into ~/.local/share/omarchy-touchbar and run as the user
-// systemd service omarchy-touchbar.service. Everything this widget shows
-// comes from probing that service; there is no QML renderer here.
+// The daemon is a Node + native DRM app built from this repo and deployed by
+// install.sh to ~/.local/share/omarchy-touchbar, run as the user systemd
+// service omarchy-touchbar.service. Everything this widget shows comes from
+// probing that service; there is no QML renderer here.
 //
 // States: not installed (click → run installer in a terminal), installed but
 // stopped (click → start the service), or running. When installed, the pill

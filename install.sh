@@ -14,12 +14,24 @@ shopt -s nullglob
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || printf '%s' "$SCRIPT_DIR")"
+# The daemon, the service and the config editor all run from this stable
+# install dir, never from the repo/plugin checkout (which omarchy may replace
+# on `plugin update`). The BarWidget probes
+# "$INSTALL_DIR/linux-touchbar-control-center/dist/index.js".
+INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/share/omarchy-touchbar}"
 
 readonly TOUCHBAR_VENDOR_ID="05ac"
 readonly TOUCHBAR_PRODUCT_ID="8302"
 readonly REQUIRED_TINY_DAEMONS=(tiny-dfr mac-touchbar-plus)
-readonly REQUIRED_KERNEL_MODULES=(appletbdrm hid-appletb-bl)
 readonly COMMON_RUNTIME_PACKAGES=(brightnessctl cava)
+# Per-stack kernel modules. kait2en (T2 Fedora fork) uses the t2bdrm driver;
+# its HID/backlight helper set is not documented in-repo (ponytail: add the
+# exact t2bdrm-side HID module here when confirmed, rather than guessing).
+readonly MODULES_BY_PROFILE=(
+  "t2linux appletbdrm hid-appletb-bl"
+  "kait2en t2bdrm"
+)
+REQUIRED_KERNEL_MODULES=()
 
 ANALYSIS_MISSING_COMMANDS=()
 ANALYSIS_MISSING_MODULES=()
@@ -62,6 +74,14 @@ LOG_PHASE="install"
 # packaging, purge or deploy logic itself. Set only via `install --gui`,
 # which is only ever invoked by install-gui's own child process spawn.
 GUI_MODE=0
+
+# ASSUME_YES=1 (--yes/-y) skips the typed yes/CONTINUE/PURGE confirmations.
+# Detection still runs in full; only the interactive gates are bypassed.
+ASSUME_YES=0
+# HARDWARE_PROFILE selects the Touch Bar driver stack (t2linux | kait2en).
+# Empty until detect_hardware_profile() runs; --profile pins it up front.
+HARDWARE_PROFILE=""
+PROFILE_FORCED=0
 
 json_escape() {
   local s=$1
@@ -177,9 +197,10 @@ The installation has three phases:
      your user to the video and input groups if required. If group memberships
      change, you must log out and back in after installation.
 
-The package manager refreshes repository metadata before installing packages.
-On Arch-based systems, only the required packages are installed (no system
-upgrade — a stale package database may be refreshed first with a full update).
+On Arch-based systems, only missing required packages are installed — the
+repository metadata is not refreshed and no system upgrade is performed. If
+package resolution fails because the system is stale, run `omarchy update`
+(Omarchy blocks direct pacman upgrades) and run this installer again.
 
 This installer does not download omarchy-touchbar source updates. To update an
 existing installation, update the local omarchy-touchbar source using the same method
@@ -199,15 +220,19 @@ This installer is provided without warranty and is used entirely at your own
 risk. The author and project contributors are not responsible for data loss,
 hardware damage, system failure, or any other consequences of its use.
 EOF
-  while true; do
-    printf '\nType yes to continue, or no to cancel. Press Ctrl+C to abort: '
-    IFS= read -r answer || fail "installation cancelled"
-    case "$answer" in
-      yes) break ;;
-      no) fail "installation cancelled" ;;
-      *) warn "please type yes or no" ;;
-    esac
-  done
+  if [[ $ASSUME_YES -eq 1 ]]; then
+    info "--yes supplied; skipping confirmation prompt"
+  else
+    while true; do
+      printf '\nType yes to continue, or no to cancel. Press Ctrl+C to abort: '
+      IFS= read -r answer || fail "installation cancelled"
+      case "$answer" in
+        yes) break ;;
+        no) fail "installation cancelled" ;;
+        *) warn "please type yes or no" ;;
+      esac
+    done
+  fi
   command -v sudo >/dev/null 2>&1 || fail "sudo is required"
   info "Acquiring administrative privileges"
   sudo -v || fail "unable to acquire administrative privileges"
@@ -223,6 +248,10 @@ confirm_purge() {
     if [[ $GUI_MODE -eq 1 ]]; then
       gui_ask continue
       [[ "$GUI_ANSWER" == CONTINUE ]] || fail "installation cancelled before deployment"
+      return
+    fi
+    if [[ $ASSUME_YES -eq 1 ]]; then
+      info "--yes supplied; skipping deployment confirmation"
       return
     fi
     cat <<'EOF'
@@ -246,6 +275,10 @@ EOF
   if [[ $GUI_MODE -eq 1 ]]; then
     gui_ask purge
     [[ "$GUI_ANSWER" == PURGE ]] || fail "installation cancelled before purge"
+    return
+  fi
+  if [[ $ASSUME_YES -eq 1 ]]; then
+    info "--yes supplied; skipping purge confirmation (the conflicts listed above will be removed)"
     return
   fi
 
@@ -332,7 +365,7 @@ detect_touchbar_hardware() {
   [[ $found -eq 1 ]] || fail "Touch Bar hardware (05ac:8302) not found"
   for card in /sys/class/drm/card*; do
     [[ -e "$card/device/uevent" ]] || continue
-    if grep -qi 'DRIVER=appletbdrm' "$card/device/uevent" 2>/dev/null; then
+    if grep -qE 'DRIVER=(appletbdrm|t2bdrm)' "$card/device/uevent" 2>/dev/null; then
       ANALYSIS_TOUCHBAR_DRM_CARDS+=("$card")
     fi
   done
@@ -369,9 +402,9 @@ detect_user_groups() {
 check_deploy_files() {
   local file
   [[ -w "$REPO_ROOT" ]] || fail "repository is not writable: $REPO_ROOT"
-  # 99-omarchy-touchbar.rules is generated (gitignored): this t2linux installer copies
-  # its profile rules file into the canonical name the service steps use.
-  cp -f "$REPO_ROOT/system/99-omarchy-touchbar-t2linux.rules" "$REPO_ROOT/system/99-omarchy-touchbar.rules"
+  # 99-omarchy-touchbar.rules is generated (gitignored): the profile's rules
+  # file is copied into the canonical name the service steps use.
+  cp -f "$REPO_ROOT/system/99-omarchy-touchbar-$HARDWARE_PROFILE.rules" "$REPO_ROOT/system/99-omarchy-touchbar.rules"
   for file in package.json package-lock.json system/99-omarchy-touchbar.rules system/omarchy-touchbar.service system/omarchy-touchbar-tb-detach; do
     [[ -r "$REPO_ROOT/$file" ]] || fail "required deployment file is missing or unreadable: $file"
   done
@@ -389,6 +422,32 @@ detect_kernel_modules() {
   for module in "${REQUIRED_KERNEL_MODULES[@]}"; do
     modinfo "$module" >/dev/null 2>&1 || ANALYSIS_MISSING_MODULES+=("$module")
   done
+}
+
+# Pick the Touch Bar driver stack for this machine: --profile wins, else
+# kait2en if it ships the t2bdrm driver and t2linux's appletbdrm is absent,
+# else default to t2linux. Feeds REQUIRED_KERNEL_MODULES, the DRM card probe,
+# the udev rules file and the seeded .env — nothing else in the installer is
+# stack-specific.
+detect_hardware_profile() {
+  local entry
+  if [[ $PROFILE_FORCED -eq 0 ]]; then
+    if modinfo t2bdrm >/dev/null 2>&1 && ! modinfo appletbdrm >/dev/null 2>&1; then
+      HARDWARE_PROFILE=kait2en
+    else
+      HARDWARE_PROFILE=t2linux
+    fi
+  fi
+  REQUIRED_KERNEL_MODULES=()
+  for entry in "${MODULES_BY_PROFILE[@]}"; do
+    # shellcheck disable=SC2086 # word-splitting is the point: profile then modules
+    if [[ ${entry%% *} == "$HARDWARE_PROFILE" ]]; then
+      read -ra REQUIRED_KERNEL_MODULES <<<"$entry"
+      REQUIRED_KERNEL_MODULES=("${REQUIRED_KERNEL_MODULES[@]:1}")
+      return
+    fi
+  done
+  fail "unknown hardware profile: $HARDWARE_PROFILE"
 }
 
 unit_file_exists() {
@@ -495,7 +554,8 @@ check_node_version() {
 }
 
 dry_run_packages() {
-  local output apt_policy status
+  local output apt_policy status pkg
+  local -a missing
   info "Resolving the package transaction"
   case "$PKG_MANAGER" in
     dnf)
@@ -538,9 +598,29 @@ dry_run_packages() {
       info "Package transaction resolved successfully"
       ;;
     pacman)
-      pacman -Sp --needed --print-format '%n' "${NEEDED_PACKAGES[@]}" >/dev/null ||
-        fail "the required package transaction cannot be resolved"
-      info "Package transaction resolved successfully"
+      # Resolve only what is missing. Targeting already-installed packages makes
+      # a stale sync db fail on exact version pins (e.g. systemd-sysvcompat
+      # wanting the installed systemd while the db still ships an older one)
+      # even though nothing needs to change for them. Never -Sy/-Syu here:
+      # Omarchy's ALPM guard blocks upgrades and the user chose no side effects.
+      missing=()
+      for pkg in "${NEEDED_PACKAGES[@]}"; do
+        pkg_installed "$pkg" || missing+=("$pkg")
+      done
+      if [[ ${#missing[@]} -eq 0 ]]; then
+        info "All required packages are already installed"
+        info "Package transaction resolved successfully"
+        return
+      fi
+      if output=$(LC_ALL=C pacman -Sp --needed --print-format '%n' "${missing[@]}" 2>&1); then
+        info "Package transaction resolved successfully"
+        return
+      fi
+      printf '%s\n' "$output" >&2
+      if [[ -e /usr/share/libalpm/hooks/00-omarchy-update-guard.hook ]]; then
+        fail "the package database is stale; run 'omarchy update', then re-run this installer"
+      fi
+      fail "the required package transaction cannot be resolved"
       ;;
   esac
 }
@@ -556,6 +636,7 @@ print_analysis() {
   analysis_value "Window backend" "${WINDOW_BACKEND:-unknown}"
 
   analysis_section "Hardware"
+  analysis_value "Hardware profile" "${HARDWARE_PROFILE:-unknown}"
   analysis_value "Touch Bar USB devices" "${#ANALYSIS_TOUCHBAR_USB_DEVICES[@]}"
   analysis_value "Touch Bar DRM cards" "${#ANALYSIS_TOUCHBAR_DRM_CARDS[@]}"
   analysis_value "Kernel modules" "${REQUIRED_KERNEL_MODULES[*]}"
@@ -603,6 +684,7 @@ analyze() {
   [[ -n "$PKG_MANAGER" ]] || fail "unsupported distribution: ${OS_PRETTY_NAME:-unknown}"
   detect_required_commands
   [[ ${#ANALYSIS_MISSING_COMMANDS[@]} -eq 0 ]] || fail "missing required commands: ${ANALYSIS_MISSING_COMMANDS[*]}"
+  detect_hardware_profile
   detect_kernel_modules
   [[ ${#ANALYSIS_MISSING_MODULES[@]} -eq 0 ]] || fail "missing T2 kernel modules: ${ANALYSIS_MISSING_MODULES[*]}"
   check_deploy_files
@@ -680,6 +762,8 @@ systemd_escape_path() {
 }
 
 install_dependencies() {
+  local pkg
+  local -a missing
   info "Installing build and runtime dependencies"
   case "$PKG_MANAGER" in
     dnf)
@@ -695,28 +779,45 @@ install_dependencies() {
       privileged apt-get update
       privileged apt-get install -y "${NEEDED_PACKAGES[@]}"
       ;;
-    pacman) privileged pacman -S --needed --noconfirm "${NEEDED_PACKAGES[@]}" ;;
+    pacman)
+      # Same missing-only targeting as dry_run_packages: against a stale sync db,
+      # naming already-installed packages can fail the whole transaction.
+      missing=()
+      for pkg in "${NEEDED_PACKAGES[@]}"; do
+        pkg_installed "$pkg" || missing+=("$pkg")
+      done
+      if [[ ${#missing[@]} -eq 0 ]]; then
+        info "All required packages are already installed"
+      else
+        privileged pacman -S --needed --noconfirm "${missing[@]}"
+      fi
+      ;;
   esac
   command -v node >/dev/null 2>&1 || fail "Node.js is unavailable after package installation"
   command -v npm >/dev/null 2>&1 || fail "npm is unavailable after package installation"
 }
 
 seed_user_config() {
-  local blueprint="$REPO_ROOT/linux-touchbar-control-center/config.blueprint.ts"
-  local live="$REPO_ROOT/linux-touchbar-control-center/config.ts"
+  local blueprint="$INSTALL_DIR/linux-touchbar-control-center/config.blueprint.ts"
+  local live="$INSTALL_DIR/linux-touchbar-control-center/config.ts"
   if [[ ! -e "$live" ]]; then
     info "Seeding editable config from the blueprint"
     cp "$blueprint" "$live"
   fi
 }
 
-# This installer is the t2linux (upstream) profile. Seed the per-distro
-# hardware profile into the repo-root .env, which the systemd service loads
-# via EnvironmentFile (see system/omarchy-touchbar.service). Never overwrite an
-# existing .env — the app treats it as user-editable config.
+# Seed the detected hardware profile into $INSTALL_DIR/.env, which the systemd
+# service loads via EnvironmentFile (see system/omarchy-touchbar.service). Never
+# overwrite an existing .env — the app treats it as user-editable config. A
+# previous repo-root .env is carried forward so pre-deploy edits are not lost.
 seed_distro_env() {
-  local example="$REPO_ROOT/.env.example.t2linux"
-  local live="$REPO_ROOT/.env"
+  local example="$REPO_ROOT/.env.example.${HARDWARE_PROFILE:-t2linux}"
+  local live="$INSTALL_DIR/.env"
+  if [[ -f "$REPO_ROOT/.env" && "$REPO_ROOT/.env" != "$live" ]]; then
+    info "Carrying existing $REPO_ROOT/.env to $live"
+    cp -f "$REPO_ROOT/.env" "$live"
+    return
+  fi
   if [[ -e "$live" ]]; then
     info "Keeping existing $live"
     return
@@ -725,11 +826,56 @@ seed_distro_env() {
   cp "$example" "$live"
 }
 
+# Deploys the built tree to the stable install dir. The daemon's production
+# entry is `node dist/index.js`, which imports the workspace package
+# omarchy-touchbar (dist/src/*) and, via load-addon, the native addon built by
+# node-gyp at ${REPO_ROOT}/build/Release/drm_backend.node. The systemd service,
+# the config editor and the BarWidget probe all operate on $INSTALL_DIR, so it
+# must carry: the control-center workspace (dist/, config.ts, assets/), the
+# root build/, the root dist/, .env, the detach helper — and a REAL
+# node_modules/omarchy-touchbar directory so the daemon is self-contained
+# (the repo's root node_modules/omarchy-touchbar is only a `..` workspace
+# symlink that resolves back to the repo). node_modules is otherwise NOT
+# copied wholesale — npm workspaces leave symlinks in it that omarchy plugin
+# validate rejects.
+deploy_to_install_dir() {
+  info "Deploying to $INSTALL_DIR"
+  install -d -m 0755 "$INSTALL_DIR"
+  # Sources carry a trailing slash: rsync must copy their CONTENTS into the
+  # destination, not the directory itself (without it, dest/build/build/ etc.
+  # nests one level too deep and seed_user_config cannot find the blueprint).
+  # --delete makes reruns self-healing against any previously nested copies.
+  rsync -a --delete "$REPO_ROOT/build/" "$INSTALL_DIR/build/"                        # native addon, stale-cleaned
+  rsync -a --delete "$REPO_ROOT/linux-touchbar-control-center/" \
+                    "$INSTALL_DIR/linux-touchbar-control-center/"                    # daemon workspace (dist/, config.ts, assets/)
+  rsync -a --delete "$REPO_ROOT/dist/" "$INSTALL_DIR/dist/" || true                  # root dist/src/*, mirror (pure build output)
+  seed_user_config
+  seed_distro_env
+  install -Dm 0755 "$REPO_ROOT/system/omarchy-touchbar-tb-detach" \
+                   "$INSTALL_DIR/system/omarchy-touchbar-tb-detach"
+  # Full dep tree: the daemon needs the whole hoisted closure (react-reconciler,
+  # jotai, ws, yoga, native-addon JS …). This dir is a plain data dir — omarchy
+  # plugin validate only ever inspects the plugin/repo folder, so the workspace
+  # symlinks are harmless here and cheaper to copy whole than to re-derive per
+  # package. Reruns rsync deltas only.
+  rsync -a --delete "$REPO_ROOT/node_modules/" "$INSTALL_DIR/node_modules/"
+  # The root package link ("..") is replaced by the real vendor copy below; the
+  # two install-time tooling links would dangle forever (never deployed).
+  rm -f "$INSTALL_DIR/node_modules/omarchy-touchbar" \
+        "$INSTALL_DIR/node_modules/config-gui" \
+        "$INSTALL_DIR/node_modules/install-gui"
+  # Self-contained vendor package: the control-center's require("omarchy-touchbar")
+  # resolves via its node_modules search path; a real directory here (not the repo's
+  # `..` symlink) keeps the deploy independent of the plugin/repo location.
+  install -d -m 0755 "$INSTALL_DIR/node_modules/omarchy-touchbar"
+  rsync -a --delete "$REPO_ROOT/dist/" "$INSTALL_DIR/node_modules/omarchy-touchbar/dist/"
+  rsync -a --delete "$REPO_ROOT/build/" "$INSTALL_DIR/node_modules/omarchy-touchbar/build/"
+  cp -f "$REPO_ROOT/package.json" "$INSTALL_DIR/node_modules/omarchy-touchbar/package.json"
+}
+
 build_project() {
   info "Installing npm dependencies"
   (cd "$REPO_ROOT" && npm ci)
-  seed_user_config
-  seed_distro_env
   info "Building omarchy-touchbar and the control center"
   (cd "$REPO_ROOT/linux-touchbar-control-center" && npm run build)
   info "Building the config editor"
@@ -744,10 +890,10 @@ install_config_gui_launcher() {
   # NOT a valid Desktop Entry field code, so it must be rewritten here —
   # launchers such as Vicinae and gio otherwise fail to expand it and the
   # entry's Exec= points at a nonexistent path). Rewrite it to the actual
-  # repo path, like install_user_service() does for omarchy-touchbar.service. Only
+  # install dir, like install_user_service() does for omarchy-touchbar.service. Only
   # Exec=/TryExec= lines are touched, so placeholder mentions in comments
   # stay intact.
-  sed -E '/^(Exec|TryExec)=/ s|%h/.local/share/omarchy-touchbar|'"$REPO_ROOT"'|g' \
+  sed -E '/^(Exec|TryExec)=/ s|%h/.local/share/omarchy-touchbar|'"$INSTALL_DIR"'|g' \
     "$REPO_ROOT/system/omarchy-touchbar-config.desktop" \
     > "$apps_dir/omarchy-touchbar-config.desktop"
   chmod 0644 "$apps_dir/omarchy-touchbar-config.desktop"
@@ -816,10 +962,10 @@ install_user_service() {
   local service_dir service_file temporary_file workdir_q start_q detach_q envfile_q
   service_dir="$HOME/.config/systemd/user"
   service_file="$service_dir/omarchy-touchbar.service"
-  workdir_q=$(systemd_escape_path "$REPO_ROOT/linux-touchbar-control-center")
-  start_q=$(systemd_escape_path "$REPO_ROOT/linux-touchbar-control-center/dist/index.js")
-  detach_q=$(systemd_escape_path "$REPO_ROOT/system/omarchy-touchbar-tb-detach")
-  envfile_q=$(systemd_escape_path "$REPO_ROOT/.env")
+  workdir_q=$(systemd_escape_path "$INSTALL_DIR/linux-touchbar-control-center")
+  start_q=$(systemd_escape_path "$INSTALL_DIR/linux-touchbar-control-center/dist/index.js")
+  detach_q=$(systemd_escape_path "$INSTALL_DIR/system/omarchy-touchbar-tb-detach")
+  envfile_q=$(systemd_escape_path "$INSTALL_DIR/.env")
 
   info "Installing systemd user service"
   install -d -m 0755 "$service_dir"
@@ -849,6 +995,9 @@ install_user_service() {
   fi
   mv -f "$temporary_file" "$service_file"
   systemctl --user daemon-reload
+  # A previous crash-loop may have tripped the start rate limit; without
+  # clearing the failed state and start counter, enable --now is refused.
+  systemctl --user reset-failed omarchy-touchbar.service 2>/dev/null || true
 
   if [[ $NEEDS_RELOGIN -eq 1 ]]; then
     systemctl --user enable omarchy-touchbar.service
@@ -862,17 +1011,42 @@ install_user_service() {
   fi
 }
 
+# The repo doubles as the omarchy plugin folder (manifest.json + BarWidget.qml
+# live at its root), so it must stay validatable: `omarchy plugin update` runs
+# `omarchy plugin validate` after every merge and rolls back on failure, and the
+# validator rejects any symlink except .git — which is exactly what npm ci
+# leaves behind (workspace links, .bin links). Everything production needs was
+# already deployed to $INSTALL_DIR, so wipe the build-time node_modules trees
+# and gate the install on a clean validation. Skipped where omarchy doesn't
+# exist (Fedora/Debian) or when the folder carries no manifest.
+finalize_plugin_folder() {
+  [[ -f "$REPO_ROOT/manifest.json" ]] || return 0
+  info "Cleaning build-time node_modules from the plugin folder"
+  find "$REPO_ROOT" -name node_modules -type d -prune -exec rm -rf {} +
+  if command -v omarchy >/dev/null 2>&1; then
+    info "Validating the plugin folder"
+    omarchy plugin validate "$REPO_ROOT" ||
+      fail "plugin validation failed; the plugin folder must stay clean for 'omarchy plugin update'"
+  fi
+}
+
 phase_deploy() {
   LOG_PHASE=deploy
   gui_phase deploy start
+  # Stop first — unconditionally: a crash-looping or start-limit-hit unit is
+  # failed/activating, so an is-active check would skip this and let the daemon
+  # re-exec while its files are being replaced underneath it.
+  systemctl --user stop omarchy-touchbar.service 2>/dev/null || true
   info "Deployment mode: $DEPLOYMENT_MODE"
   info "Building and deploying current repository: $REPO_ROOT"
   install_dependencies
   build_project
+  deploy_to_install_dir
   configure_user_groups
   install_udev_rules
   install_user_service
   install_config_gui_launcher
+  finalize_plugin_folder
   info "Deployment completed successfully"
   if [[ $NEEDS_RELOGIN -eq 1 ]]; then
     warn "Log out of the desktop session and log back in to activate the video and input group memberships"
@@ -887,14 +1061,44 @@ phase_deploy() {
 }
 
 main() {
-  case "${1:-install}" in
-    install)
-      [[ "${2:-}" == --gui ]] && GUI_MODE=1
-      confirm_installation; analyze; confirm_purge; phase_purge; phase_deploy ;;
+  local cmd="${1:-install}"
+  if [[ $# -gt 0 ]]; then
+    if [[ "$1" == -* ]]; then
+      cmd=install   # flags-first: default to install
+    else
+      shift
+    fi
+  fi
+  case "$cmd" in
+    install|analyze|purge|wizard) ;;
+    *) printf 'usage: %s [install|analyze|purge|wizard] [--gui] [--yes|-y] [--profile t2linux|kait2en]\n' "${0##*/}"; exit 2 ;;
+  esac
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --gui)
+        # Only the install-gui child ever passes this (see GUI_MODE above).
+        [[ $cmd == install ]] || { printf '%s: --gui is only valid for install\n' "${0##*/}" >&2; exit 2; }
+        GUI_MODE=1 ;;
+      --yes|-y) ASSUME_YES=1 ;;
+      --profile)
+        [[ $# -ge 2 ]] || { printf '%s: --profile requires t2linux or kait2en\n' "${0##*/}" >&2; exit 2; }
+        HARDWARE_PROFILE="$2"; PROFILE_FORCED=1; shift ;;
+      --profile=*)
+        HARDWARE_PROFILE="${1#--profile=}"; PROFILE_FORCED=1 ;;
+      *) printf '%s: unknown option: %s\n' "${0##*/}" "$1" >&2; exit 2 ;;
+    esac
+    shift
+  done
+  if [[ $PROFILE_FORCED -eq 1 &&
+        "$HARDWARE_PROFILE" != t2linux && "$HARDWARE_PROFILE" != kait2en ]]; then
+    printf '%s: unknown profile: %s (expected t2linux or kait2en)\n' "${0##*/}" "$HARDWARE_PROFILE" >&2
+    exit 2
+  fi
+  case "$cmd" in
+    install) confirm_installation; analyze; confirm_purge; phase_purge; phase_deploy ;;
     analyze) analyze ;;
     purge) confirm_installation; analyze; confirm_purge; phase_purge ;;
     wizard) phase_gui_bootstrap ;;
-    *) printf 'usage: %s [install|analyze|purge|wizard]\n' "${0##*/}" >&2; return 2 ;;
   esac
 }
 

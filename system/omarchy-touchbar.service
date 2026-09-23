@@ -6,11 +6,12 @@
 # KillSignal: the app treats SIGINT as its shutdown signal and ignores SIGTERM.
 # TimeoutStopSec covers the detach helper's ETIMEDOUT retries (the first
 # SET_CONFIG after a host config switch routinely times out and is retried).
-# Runs the COMPILED app (node dist/index.js), not the TypeScript sources — build
-# once before enabling:  ( cd ~/.local/share/omarchy-touchbar/linux-touchbar-control-center && npm run build )
+# Runs the COMPILED app (node dist/index.js), not the TypeScript sources.
+# install.sh builds the checkout, then deploys the compiled tree together with
+# a full node_modules mirror into ~/.local/share/omarchy-touchbar, seeds the
+# .env below, installs this unit and enables it — that is the supported install
+# path; nothing is built in place under the daemon dir.
 # Hot-reload is dev-only and stays off here (NODE_ENV=production).
-# Install: install -Dm644 system/omarchy-touchbar.service ~/.config/systemd/user/omarchy-touchbar.service
-#          systemctl --user daemon-reload && systemctl --user enable omarchy-touchbar
 [Unit]
 Description=omarchy-touchbar touch bar UI
 After=graphical-session.target
