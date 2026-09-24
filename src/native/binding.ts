@@ -11,7 +11,7 @@ const TOUCHBAR_DRM_RE = new RegExp(`DRIVER=(${TOUCHBAR_DRM_DRIVERS.join('|')})`,
 function resolveCardPath(devicePath?: string): string {
   if (devicePath) return devicePath;
 
-  const envPath = process.env.REACT_DRM_DEVICE_PATH;
+  const envPath = process.env.OMARCHY_TOUCHBAR_DEVICE_PATH;
   if (envPath) return envPath;
 
   // Prefer the Touch Bar DRM card if present.
@@ -150,14 +150,14 @@ export class DrmDisplay implements Display {
 }
 
 /**
- * Construct the display backend selected by REACT_DRM_BACKEND:
+ * Construct the display backend selected by OMARCHY_TOUCHBAR_BACKEND:
  *   'drm'     (default) — real Touch Bar over DRM/KMS.
  *   'preview' — in-memory framebuffer streamed to a browser, for development
  *               on a desktop with no Touch Bar / DRM device / root. See
  *               src/dev/preview-server.ts.
  */
 export function createDisplay(devicePath?: string): Display {
-  const backend = process.env.REACT_DRM_BACKEND ?? 'drm';
+  const backend = process.env.OMARCHY_TOUCHBAR_BACKEND ?? 'drm';
   if (backend === 'preview') {
     // Lazy require: keeps the native DRM path free of any preview-only code paths.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -165,7 +165,7 @@ export function createDisplay(devicePath?: string): Display {
     return new PreviewDisplay();
   }
   if (backend !== 'drm') {
-    log.warn(`unknown REACT_DRM_BACKEND=${backend}, falling back to 'drm'`);
+    log.warn(`unknown OMARCHY_TOUCHBAR_BACKEND=${backend}, falling back to 'drm'`);
   }
   return new DrmDisplay(devicePath);
 }

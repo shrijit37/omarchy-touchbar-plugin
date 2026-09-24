@@ -9,8 +9,8 @@
  * on which stream a service writes to, so this keeps `journalctl -p warning`
  * filtering meaningful even in the non-TTY fallback.
  *
- * DEBUG is silent unless REACT_DRM_LOG_LEVEL=debug (mirrors the existing
- * REACT_DRM_PROFILE / DRM_DAMAGE_LOG env-flag convention).
+ * DEBUG is silent unless OMARCHY_TOUCHBAR_LOG_LEVEL=debug (mirrors the existing
+ * OMARCHY_TOUCHBAR_PROFILE / DRM_DAMAGE_LOG env-flag convention).
  */
 
 type Level = 'debug' | 'info' | 'warn' | 'error';
@@ -34,7 +34,7 @@ const LEVEL_STYLE: Record<Level, { label: string; color: string }> = {
 
 const SCOPE_WIDTH = 12;
 const fancy = process.stdout.isTTY === true;
-const debugEnabled = process.env.REACT_DRM_LOG_LEVEL === 'debug';
+const debugEnabled = process.env.OMARCHY_TOUCHBAR_LOG_LEVEL === 'debug';
 
 function timestamp(): string {
   return new Date().toTimeString().slice(0, 8); // HH:MM:SS

@@ -35,7 +35,7 @@ export interface SuspendHooks {
   onResume?: () => void;
 }
 
-const HOOKS_KEY = '__reactDrmSuspendHooks';
+const HOOKS_KEY = '__omarchyTouchbarSuspendHooks';
 
 function hooks(): Map<string, SuspendHooks> {
   const g = globalThis as Record<string, unknown>;

@@ -633,11 +633,11 @@ export function render(
   let prevShiftX = NaN;
   let prevShiftY = NaN;
 
-  // Frame profiler — set REACT_DRM_PROFILE=1 to log a per-second breakdown of
+  // Frame profiler — set OMARCHY_TOUCHBAR_PROFILE=1 to log a per-second breakdown of
   // where each frame's time goes (commits/s, blits/s, layout/serialize/blit ms,
   // draw_svg count). Pairs with the native [native] breakdown (cairo_renderer.cpp,
   // binding.cpp). Off by default; kept as a standing diagnostic tool.
-  const PROFILE = !!process.env.REACT_DRM_PROFILE;
+  const PROFILE = !!process.env.OMARCHY_TOUCHBAR_PROFILE;
   const cpuCores = Math.max(1, os.cpus().length);
   let cpuPrev = process.cpuUsage();
   let wallPrev = performance.now();
@@ -825,12 +825,12 @@ export function render(
   if (dimMs > 0) startIdleTimers();
   // ──────────────────────────────────────────────────────────────────────────
 
-  // Dev-mode blinker (set by dev.sh via REACT_DRM_DEV_INDICATOR=1; never set by
+  // Dev-mode blinker (set by dev.sh via OMARCHY_TOUCHBAR_DEV_INDICATOR=1; never set by
   // the production service). A red border around the true framebuffer edge, on
   // top of every layer including the boot screen — full-edge coords, so SafeArea
   // padding can't clip it. Lives in the renderer, not the React tree, so hot
   // reload's full remount never resets the blink phase.
-  const DEV_INDICATOR = process.env.REACT_DRM_DEV_INDICATOR === '1';
+  const DEV_INDICATOR = process.env.OMARCHY_TOUCHBAR_DEV_INDICATOR === '1';
   const DEV_COLOR = parseColor('#f87171'); // design-system error red, 0..1 like every other command color
   let devBlinkOn = true;
   let devBlinkTimer: ReturnType<typeof setInterval> | null = null;

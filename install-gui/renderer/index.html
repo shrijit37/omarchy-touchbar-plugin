@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self';" />
   <title>omarchy-touchbar Installer</title>
   <link rel="stylesheet" href="renderer.css" />
 </head>
@@ -15,10 +16,10 @@
           <svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.2"/></svg>
         </button>
         <button id="win-maximize" type="button" class="win-btn" aria-label="Maximize">
-          <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1.5" y="1.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+          <svg width="10" height="10" viewBox="0 0 10 10"><rect x1="1.5" y1="1.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
         </button>
         <button id="win-close" type="button" class="win-btn win-btn-close" aria-label="Close">
-          <svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.2"/><line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.2"/></svg>
+          <svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.2"/><line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.2"/></svg>
         </button>
       </div>
     </header>
@@ -28,27 +29,37 @@
         <div class="welcome-mark" aria-hidden="true">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="2" y="9" width="20" height="6" rx="2" stroke="currentColor" stroke-width="1.5" /><line x1="6" y1="10.5" x2="6" y2="13.5" stroke="currentColor" stroke-width="1.25" /><line x1="9.5" y1="10.5" x2="9.5" y2="13.5" stroke="currentColor" stroke-width="1.25" /><line x1="13" y1="10.5" x2="13" y2="13.5" stroke="currentColor" stroke-width="1.25" /><line x1="16.5" y1="10.5" x2="16.5" y2="13.5" stroke="currentColor" stroke-width="1.25" /></svg>
         </div>
-        <h1 id="welcome-title"></h1>
+        <h1 id="welcome-title" tabindex="-1"></h1>
         <div id="welcome-body" class="prose"></div>
         <button id="begin-btn" type="button"></button>
       </section>
 
       <section id="screen-working" class="screen">
-        <ol id="stepper"></ol>
-        <div id="log" aria-live="polite"></div>
+        <ol id="stepper" tabindex="-1" aria-label="Installation progress"></ol>
+        <!-- A build log can run to thousands of lines. Announcing each one
+             would make a screen reader useless for the phase that matters most,
+             so the log itself is silent and #status-live carries phase changes. -->
+        <div id="log" role="log" aria-live="off"><p id="log-placeholder">Starting the installer…</p></div>
       </section>
 
       <section id="screen-result" class="screen">
         <div id="result-icon"></div>
-        <h1 id="result-title"></h1>
+        <h1 id="result-title" tabindex="-1"></h1>
         <p id="result-message"></p>
-        <button id="close-btn" type="button">Close</button>
+        <pre id="result-detail" class="code hidden"></pre>
+        <div id="result-actions">
+          <button id="retry-btn" type="button" class="secondary" hidden>Try again</button>
+          <button id="close-btn" type="button">Close</button>
+        </div>
       </section>
     </main>
   </div>
 
+  <!-- Announces phase transitions only — never the log stream. -->
+  <div id="status-live" class="visually-hidden" role="status" aria-live="polite"></div>
+
   <div id="question-overlay" class="overlay hidden">
-    <div class="overlay-panel">
+    <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="question-title" aria-describedby="question-body" tabindex="-1">
       <h2 id="question-title"></h2>
       <p id="question-body"></p>
       <div id="question-actions"></div>

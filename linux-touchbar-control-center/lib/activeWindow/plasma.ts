@@ -71,7 +71,7 @@ export const plasma: ActiveWindowBackend = {
 
       // Unique marker per run so a crashed previous run's journal lines can't be
       // mistaken for ours.
-      const marker = `REACTDRM_ACTWIN_${process.pid}`;
+      const marker = `OMARCHYTOUCHBAR_ACTWIN_${process.pid}`;
 
       // loadScript takes a file path. KWin runs as the user, so the file must be
       // world-readable even when we're under sudo (root-owned 0600 would be

@@ -3,7 +3,7 @@ import type { BoxNode, RootContainer, SceneNode } from '../scene/types';
 import { createLogger } from '../logger';
 
 const touchLog   = createLogger('touch');
-const touchDebug = process.env.REACT_DRM_LOG_LEVEL === 'debug';
+const touchDebug = process.env.OMARCHY_TOUCHBAR_LOG_LEVEL === 'debug';
 
 export interface GestureRegion {
   x: number;
@@ -409,6 +409,6 @@ function hitTestScene(
 }
 
 const _G = global as Record<string, unknown>;
-const _K = '__react_drm_TouchRegistryContext__';
+const _K = '__omarchy_touchbar_TouchRegistryContext__';
 if (!_G[_K]) _G[_K] = createContext<TouchRegistry | null>(null);
 export const TouchRegistryContext = _G[_K] as import('react').Context<TouchRegistry | null>;

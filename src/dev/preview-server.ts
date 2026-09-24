@@ -43,7 +43,7 @@ export function startPreviewServer(
   input: Pick<RenderResult, 'touchStart' | 'touchMove' | 'touchEnd'>,
   options: PreviewServerOptions = {},
 ): PreviewServerHandle {
-  const port = options.port ?? (Number(process.env.REACT_DRM_PREVIEW_PORT) || 8787);
+  const port = options.port ?? (Number(process.env.OMARCHY_TOUCHBAR_PREVIEW_PORT) || 8787);
   const host = options.host ?? '127.0.0.1';
 
   const page = fs.readFileSync(PAGE_PATH);

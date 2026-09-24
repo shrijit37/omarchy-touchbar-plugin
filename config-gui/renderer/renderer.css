@@ -192,7 +192,14 @@ button, input, select { font-family: inherit; font-size: inherit; }
   flex-shrink: 0;
 }
 #topbar-drag { flex: 1; align-self: stretch; -webkit-app-region: drag; }
-#status { color: var(--text-faint); font-size: 12px; }
+#status {
+  color: var(--text-faint);
+  font-size: 12px;
+  /* Long save/restart failures wrap inside the topbar instead of shoving the
+     buttons out of the window. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 #status.ok { color: var(--ok); }
 #status.error { color: var(--danger); }
 
@@ -253,13 +260,46 @@ button:disabled { opacity: 0.5; cursor: default; filter: none; }
 
 .field-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border-soft);
 }
-.field-row label { color: var(--text-muted); font-size: 12.75px; }
+/* Author `display:flex` beats the UA sheet's `[hidden]{display:none}`, so
+   conditional rows (see FIELD_META.showIf) need this spelled out. */
+.field-row[hidden] { display: none; }
+
+.field-labels { min-width: 0; }
+.field-labels label { color: var(--text); font-size: 12.75px; font-weight: 550; }
+.field-help {
+  color: var(--text-muted);
+  font-size: 11.75px;
+  line-height: 1.5;
+  margin: 3px 0 0;
+  max-width: 42ch;
+}
+.field-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  align-self: center;
+  flex-shrink: 0;
+}
+.field-unit {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  min-width: 24px;
+}
+.field-error {
+  color: var(--danger);
+  font-size: 11.25px;
+  margin: 4px 0 0;
+  max-width: 24ch;
+  text-align: right;
+}
 
 .field-row input[type="text"],
 .field-row select {
@@ -275,9 +315,47 @@ button:disabled { opacity: 0.5; cursor: default; filter: none; }
 .field-row input[type="text"]:focus-visible,
 .field-row select:focus-visible { border-color: var(--accent); outline: none; }
 .field-row input[type="text"] { font-family: var(--font-mono); font-size: 12.25px; text-align: right; }
+.field-row input[aria-invalid="true"] { border-color: var(--danger); }
 .field-row input[type="checkbox"] {
   width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer;
 }
+.field-row input[type="color"] {
+  width: 220px;
+  height: 31px;
+  padding: 3px;
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s var(--ease);
+}
+.field-row input[type="color"]:focus-visible { border-color: var(--accent); outline: none; }
+
+/* ── Advanced disclosure ────────────────────────────────────────────────────
+   One native <details> per containing group, so nested fields stay under
+   their own legend instead of being lifted to a section-level block. */
+.advanced {
+  margin: 6px 0 2px;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 2px;
+}
+.advanced > summary {
+  cursor: pointer;
+  color: var(--text-faint);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 0 6px;
+  list-style: none;
+  user-select: none;
+}
+.advanced > summary::-webkit-details-marker { display: none; }
+.advanced > summary::before { content: "▸ "; }
+.advanced[open] > summary::before { content: "▾ "; }
+.advanced > summary:hover { color: var(--text-muted); }
+
+.search-empty { color: var(--text-faint); font-size: 12px; padding: 14px 10px 4px; }
 
 /* ── Touch Bar live preview ───────────────────────────────────────────────── */
 
@@ -370,10 +448,9 @@ legend {
 .app-card:hover { border-color: var(--panel-hi); }
 .app-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .app-card-header select { background: var(--bg); }
-.app-card-header input[type="text"] { flex: 1; width: auto; font-family: var(--font-mono); text-align: left; }
 .app-card .field-row { padding: 6px 0; }
 .app-card .field-row input[type="text"] { width: 100%; text-align: left; font-family: var(--font-ui); font-size: 12.75px; }
-.app-card .field-row label { flex: 0 0 150px; }
+.app-card .field-control { flex: 1; max-width: 220px; }
 
 /* ── Key capture ──────────────────────────────────────────────────────────── */
 
@@ -412,7 +489,16 @@ legend {
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border-soft);
 }
-.override-block-header strong { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; }
+.override-block-header strong {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  /* Window-class names can be arbitrary pasted strings — a long unbroken one
+     must wrap (and let the Remove button shrink) instead of overflowing. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 
 #panel-BROWSER_KEY_OVERRIDES > .field-row,
 #panel-VSCODE_KEY_OVERRIDES > .field-row { border-bottom: none; padding-top: 14px; }
@@ -426,6 +512,11 @@ legend {
   font-size: 13px;
   line-height: 1.7;
 }
+/* Was an inline style="" on the "Locate folder…" button, which the CSP in
+   index.html forbids. Class instead, so style-src can stay 'self'. */
+.empty-state button {
+  margin-top: 14px;
+}
 .empty-state code {
   display: inline-block;
   background: var(--panel-alt);
@@ -436,6 +527,11 @@ legend {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--danger);
+  /* Engine/parse messages can be very long single lines — wrap instead of
+     blowing the empty-state width. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* ── App picker ───────────────────────────────────────────────────────────── */

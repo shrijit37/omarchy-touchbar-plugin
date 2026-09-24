@@ -24,8 +24,15 @@ detects and removes exactly those two daemons and nothing else.
 Install as an omarchy plugin (clones + validates, then run the installer once):
 
 ```sh
-omarchy plugin add https://github.com/shrijit37/react-drm-for-touchbar --enable
+omarchy plugin add https://github.com/shrijit37/omarchy-touchbar-plugin --enable
 ~/.config/omarchy/plugins/io.github.shrijit37.omarchy-touchbar/install-omarchy.sh
+```
+
+On other Arch-based distributions, or on a compositor where you don't want the
+plugin, run the installer directly from a checkout instead:
+
+```sh
+./install.sh install
 ```
 
 The Bar Widget shows setup status and launches the installer when the daemon
@@ -43,16 +50,15 @@ isn't built yet. The installer:
   `~/.local/share/omarchy-touchbar`, which is where the service, config editor
   and Bar Widget all run from (never from the checkout itself);
 - builds the Touch Bar configuration GUI and adds it to the application menu;
-- installs Window Monitor Pro when GNOME is active;
 - installs and starts `omarchy-touchbar.service` for the invoking user;
 - cleans build-time `node_modules` out of the checkout and gates the install on
   `omarchy plugin validate`, so `omarchy plugin update` keeps working.
 
-The installer auto-detects the Touch Bar driver stack (`t2linux` or KaiT2en's
-`t2bdrm`) and seeds the matching environment/udev profile. It accepts:
+The installer targets Arch-family distributions (Omarchy included) and the
+`t2linux` Touch Bar driver stack, seeding the matching environment/udev profile.
+It accepts:
 
-- `--yes, -y` — skip the interactive `yes` / `CONTINUE` / `PURGE` confirmations;
-- `--profile t2linux|kait2en` — force a driver stack instead of auto-detecting.
+- `--yes, -y` — skip the interactive `yes` / `CONTINUE` / `PURGE` confirmations.
 
 Command-line install (equivalent to the omarchy flow):
 
@@ -105,7 +111,7 @@ blinking red dot on the desktop bar's Touch Bar pill):
 ./dev.sh
 ```
 
-The blinker is dev-only: it is gated on `REACT_DRM_DEV_INDICATOR=1`, which
+The blinker is dev-only: it is gated on `OMARCHY_TOUCHBAR_DEV_INDICATOR=1`, which
 `dev.sh` sets and the installed service never does. The script removes its
 dev-mode marker on exit, including on Ctrl-C.
 
@@ -118,11 +124,12 @@ from the repository checkout (development happens here, not in
 systemctl --user stop omarchy-touchbar.service
 cd ~/.config/omarchy/plugins/io.github.shrijit37.omarchy-touchbar  # or your clone
 npm ci
-npm run dev
+./dev.sh
 ```
 
-`npm run dev` is the development entrypoint and keeps hot reload enabled. The
-installed systemd service uses the compiled production build instead.
+`./dev.sh` is the development entrypoint and keeps hot reload enabled (it runs
+`npm run dev` in the control-center workspace — there is no root `dev` script).
+The installed systemd service uses the compiled production build instead.
 
 ## Browser preview (no Touch Bar / DRM hardware)
 
@@ -158,7 +165,7 @@ npm run dev:preview    # browser preview instead (dev/tsx)
 npm run start:preview  # browser preview instead (compiled production build)
 ```
 
-`dev:preview` sets `REACT_DRM_BACKEND=preview`, which makes `createDisplay()`
+`dev:preview` sets `OMARCHY_TOUCHBAR_BACKEND=preview`, which makes `createDisplay()`
 construct a `PreviewDisplay` (an in-memory framebuffer wrapped by the same
 `CairoRenderer` class the DRM path uses) instead of `DrmDisplay`, and starts a
 small HTTP + WebSocket server. It prints:
@@ -174,12 +181,12 @@ elsewhere in the project) and is scaled up with CSS for visibility;
 scaling is nearest-neighbor so it stays pixel-accurate.
 
 Backend selection follows the project's existing environment-variable
-convention (alongside `REACT_DRM_DEVICE_PATH`, `REACT_DRM_PROFILE`, etc.):
+convention (alongside `OMARCHY_TOUCHBAR_DEVICE_PATH`, `OMARCHY_TOUCHBAR_PROFILE`, etc.):
 
 | Variable                  | Values                     | Default | Meaning |
 |----------------------------|-----------------------------|---------|---------|
-| `REACT_DRM_BACKEND`        | `drm` \| `preview`          | `drm`   | Which display backend `createDisplay()` builds |
-| `REACT_DRM_PREVIEW_PORT`   | port number                 | `8787`  | Preview HTTP/WebSocket port |
+| `OMARCHY_TOUCHBAR_BACKEND`        | `drm` \| `preview`          | `drm`   | Which display backend `createDisplay()` builds |
+| `OMARCHY_TOUCHBAR_PREVIEW_PORT`   | port number                 | `8787`  | Preview HTTP/WebSocket port |
 
 ### Input mapping
 
@@ -220,11 +227,11 @@ doesn't use libsoup's client) and paints the received RGBA bytes straight
 onto a `GtkImage` via `GdkPixbuf`, which matches the wire format byte-for-byte
 with no conversion needed.
 
-Dependencies (all standard Linux desktop packages — nothing to install via
-npm): `python3-gobject`, `gtk3`, `gtk-layer-shell`. On Fedora:
+Dependencies (all standard Arch desktop packages — nothing to install via
+npm): `python-gobject`, `gtk3`, `gtk-layer-shell`.
 
 ```sh
-sudo dnf install python3-gobject gtk3 gtk-layer-shell
+sudo pacman -S --needed python-gobject gtk3 gtk-layer-shell
 ```
 
 Start the preview server first, from `linux-touchbar-control-center`:
@@ -257,20 +264,18 @@ Press <kbd>Esc</kbd> while it's focused to close it (it has no titlebar).
 
 ## Active window integration
 
-Application-specific controls require an active-window backend. The
-installer deploys the required backend and omarchy-touchbar selects it
-automatically:
+Application-specific controls require an active-window backend.
+omarchy-touchbar selects one automatically:
 
 - GNOME Wayland uses
   [Window Monitor Pro](https://extensions.gnome.org/extension/8549/window-monitor-pro/),
-  maintained by the omarchy-touchbar developer
+  installed separately by the user — it is not bundled here
 - KDE Plasma Wayland uses KWin scripting
 - Hyprland uses its IPC socket
 - Xorg uses `xprop`
 
-On GNOME Wayland the installer includes and enables Window Monitor Pro.
 A logout and login may be required when the extension is installed for the
-first time. `xprop` must be installed for Xorg sessions. Unsupported Wayland
+first time. `xorg-xprop` must be installed for Xorg sessions. Unsupported Wayland
 desktops can still run the Touch Bar UI, but application-specific controls
 that depend on the focused window will not work.
 
@@ -358,3 +363,19 @@ Enabling the security-sensitive API allows any process on the session bus to
 send text and commands to open Konsole sessions.
 
 _Last updated: 2026-09-24_
+
+## Credits and license
+
+Omarchy Touch Bar is licensed under GPL-3.0-or-later. It builds on the work of
+others, and that attribution is preserved:
+
+- **Muhammad Adel** — the original `react-drm` renderer this project is built
+  on: <https://github.com/dev-muhammad-adel/react-drm>
+- **André Eikmeyer** (`dev@deqrocks`) — the system integration scripts
+  (`install.sh`, `uninstall.sh`)
+- The **t2linux** project and the wider T2 MacBook-on-Linux community, whose
+  driver work and device testing this depends on
+
+This repository is an independent, fork-free distribution of that work under
+its original license. Contributions are welcome.
+

@@ -105,7 +105,7 @@ export const DEFAULT_DISPLAY_H = 60;
 function resolveTouchDevicePath(devicePath?: string): string {
   if (devicePath) return devicePath;
 
-  const envPath = process.env.REACT_DRM_TOUCH_DEVICE_PATH ?? process.env.TOUCH_DEVICE_PATH;
+  const envPath = process.env.OMARCHY_TOUCHBAR_TOUCH_DEVICE_PATH ?? process.env.TOUCH_DEVICE_PATH;
   if (envPath) return envPath;
 
   try {

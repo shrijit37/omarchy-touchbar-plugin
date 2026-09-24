@@ -20,7 +20,7 @@ PartOf=graphical-session.target
 [Service]
 Environment=NODE_ENV=production
 # Loads the per-distro hardware profile seeded by the installer into
-# <daemon-dir>/.env (REACT_DRM_* variables). The installer rewrites this path.
+# <daemon-dir>/.env (OMARCHY_TOUCHBAR_* variables). The installer rewrites this path.
 EnvironmentFile=-%h/.local/share/omarchy-touchbar/.env
 WorkingDirectory=%h/.local/share/omarchy-touchbar/linux-touchbar-control-center
 ExecStart=node %h/.local/share/omarchy-touchbar/linux-touchbar-control-center/dist/index.js

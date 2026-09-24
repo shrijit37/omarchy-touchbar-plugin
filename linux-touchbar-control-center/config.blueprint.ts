@@ -84,14 +84,16 @@ export const ACTIVE_WINDOW = {
 
 // ─── Screenshots ────────────────────────────────────────────────────────────
 
-// The app usually runs under sudo — save into the real user's home, not /root.
-const home = process.env.SUDO_USER ? `/home/${process.env.SUDO_USER}` : (process.env.HOME ?? '.');
+// The daemon is an unprivileged *user* service (omarchy-touchbar.service has no
+// User=, and install.sh never creates a root unit), so HOME is always the real
+// user's home. There is deliberately no SUDO_USER branch here: it was dead, and
+// it interpolated SUDO_USER unquoted into an execSync string.
+const home = process.env.HOME ?? '.';
 
 // Use nodejs to get the path to the images folder independent from the user's language.
 let picturesDir: string;
 try {
-  const cmd = process.env.SUDO_USER ? `sudo -u ${process.env.SUDO_USER} xdg-user-dir PICTURES` : 'xdg-user-dir PICTURES';
-  picturesDir = execSync(cmd).toString().trim();
+  picturesDir = execSync('xdg-user-dir PICTURES').toString().trim();
 } catch {
   picturesDir = `${home}/Pictures`;
 }

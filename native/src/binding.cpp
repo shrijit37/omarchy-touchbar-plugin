@@ -68,10 +68,18 @@ private:
 
   Napi::Value Render(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
-    if (!renderer_)
+    // ThrowAsJavaScriptException does NOT unwind the C++ frame, so every guard
+    // below must return explicitly — otherwise the call falls through to a
+    // null deref (segfault) instead of raising a catchable JS error. Same
+    // discipline as RenderBinary.
+    if (!renderer_ || !drm_) {
       Napi::TypeError::New(env, "Call setup() before render()").ThrowAsJavaScriptException();
-    if (info.Length() < 1 || !info[0].IsArray())
+      return env.Undefined();
+    }
+    if (info.Length() < 1 || !info[0].IsArray()) {
       Napi::TypeError::New(env, "render() expects an array of draw commands").ThrowAsJavaScriptException();
+      return env.Undefined();
+    }
 
     renderer_->render(env, info[0].As<Napi::Array>());
 
@@ -111,8 +119,8 @@ private:
     const drmModeClip* cp = clips.empty() ? nullptr : clips.data();
     const uint32_t cn = (uint32_t)clips.size();
 
-    // Profiler (REACT_DRM_PROFILE=1): time the DRM scanout flush.
-    static const bool prof = std::getenv("REACT_DRM_PROFILE") != nullptr;
+    // Profiler (OMARCHY_TOUCHBAR_PROFILE=1): time the DRM scanout flush.
+    static const bool prof = std::getenv("OMARCHY_TOUCHBAR_PROFILE") != nullptr;
     if (prof) {
       auto t0 = std::chrono::steady_clock::now();
       drm_->dirty(cp, cn);
@@ -170,7 +178,7 @@ private:
     }
     const drmModeClip* cp = clips.empty() ? nullptr : clips.data();
     const uint32_t cn = (uint32_t)clips.size();
-    static const bool prof = std::getenv("REACT_DRM_PROFILE") != nullptr;
+    static const bool prof = std::getenv("OMARCHY_TOUCHBAR_PROFILE") != nullptr;
     if (prof) {
       auto t0 = std::chrono::steady_clock::now();
       drm_->dirty(cp, cn);
@@ -230,12 +238,14 @@ private:
     return env.Undefined();
   }
 
+  // drm_ is null before setup() and after close(); 0 is the safe answer there,
+  // matching what the TS side already falls back to.
   Napi::Value GetWidth(const Napi::CallbackInfo& info) {
-    return Napi::Number::New(info.Env(), drm_->width());
+    return Napi::Number::New(info.Env(), drm_ ? drm_->width() : 0);
   }
 
   Napi::Value GetHeight(const Napi::CallbackInfo& info) {
-    return Napi::Number::New(info.Env(), drm_->height());
+    return Napi::Number::New(info.Env(), drm_ ? drm_->height() : 0);
   }
 
   Napi::Value Close(const Napi::CallbackInfo& info) {

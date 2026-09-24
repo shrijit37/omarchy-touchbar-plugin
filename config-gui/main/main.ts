@@ -12,7 +12,7 @@ import { DOM_CODE_TO_KEY_NAME } from './keyNames';
 import { listDesktopApps } from './desktopApps';
 import { listIconThemes } from './iconThemes';
 
-let currentPaths: ConfigPaths = defaultConfigPaths(process.env.REACT_DRM_REPO_DIR);
+let currentPaths: ConfigPaths = defaultConfigPaths(process.env.OMARCHY_TOUCHBAR_REPO_DIR);
 
 function findRepoDir(): string | null {
   // install.sh's convention. If it's not there, the user needs to locate it manually.
@@ -43,6 +43,11 @@ function createWindow(): void {
     },
   });
   mainWindow = win;
+  // The renderer only ever needs the local config page. Deny navigation and
+  // popups so a stray link (or an injected one) can't load a remote origin that
+  // would still hold the `configApi` bridge — same guards install-gui sets.
+  win.webContents.on('will-navigate', event => event.preventDefault());
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.on('closed', () => { mainWindow = null; });
   win.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
 }
@@ -89,8 +94,12 @@ ipcMain.handle('config:locate', async (): Promise<{ found: boolean }> => {
 });
 
 ipcMain.handle('icon:resolve', (_event, name: string): string | null => {
-  const file = appIconSource(name);
-  return file ? pathToFileURL(file).toString() : null;
+  try {
+    const file = appIconSource(name);
+    return file ? pathToFileURL(file).toString() : null;
+  } catch {
+    return null;
+  }
 });
 
 // Lets the live Dock preview reflect whatever icon theme is currently picked
@@ -99,12 +108,16 @@ ipcMain.handle('icon:resolve', (_event, name: string): string | null => {
 // it's changed again, same mechanism the real touchbar app uses in
 // configLoader.ts, just driven live from the renderer instead of once at boot.
 ipcMain.handle('icon:setTheme', (_event, theme: string | null) => {
-  setIconTheme(theme);
+  try { setIconTheme(theme); } catch { /* keep the last good theme; the preview falls back */ }
 });
 
-ipcMain.handle('apps:list', () => listDesktopApps());
+ipcMain.handle('apps:list', () => {
+  try { return listDesktopApps(); } catch { return []; }
+});
 
-ipcMain.handle('icon:themes', () => listIconThemes());
+ipcMain.handle('icon:themes', () => {
+  try { return listIconThemes(); } catch { return []; }
+});
 
 ipcMain.handle('config:meta', () => ({
   iconChoices: ICON_CHOICES,

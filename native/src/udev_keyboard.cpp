@@ -65,11 +65,11 @@ static std::vector<std::string> enumerate_input(
 //     /devices/virtual/ and must never be bound.
 //   • the built-in T2 keyboard always sits on the apple-bce/bce-vhci bridge
 //     upstream, or t2bce on KaiT2en forks (a renamed "t2bce-vhci"). The bridge
-//     tokens come from the REACT_DRM_USB_BRIDGE env var (comma separated),
+//     tokens come from the OMARCHY_TOUCHBAR_USB_BRIDGE env var (comma separated),
 //     defaulting to the upstream names when unset. Mirrors
 //     src/native/hardware.ts. Substring match, so a boost (never a gate).
 static bool bridge_matches(const std::string& sp) {
-  const char* e = getenv("REACT_DRM_USB_BRIDGE");
+  const char* e = getenv("OMARCHY_TOUCHBAR_USB_BRIDGE");
   if (e && *e) {
     std::string env = e;
     size_t start = 0;

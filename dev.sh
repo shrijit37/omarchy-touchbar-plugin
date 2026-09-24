@@ -44,7 +44,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-export REACT_DRM_DEV_INDICATOR=1
+export OMARCHY_TOUCHBAR_DEV_INDICATOR=1
 
 # not exec: the trap must fire to drop the marker when dev stops
 npm run dev --workspace linux-touchbar-control-center

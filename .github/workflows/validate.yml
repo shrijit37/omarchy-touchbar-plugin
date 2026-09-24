@@ -15,7 +15,31 @@ jobs:
       - uses: actions/setup-node@499d2b5c0b9d4e38681a8604b0a3c5b6b3f69b7a # v4
         with:
           node-version: "20"
+      # The native addon compiles against libdrm/cairo/librsvg/pangocairo/udev
+      # (see binding.gyp). The runner image ships none of them, so `node-gyp`
+      # fails at configure and every step after it is dead code.
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libdrm-dev libcairo2-dev librsvg2-dev libpango1.0-dev libudev-dev \
+            pkg-config build-essential
       - run: python3 -m json.tool manifest.json >/dev/null
-      - run: bash -n install.sh uninstall.sh install-omarchy.sh install-kait2en.sh
+      - run: bash -n install.sh uninstall.sh install-omarchy.sh uninstall-omarchy.sh dev.sh
       - run: npm ci --no-audit --no-fund
       - run: npm run build
+      # The three workspaces each own a build; the root build does not cover
+      # them, so type errors there used to pass CI silently.
+      - name: Build workspaces
+        run: |
+          npm run build --workspace linux-touchbar-control-center
+          npm run build --workspace config-gui
+          npm run build --workspace install-gui
+      # configEngine.ts imports the root package, which resolves to dist/ —
+      # `npm run build` above already produced it, so these can resolve.
+      - name: Test
+        run: |
+          npm test
+          npm test --workspace linux-touchbar-control-center
+          npm test --workspace config-gui
+          npm test --workspace install-gui

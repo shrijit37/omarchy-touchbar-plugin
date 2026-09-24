@@ -73,6 +73,7 @@ button {
 }
 button:hover { filter: brightness(1.08); }
 button:active { filter: brightness(0.95); }
+button:disabled { background: var(--panel-hi); color: var(--text-faint); cursor: default; filter: none; }
 button.secondary { background: var(--panel-hi); color: var(--text); border: 1px solid var(--border); }
 button.secondary:hover { filter: none; border-color: var(--text-faint); }
 button.danger { background: var(--danger); color: #1a0a0a; }
@@ -201,6 +202,9 @@ button.danger { background: var(--danger); color: #1a0a0a; }
 .log-line.warn { color: var(--warning); }
 .log-line.error { color: var(--danger); }
 .log-line.phase { color: var(--cyan); font-weight: 650; margin-top: 6px; }
+/* Stands in for output the ring buffer has already discarded — stated, not hidden. */
+.log-line.dropped { color: var(--text-faint); font-style: italic; }
+#log-placeholder { color: var(--text-faint); margin: 0; font-style: italic; }
 
 /* ── Result ───────────────────────────────────────────────────────────────── */
 
@@ -216,8 +220,47 @@ button.danger { background: var(--danger); color: #1a0a0a; }
 #result-icon.ok { background: var(--ok); color: #06210f; }
 #result-icon.error { background: var(--danger); color: #250608; }
 #result-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 4px 0 0; }
-#result-message { color: var(--text-muted); font-size: 13.5px; max-width: 480px; }
-#close-btn { margin-top: 10px; }
+#result-message { color: var(--text-muted); font-size: 13.5px; max-width: 480px; overflow-wrap: anywhere; }
+#result-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+/* The failing command itself. Mono for code, per the system rule — this is a
+   shell command, not decoration. Long lines wrap rather than overflow. */
+#result-detail {
+  margin: 2px 0 0;
+  padding: 10px 12px;
+  max-width: 480px;
+  max-height: 140px;
+  overflow: auto;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Available to screen readers, not to the eye. Carries phase announcements so
+   the streaming log itself can stay silent. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hidden { display: none; }
+/* The UA `[hidden]` rule loses to any author `display`, so state it outright. */
+[hidden] { display: none; }
 
 /* ── Question overlay ─────────────────────────────────────────────────────── */
 

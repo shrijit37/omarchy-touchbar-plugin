@@ -42,7 +42,7 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('GtkLayerShell', '0.1')
 from gi.repository import GdkPixbuf, Gdk, GLib, Gtk, GtkLayerShell  # noqa: E402
 
-PREVIEW_URL = os.environ.get('REACT_DRM_PREVIEW_URL', 'http://127.0.0.1:8787')
+PREVIEW_URL = os.environ.get('OMARCHY_TOUCHBAR_PREVIEW_URL', 'http://127.0.0.1:8787')
 WS_URL = PREVIEW_URL.replace('http://', 'ws://').replace('https://', 'wss://') + '/ws'
 TOUCHBAR_ASPECT = 2008 / 60  # logical Touch Bar width:height — matches DEFAULT_DISPLAY_W/H
 RECONNECT_DELAY_S = 1

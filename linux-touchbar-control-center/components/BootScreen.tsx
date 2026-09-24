@@ -9,7 +9,7 @@ interface BootScreenProps {
   opacity: number;
 }
 
-// Optional boot logo, driven by REACT_DRM_BOOT_LOGO (set per-distro in the
+// Optional boot logo, driven by OMARCHY_TOUCHBAR_BOOT_LOGO (set per-distro in the
 // repo .env — e.g. a fork's wordmark). Falls back to the plain spinner when
 // the env var is unset or the file is missing, so upstream t2linux builds
 // keep the original look with no extra dependency.
@@ -17,7 +17,7 @@ const LOGO_WIDTH = 883;
 const LOGO_HEIGHT = 235;
 
 function loadLogo(): string | null {
-  const file = process.env.REACT_DRM_BOOT_LOGO;
+  const file = process.env.OMARCHY_TOUCHBAR_BOOT_LOGO;
   if (!file || !existsSync(file)) return null;
   const data = readFileSync(file).toString('base64');
   return '<svg xmlns="http://www.w3.org/2000/svg" ' +

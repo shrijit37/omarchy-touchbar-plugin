@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <!-- img-src needs file: because main resolves dock icons to file:// URLs
+       (icon:resolve); 'unsafe-inline' is deliberately NOT granted for styles —
+       the renderer sets presentation through classes and CSSOM only. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: file:; font-src 'self'; connect-src 'self';" />
   <title>Omarchy Touch Bar Config</title>
   <link rel="stylesheet" href="renderer.css" />
 </head>

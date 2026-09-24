@@ -5,8 +5,8 @@
   "version": "0.1.0",
   "author": "shrijit37",
   "license": "GPL-3.0-or-later",
-  "description": "React-rendered, app-aware control center for the T2 MacBook Touch Bar, drawn directly to the DRM/KMS display.",
-  "homepage": "https://github.com/shrijit37/react-drm-for-touchbar",
+  "description": "Omarchy plugin: app-aware Touch Bar control center for T2 MacBooks on Linux, drawn directly to the DRM/KMS display.",
+  "homepage": "https://github.com/shrijit37/omarchy-touchbar-plugin",
   "kinds": ["bar-widget"],
   "entryPoints": {
     "barWidget": "BarWidget.qml"

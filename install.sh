@@ -2,7 +2,9 @@
 #
 # System integration of Omarchy Touch Bar
 #
+# Project: Omarchy Touch Bar — https://github.com/shrijit37/omarchy-touchbar-plugin
 # Author: André Eikmeyer (dev@deqrocks)
+# Upstream renderer: Muhammad Adel — https://github.com/dev-muhammad-adel/react-drm
 # Date: 2026-06-14
 #
 # This script is provided without warranty. Use it at your own risk.
@@ -24,14 +26,8 @@ readonly TOUCHBAR_VENDOR_ID="05ac"
 readonly TOUCHBAR_PRODUCT_ID="8302"
 readonly REQUIRED_TINY_DAEMONS=(tiny-dfr mac-touchbar-plus)
 readonly COMMON_RUNTIME_PACKAGES=(brightnessctl cava)
-# Per-stack kernel modules. kait2en (T2 Fedora fork) uses the t2bdrm driver;
-# its HID/backlight helper set is not documented in-repo (ponytail: add the
-# exact t2bdrm-side HID module here when confirmed, rather than guessing).
-readonly MODULES_BY_PROFILE=(
-  "t2linux appletbdrm hid-appletb-bl"
-  "kait2en t2bdrm"
-)
-REQUIRED_KERNEL_MODULES=()
+# t2linux is the only supported Touch Bar driver stack (Omarchy/Arch).
+readonly REQUIRED_KERNEL_MODULES=(appletbdrm hid-appletb-bl)
 
 ANALYSIS_MISSING_COMMANDS=()
 ANALYSIS_MISSING_MODULES=()
@@ -41,15 +37,12 @@ ANALYSIS_CONFLICTING_UNITS=()
 ANALYSIS_TOUCHBAR_USB_DEVICES=()
 ANALYSIS_TOUCHBAR_DRM_CARDS=()
 ANALYSIS_MISSING_USER_GROUPS=()
-ANALYSIS_FEDORA_REPLACED_PACKAGES=()
 
 OS_ID=""
-OS_ID_LIKE=""
 OS_VERSION_ID=""
 OS_PRETTY_NAME=""
 OS_SIGNATURE=""
 PKG_MANAGER=""
-DISTRO_FAMILY=""
 
 SESSION_TYPE=""
 CURRENT_DESKTOP=""
@@ -57,8 +50,6 @@ SESSION_DESKTOP=""
 WINDOW_BACKEND=""
 DESKTOP_SUPPORTED=1
 DESKTOP_ABORT_REASON=""
-NIXOS_DETECTED=0
-UBUNTU_BASED=0
 NEEDS_RELOGIN=0
 DEPLOYMENT_MODE="new installation"
 
@@ -78,10 +69,9 @@ GUI_MODE=0
 # ASSUME_YES=1 (--yes/-y) skips the typed yes/CONTINUE/PURGE confirmations.
 # Detection still runs in full; only the interactive gates are bypassed.
 ASSUME_YES=0
-# HARDWARE_PROFILE selects the Touch Bar driver stack (t2linux | kait2en).
-# Empty until detect_hardware_profile() runs; --profile pins it up front.
-HARDWARE_PROFILE=""
-PROFILE_FORCED=0
+# t2linux is the only supported driver stack; named explicitly so the udev
+# rules and .env seeding paths read the same as the dropped multi-profile form.
+HARDWARE_PROFILE=t2linux
 
 json_escape() {
   local s=$1
@@ -214,7 +204,7 @@ daemon if either check fails.
 
 If the analysis produces incorrect results or the installer behaves
 unexpectedly, stop the installation and report the problem at:
-https://github.com/dev-muhammad-adel/omarchy-touchbar-for-touchbar/issues
+https://github.com/shrijit37/omarchy-touchbar-plugin/issues
 
 This installer is provided without warranty and is used entirely at your own
 risk. The author and project contributors are not responsible for data loss,
@@ -308,23 +298,16 @@ source_os_release() {
   # shellcheck disable=SC1091
   . /etc/os-release
   OS_ID=${ID:-}
-  OS_ID_LIKE=${ID_LIKE:-}
   OS_VERSION_ID=${VERSION_ID:-}
   OS_PRETTY_NAME=${PRETTY_NAME:-${NAME:-unknown}}
-  OS_SIGNATURE="${OS_ID} ${OS_ID_LIKE} ${OS_PRETTY_NAME}"
+  OS_SIGNATURE="${OS_ID} ${OS_PRETTY_NAME}"
   OS_SIGNATURE="${OS_SIGNATURE,,}"
-  if [[ "$OS_ID" == ubuntu || " ${OS_ID_LIKE,,} " == *" ubuntu "* ]]; then
-    UBUNTU_BASED=1
-  fi
 }
 
 detect_pkg_manager() {
   case "$OS_SIGNATURE" in
-    *nixos*) PKG_MANAGER=nix; DISTRO_FAMILY=nix; NIXOS_DETECTED=1 ;;
-    *fedora*) PKG_MANAGER=dnf; DISTRO_FAMILY=fedora ;;
-    *debian*|*ubuntu*|*kubuntu*|*linuxmint*|*pop*|*elementary*) PKG_MANAGER=apt; DISTRO_FAMILY=debian ;;
-    *arch*|*cachy*|*endeavouros*|*manjaro*) PKG_MANAGER=pacman; DISTRO_FAMILY=arch ;;
-    *) DISTRO_FAMILY=unknown ;;
+    *arch*|*cachy*|*endeavouros*|*manjaro*) PKG_MANAGER=pacman ;;
+    *) PKG_MANAGER="" ;;
   esac
 }
 
@@ -365,7 +348,7 @@ detect_touchbar_hardware() {
   [[ $found -eq 1 ]] || fail "Touch Bar hardware (05ac:8302) not found"
   for card in /sys/class/drm/card*; do
     [[ -e "$card/device/uevent" ]] || continue
-    if grep -qE 'DRIVER=(appletbdrm|t2bdrm)' "$card/device/uevent" 2>/dev/null; then
+    if grep -qE 'DRIVER=appletbdrm' "$card/device/uevent" 2>/dev/null; then
       ANALYSIS_TOUCHBAR_DRM_CARDS+=("$card")
     fi
   done
@@ -376,14 +359,7 @@ detect_required_commands() {
   local privilege_cmd=sudo
   [[ $GUI_MODE -eq 1 ]] && privilege_cmd=pkexec
   for cmd in "$privilege_cmd" systemctl systemd-analyze udevadm modinfo getent; do command -v "$cmd" >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("$cmd"); done
-  case "$PKG_MANAGER" in
-    dnf) command -v dnf >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("dnf") ;;
-    apt)
-      command -v apt-get >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("apt-get")
-      command -v apt-cache >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("apt-cache")
-      ;;
-    pacman) command -v pacman >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("pacman") ;;
-  esac
+  command -v pacman >/dev/null 2>&1 || ANALYSIS_MISSING_COMMANDS+=("pacman")
 }
 
 detect_user_groups() {
@@ -422,32 +398,6 @@ detect_kernel_modules() {
   for module in "${REQUIRED_KERNEL_MODULES[@]}"; do
     modinfo "$module" >/dev/null 2>&1 || ANALYSIS_MISSING_MODULES+=("$module")
   done
-}
-
-# Pick the Touch Bar driver stack for this machine: --profile wins, else
-# kait2en if it ships the t2bdrm driver and t2linux's appletbdrm is absent,
-# else default to t2linux. Feeds REQUIRED_KERNEL_MODULES, the DRM card probe,
-# the udev rules file and the seeded .env — nothing else in the installer is
-# stack-specific.
-detect_hardware_profile() {
-  local entry
-  if [[ $PROFILE_FORCED -eq 0 ]]; then
-    if modinfo t2bdrm >/dev/null 2>&1 && ! modinfo appletbdrm >/dev/null 2>&1; then
-      HARDWARE_PROFILE=kait2en
-    else
-      HARDWARE_PROFILE=t2linux
-    fi
-  fi
-  REQUIRED_KERNEL_MODULES=()
-  for entry in "${MODULES_BY_PROFILE[@]}"; do
-    # shellcheck disable=SC2086 # word-splitting is the point: profile then modules
-    if [[ ${entry%% *} == "$HARDWARE_PROFILE" ]]; then
-      read -ra REQUIRED_KERNEL_MODULES <<<"$entry"
-      REQUIRED_KERNEL_MODULES=("${REQUIRED_KERNEL_MODULES[@]:1}")
-      return
-    fi
-  done
-  fail "unknown hardware profile: $HARDWARE_PROFILE"
 }
 
 unit_file_exists() {
@@ -498,131 +448,52 @@ detect_conflicts() {
 }
 
 pkg_installed() {
-  case "$PKG_MANAGER" in
-    dnf) rpm -q "$1" >/dev/null 2>&1 ;;
-    apt) dpkg -s "$1" >/dev/null 2>&1 ;;
-    pacman) pacman -Q "$1" >/dev/null 2>&1 ;;
-    *) return 1 ;;
-  esac
+  pacman -Q "$1" >/dev/null 2>&1
 }
 
 detect_package_sets() {
   NEEDED_RUNTIME_PACKAGES=("${COMMON_RUNTIME_PACKAGES[@]}")
   NEEDED_BACKEND_PACKAGES=()
-  case "$DISTRO_FAMILY" in
-    fedora) NEEDED_BUILD_PACKAGES=(nodejs22-bin nodejs22-npm-bin python3 gcc gcc-c++ make pkgconf-pkg-config systemd-devel libdrm-devel cairo-devel librsvg2-devel) ;;
-    debian) NEEDED_BUILD_PACKAGES=(nodejs npm python3 g++ make pkg-config libsystemd-dev libdrm-dev libcairo2-dev librsvg2-dev) ;;
-    arch) NEEDED_BUILD_PACKAGES=(nodejs npm python gcc make pkgconf systemd libdrm cairo librsvg) ;;
-    nix|unknown) NEEDED_BUILD_PACKAGES=() ;;
-  esac
+  NEEDED_BUILD_PACKAGES=(nodejs npm python gcc make pkgconf systemd libdrm cairo librsvg)
   if [[ "$WINDOW_BACKEND" == xorg ]]; then
-    case "$DISTRO_FAMILY" in
-      fedora) NEEDED_BACKEND_PACKAGES=(xprop) ;;
-      debian) NEEDED_BACKEND_PACKAGES=(x11-utils) ;;
-      arch) NEEDED_BACKEND_PACKAGES=(xorg-xprop) ;;
-    esac
+    NEEDED_BACKEND_PACKAGES=(xorg-xprop)
   fi
   NEEDED_PACKAGES=("${NEEDED_BUILD_PACKAGES[@]}" "${NEEDED_RUNTIME_PACKAGES[@]}" "${NEEDED_BACKEND_PACKAGES[@]}")
 }
 
-detect_fedora_node_replacements() {
-  local package
-  ANALYSIS_FEDORA_REPLACED_PACKAGES=()
-  [[ "$DISTRO_FAMILY" == fedora ]] || return 0
-  for package in nodejs nodejs-libs nodejs-npm nodejs-docs nodejs-full-i18n; do
-    if rpm -q "$package" >/dev/null 2>&1; then
-      ANALYSIS_FEDORA_REPLACED_PACKAGES+=("$package")
-    fi
-  done
-}
-
 check_node_version() {
   local version
-  case "$PKG_MANAGER" in
-    dnf) return ;;
-    apt)
-      version=$(apt-cache policy nodejs | awk '/Candidate:/ { print $2; exit }')
-      [[ -n "$version" && "$version" != "(none)" ]] || fail "no Node.js candidate is available"
-      dpkg --compare-versions "$version" ge 20.19.0 ||
-        fail "the available Node.js version ($version) is too old; omarchy-touchbar requires Node.js 20.19.0 or newer"
-      ;;
-    pacman)
-      version=$(pacman -Si nodejs 2>/dev/null | awk -F ': ' '/^Version/ { print $2; exit }')
-      [[ -n "$version" ]] || fail "no Node.js candidate is available"
-      ;;
-  esac
+  version=$(pacman -Si nodejs 2>/dev/null | awk -F ': ' '/^Version/ { print $2; exit }')
+  [[ -n "$version" ]] || fail "no Node.js candidate is available"
 }
 
 dry_run_packages() {
-  local output apt_policy status pkg
+  local output pkg
   local -a missing
   info "Resolving the package transaction"
-  case "$PKG_MANAGER" in
-    dnf)
-      if [[ ${#ANALYSIS_FEDORA_REPLACED_PACKAGES[@]} -gt 0 ]]; then
-        if output=$(LC_ALL=C dnf -q --assumeno do \
-          --action=remove "${ANALYSIS_FEDORA_REPLACED_PACKAGES[@]}" \
-          --action=install "${NEEDED_PACKAGES[@]}" 2>&1); then
-          status=0
-        else
-          status=$?
-        fi
-      else
-        if output=$(LC_ALL=C dnf -q --assumeno install "${NEEDED_PACKAGES[@]}" 2>&1); then
-          status=0
-        else
-          status=$?
-        fi
-      fi
-      if [[ $status -eq 0 ]]; then
-        info "Package transaction resolved successfully"
-        return
-      fi
-      if [[ $status -eq 1 ]] &&
-         grep -Fq 'Transaction Summary:' <<<"$output" &&
-         grep -Fq 'Operation aborted by the user.' <<<"$output"; then
-        info "Package transaction resolved successfully"
-        return
-      fi
-      printf '%s\n' "$output" >&2
-      fail "the required package transaction cannot be resolved"
-      ;;
-    apt)
-      if [[ $UBUNTU_BASED -eq 1 ]]; then
-        apt_policy=$(apt-cache policy)
-        grep -q 'c=universe' <<<"$apt_policy" ||
-          fail "Ubuntu's universe repository is required; enable it with 'sudo add-apt-repository universe' and run 'sudo apt-get update'"
-      fi
-      apt-get --simulate install "${NEEDED_PACKAGES[@]}" >/dev/null ||
-        fail "the required package transaction cannot be resolved"
-      info "Package transaction resolved successfully"
-      ;;
-    pacman)
-      # Resolve only what is missing. Targeting already-installed packages makes
-      # a stale sync db fail on exact version pins (e.g. systemd-sysvcompat
-      # wanting the installed systemd while the db still ships an older one)
-      # even though nothing needs to change for them. Never -Sy/-Syu here:
-      # Omarchy's ALPM guard blocks upgrades and the user chose no side effects.
-      missing=()
-      for pkg in "${NEEDED_PACKAGES[@]}"; do
-        pkg_installed "$pkg" || missing+=("$pkg")
-      done
-      if [[ ${#missing[@]} -eq 0 ]]; then
-        info "All required packages are already installed"
-        info "Package transaction resolved successfully"
-        return
-      fi
-      if output=$(LC_ALL=C pacman -Sp --needed --print-format '%n' "${missing[@]}" 2>&1); then
-        info "Package transaction resolved successfully"
-        return
-      fi
-      printf '%s\n' "$output" >&2
-      if [[ -e /usr/share/libalpm/hooks/00-omarchy-update-guard.hook ]]; then
-        fail "the package database is stale; run 'omarchy update', then re-run this installer"
-      fi
-      fail "the required package transaction cannot be resolved"
-      ;;
-  esac
+  # Resolve only what is missing. Targeting already-installed packages makes
+  # a stale sync db fail on exact version pins (e.g. systemd-sysvcompat
+  # wanting the installed systemd while the db still ships an older one)
+  # even though nothing needs to change for them. Never -Sy/-Syu here:
+  # Omarchy's ALPM guard blocks upgrades and the user chose no side effects.
+  missing=()
+  for pkg in "${NEEDED_PACKAGES[@]}"; do
+    pkg_installed "$pkg" || missing+=("$pkg")
+  done
+  if [[ ${#missing[@]} -eq 0 ]]; then
+    info "All required packages are already installed"
+    info "Package transaction resolved successfully"
+    return
+  fi
+  if output=$(LC_ALL=C pacman -Sp --needed --print-format '%n' "${missing[@]}" 2>&1); then
+    info "Package transaction resolved successfully"
+    return
+  fi
+  printf '%s\n' "$output" >&2
+  if [[ -e /usr/share/libalpm/hooks/00-omarchy-update-guard.hook ]]; then
+    fail "the package database is stale; run 'omarchy update', then re-run this installer"
+  fi
+  fail "the required package transaction cannot be resolved"
 }
 
 print_analysis() {
@@ -645,7 +516,6 @@ print_analysis() {
   analysis_value "Build dependencies" "${NEEDED_BUILD_PACKAGES[*]:-none}"
   analysis_value "Runtime dependencies" "${NEEDED_RUNTIME_PACKAGES[*]:-none}"
   analysis_value "Backend dependencies" "${NEEDED_BACKEND_PACKAGES[*]:-none}"
-  analysis_value "Fedora replacements" "${ANALYSIS_FEDORA_REPLACED_PACKAGES[*]:-none}"
 
   analysis_section "Planned Changes"
   analysis_value "Deployment mode" "$DEPLOYMENT_MODE"
@@ -670,27 +540,17 @@ analyze() {
   source_os_release
   detect_pkg_manager
   detect_session
-  if [[ $NIXOS_DETECTED -eq 1 ]]; then
-    warn "NixOS is not handled by this installer. Follow the manual setup instructions."
-    exit 2
-  fi
   if [[ $DESKTOP_SUPPORTED -eq 0 ]]; then
     fail "$DESKTOP_ABORT_REASON; omarchy-touchbar currently supports GNOME, Plasma, Hyprland and Niri on Wayland, plus Xorg"
   fi
-  if [[ "$DISTRO_FAMILY" == fedora ]]; then
-    [[ "$OS_VERSION_ID" =~ ^[0-9]+$ ]] || fail "unable to determine the Fedora version"
-    (( OS_VERSION_ID >= 44 )) || fail "Fedora 44 or newer is required"
-  fi
-  [[ -n "$PKG_MANAGER" ]] || fail "unsupported distribution: ${OS_PRETTY_NAME:-unknown}"
+  [[ -n "$PKG_MANAGER" ]] || fail "omarchy-touchbar supports Arch-family distributions only (including Omarchy): ${OS_PRETTY_NAME:-unknown}"
   detect_required_commands
   [[ ${#ANALYSIS_MISSING_COMMANDS[@]} -eq 0 ]] || fail "missing required commands: ${ANALYSIS_MISSING_COMMANDS[*]}"
-  detect_hardware_profile
   detect_kernel_modules
   [[ ${#ANALYSIS_MISSING_MODULES[@]} -eq 0 ]] || fail "missing T2 kernel modules: ${ANALYSIS_MISSING_MODULES[*]}"
   check_deploy_files
   detect_user_groups
   detect_package_sets
-  detect_fedora_node_replacements
   check_node_version
   detect_touchbar_hardware
   detect_conflicts
@@ -727,11 +587,7 @@ phase_purge() {
 
   if [[ ${#ANALYSIS_CONFLICTING_PACKAGES[@]} -gt 0 ]]; then
     info "Removing packages: ${ANALYSIS_CONFLICTING_PACKAGES[*]}"
-    case "$PKG_MANAGER" in
-      dnf) privileged dnf remove -y "${ANALYSIS_CONFLICTING_PACKAGES[@]}" ;;
-      apt) privileged apt-get purge -y "${ANALYSIS_CONFLICTING_PACKAGES[@]}" ;;
-      pacman) privileged pacman -Rns --noconfirm "${ANALYSIS_CONFLICTING_PACKAGES[@]}" ;;
-    esac
+    privileged pacman -Rns --noconfirm "${ANALYSIS_CONFLICTING_PACKAGES[@]}"
     privileged systemctl daemon-reload
     systemctl --user daemon-reload
   fi
@@ -765,34 +621,17 @@ install_dependencies() {
   local pkg
   local -a missing
   info "Installing build and runtime dependencies"
-  case "$PKG_MANAGER" in
-    dnf)
-      if [[ ${#ANALYSIS_FEDORA_REPLACED_PACKAGES[@]} -gt 0 ]]; then
-        privileged dnf -y do \
-          --action=remove "${ANALYSIS_FEDORA_REPLACED_PACKAGES[@]}" \
-          --action=install "${NEEDED_PACKAGES[@]}"
-      else
-        privileged dnf install -y "${NEEDED_PACKAGES[@]}"
-      fi
-      ;;
-    apt)
-      privileged apt-get update
-      privileged apt-get install -y "${NEEDED_PACKAGES[@]}"
-      ;;
-    pacman)
-      # Same missing-only targeting as dry_run_packages: against a stale sync db,
-      # naming already-installed packages can fail the whole transaction.
-      missing=()
-      for pkg in "${NEEDED_PACKAGES[@]}"; do
-        pkg_installed "$pkg" || missing+=("$pkg")
-      done
-      if [[ ${#missing[@]} -eq 0 ]]; then
-        info "All required packages are already installed"
-      else
-        privileged pacman -S --needed --noconfirm "${missing[@]}"
-      fi
-      ;;
-  esac
+  # Same missing-only targeting as dry_run_packages: against a stale sync db,
+  # naming already-installed packages can fail the whole transaction.
+  missing=()
+  for pkg in "${NEEDED_PACKAGES[@]}"; do
+    pkg_installed "$pkg" || missing+=("$pkg")
+  done
+  if [[ ${#missing[@]} -eq 0 ]]; then
+    info "All required packages are already installed"
+  else
+    privileged pacman -S --needed --noconfirm "${missing[@]}"
+  fi
   command -v node >/dev/null 2>&1 || fail "Node.js is unavailable after package installation"
   command -v npm >/dev/null 2>&1 || fail "npm is unavailable after package installation"
 }
@@ -845,9 +684,15 @@ deploy_to_install_dir() {
   # destination, not the directory itself (without it, dest/build/build/ etc.
   # nests one level too deep and seed_user_config cannot find the blueprint).
   # --delete makes reruns self-healing against any previously nested copies.
+  # config.ts and custom-layer.json are EXCLUDED from the delete: both are
+  # gitignored (they exist only in the user's install dir, never in a fresh
+  # checkout), so --delete would wipe the user's saved config on every re-install
+  # and seed_user_config would silently re-seed blueprint defaults over it. Same
+  # reasoning as seed_distro_env's "never overwrite an existing .env".
   rsync -a --delete "$REPO_ROOT/build/" "$INSTALL_DIR/build/"                        # native addon, stale-cleaned
-  rsync -a --delete "$REPO_ROOT/linux-touchbar-control-center/" \
-                    "$INSTALL_DIR/linux-touchbar-control-center/"                    # daemon workspace (dist/, config.ts, assets/)
+  rsync -a --delete --exclude 'config.ts' --exclude 'custom-layer.json' \
+                    "$REPO_ROOT/linux-touchbar-control-center/" \
+                    "$INSTALL_DIR/linux-touchbar-control-center/"                    # daemon workspace (dist/, assets/)
   rsync -a --delete "$REPO_ROOT/dist/" "$INSTALL_DIR/dist/" || true                  # root dist/src/*, mirror (pure build output)
   seed_user_config
   seed_distro_env
@@ -914,11 +759,9 @@ phase_gui_bootstrap() {
   [[ $EUID -ne 0 ]] || fail "run this installer as your regular user, not as root"
   source_os_release
   detect_pkg_manager
-  [[ "$DISTRO_FAMILY" != nix ]] || fail "NixOS is not handled by this installer. Follow the manual setup instructions."
-  [[ -n "$PKG_MANAGER" ]] || fail "unsupported distribution: ${OS_PRETTY_NAME:-unknown}"
+  [[ -n "$PKG_MANAGER" ]] || fail "omarchy-touchbar supports Arch-family distributions only (including Omarchy): ${OS_PRETTY_NAME:-unknown}"
   detect_required_commands
   [[ ${#ANALYSIS_MISSING_COMMANDS[@]} -eq 0 ]] || fail "missing required commands: ${ANALYSIS_MISSING_COMMANDS[*]}"
-  detect_fedora_node_replacements
   check_node_version
   detect_package_sets
 
@@ -947,7 +790,7 @@ EOF
   info "Building the graphical installer"
   (cd "$REPO_ROOT/install-gui" && npm run build)
   info "Launching the graphical installer"
-  REACT_DRM_REPO_DIR="$REPO_ROOT" exec "$REPO_ROOT/node_modules/.bin/electron" "$REPO_ROOT/install-gui" --mode=install
+  OMARCHY_TOUCHBAR_REPO_DIR="$REPO_ROOT" exec "$REPO_ROOT/node_modules/.bin/electron" "$REPO_ROOT/install-gui" --mode=install
 }
 
 configure_user_groups() {
@@ -1028,7 +871,7 @@ install_user_service() {
 # leaves behind (workspace links, .bin links). Everything production needs was
 # already deployed to $INSTALL_DIR, so wipe the build-time node_modules trees
 # and gate the install on a clean validation. Skipped where omarchy doesn't
-# exist (Fedora/Debian) or when the folder carries no manifest.
+# exist or when the folder carries no manifest.
 finalize_plugin_folder() {
   [[ -f "$REPO_ROOT/manifest.json" ]] || return 0
   info "Cleaning build-time node_modules from the plugin folder"
@@ -1081,7 +924,7 @@ main() {
   fi
   case "$cmd" in
     install|analyze|purge|wizard) ;;
-    *) printf 'usage: %s [install|analyze|purge|wizard] [--gui] [--yes|-y] [--profile t2linux|kait2en]\n' "${0##*/}"; exit 2 ;;
+    *) printf 'usage: %s [install|analyze|purge|wizard] [--gui] [--yes|-y]\n' "${0##*/}"; exit 2 ;;
   esac
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -1090,20 +933,10 @@ main() {
         [[ $cmd == install ]] || { printf '%s: --gui is only valid for install\n' "${0##*/}" >&2; exit 2; }
         GUI_MODE=1 ;;
       --yes|-y) ASSUME_YES=1 ;;
-      --profile)
-        [[ $# -ge 2 ]] || { printf '%s: --profile requires t2linux or kait2en\n' "${0##*/}" >&2; exit 2; }
-        HARDWARE_PROFILE="$2"; PROFILE_FORCED=1; shift ;;
-      --profile=*)
-        HARDWARE_PROFILE="${1#--profile=}"; PROFILE_FORCED=1 ;;
       *) printf '%s: unknown option: %s\n' "${0##*/}" "$1" >&2; exit 2 ;;
     esac
     shift
   done
-  if [[ $PROFILE_FORCED -eq 1 &&
-        "$HARDWARE_PROFILE" != t2linux && "$HARDWARE_PROFILE" != kait2en ]]; then
-    printf '%s: unknown profile: %s (expected t2linux or kait2en)\n' "${0##*/}" "$HARDWARE_PROFILE" >&2
-    exit 2
-  fi
   case "$cmd" in
     install) confirm_installation; analyze; confirm_purge; phase_purge; phase_deploy ;;
     analyze) analyze ;;

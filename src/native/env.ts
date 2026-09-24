@@ -11,7 +11,7 @@ import path from 'path';
 // value are stripped.
 
 function candidatePaths(): string[] {
-  const explicit = process.env.REACT_DRM_ENV_FILE;
+  const explicit = process.env.OMARCHY_TOUCHBAR_ENV_FILE;
   const cwd = process.cwd();
   const here = __dirname;
   return [

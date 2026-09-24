@@ -13,13 +13,13 @@
 #include <string>
 #include <vector>
 
-// Native blit profiler (REACT_DRM_PROFILE=1). Splits CairoRenderer::render into
+// Native blit profiler (OMARCHY_TOUCHBAR_PROFILE=1). Splits CairoRenderer::render into
 // per-command-type buckets (text vs shapes vs svg vs image) and prints a periodic
 // summary, so the blit cost can be attributed. Off by default; kept as a standing
 // diagnostic tool (pairs with the JS [profile] line and the drm-flush timing in
 // binding.cpp).
 namespace {
-  const bool kBlitProf = std::getenv("REACT_DRM_PROFILE") != nullptr;
+  const bool kBlitProf = std::getenv("OMARCHY_TOUCHBAR_PROFILE") != nullptr;
   double pShape = 0, pText = 0, pSvg = 0, pImage = 0, pOther = 0, pTotal = 0;
   int    pFrames = 0;
   using Clock = std::chrono::steady_clock;

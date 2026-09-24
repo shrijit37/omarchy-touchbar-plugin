@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, easings, motion } from 'omarchy-touchbar';
 import { ESC_KEY, DOCK, FN_LAYER, CUSTOM_LAYER, THEME } from '@/lib/utils/configLoader';
 import { EscKey } from '@/components/EscKey';
@@ -9,8 +9,6 @@ import { usePomodoroEngine } from '@/lib/hooks/usePomodoro';
 import { useLayerToggle } from '@/lib/hooks/useLayerToggle';
 import { useSystemLockNavigation } from '@/lib/hooks/useSystemLockNavigation';
 import type { LayoutChildren } from '@/lib/routes/loadRoutes';
-import { TouchIdGate, type TouchIdDeductInfo } from '@/components/TouchIdGate';
-import { go } from '@/lib/routes/router-registry';
 
 // No layoutConfig/initial here anymore — app/page.tsx (this segment's own
 // sibling page) is root's default automatically, see loadRoutes.ts.
@@ -42,11 +40,6 @@ export default function RootLayout({ width, height, children, current }: {
   usePomodoroEngine();
   const { isLocked } = useSystemLockNavigation();
 
-  // Width the Touch ID block currently deducts from the layer area (live while
-  // animating out/in) — fed by TouchIdGate via onDeduct so children re-lay out
-  // mid-animation, not just snap to the final value.
-  const [deduct, setDeduct] = useState<TouchIdDeductInfo>({ active: false, blockWidth: 0, liveDeduct: 0 });
-
   if (!booted) {
     return <BootScreen width={width} height={height} opacity={opacity} />;
   }
@@ -62,22 +55,19 @@ export default function RootLayout({ width, height, children, current }: {
         const layerW = showEsc ? w - ESC_KEY.width - ESC_KEY.gap : w;
         const layerHost = (
           <motion.Box
-            initial={{ width: layerW - deduct.blockWidth }}
-            animate={{ width: layerW -  deduct.blockWidth  }}
-            transition={{ duration: [400, 400], ease: easings.easeInBack, delay: deduct.active ? 0 :isLocked?0: 1000 }}
+            initial={{ width: layerW }}
+            animate={{ width: layerW }}
+            transition={{ duration: [400, 400], ease: easings.easeInBack, delay: isLocked ? 0 : 1000 }}
             style={{width:isLocked?layerW:undefined, height: h, overflow: 'hidden' }}
           >
-            {children(layerW -(isLocked?0: deduct.liveDeduct), h)}
+            {children(layerW, h)}
           </motion.Box>
         );
-
-        const touchId = !isLocked ? <TouchIdGate width={w} height={h} onDeduct={setDeduct} /> : null;
 
         if (!showEsc) {
           return (
             <Box style={{ width: w, height: h, alignItems: 'stretch' }}>
               {layerHost}
-              {touchId}
             </Box>
           );
         }
@@ -86,7 +76,6 @@ export default function RootLayout({ width, height, children, current }: {
           <Box style={{ width: w, height: h, alignItems: 'stretch', gap: ESC_KEY.gap }}>
             <EscKey width={ESC_KEY.width} height={h} />
             {layerHost}
-            {touchId}
           </Box>
         );
       }}

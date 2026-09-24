@@ -33,13 +33,26 @@ linux-touchbar-control-center/custom-layer.json
 # Test/coverage output
 coverage/
 
-# Local editor/agent artifacts
+# Local editor artifacts
 .DS_Store
 .vscode/
 .idea/
+
+# AI / agent tooling — local only, never published. These are development
+# scratch, not product: they must never reach the remote, in the working tree
+# or in history.
 .claude/
+.cursor/
+.aider*
+.opencode/
+.codex/
+.gemini/
+.mcp.json
+AGENTS.md
+CLAUDE.md
+settings.local.json
+.impeccable/
 
 # Local notes
 NOTES.md
 systembar-suggestions.md
-config-gui-python/__pycache__/

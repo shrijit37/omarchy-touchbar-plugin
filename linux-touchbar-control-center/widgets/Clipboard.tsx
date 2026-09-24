@@ -10,29 +10,14 @@ const MAX_LEN = 30;
 
 function readClipboard(): Promise<string> {
   return new Promise<string>((resolve) => {
-    const sudoUser = process.env.SUDO_USER;
-    const sudoUid = process.env.SUDO_UID;
-    const uid = typeof process.getuid === 'function' ? process.getuid() : 1000;
-
-    if (uid === 0 && sudoUser && sudoUid) {
-      const runtimeDir = `/run/user/${sudoUid}`;
-      const env = [
-        `XDG_RUNTIME_DIR=${runtimeDir}`,
-        `DBUS_SESSION_BUS_ADDRESS=unix:path=${runtimeDir}/bus`,
-        `DISPLAY=${process.env.DISPLAY ?? ':0'}`,
-      ];
-      const wayland = process.env.WAYLAND_DISPLAY;
-      if (wayland) env.push(`WAYLAND_DISPLAY=${wayland}`);
-
-      execFile('runuser', ['-u', sudoUser, '--', 'env', ...env, 'npx', 'clipboardy'],
-        { timeout: 3000 }, (err, stdout) => {
-          resolve(err ? '' : stdout.trim());
-        });
-    } else {
-      execFile('npx', ['clipboardy'], { timeout: 3000 }, (err, stdout) => {
-        resolve(err ? '' : stdout.trim());
-      });
-    }
+    // The daemon is an unprivileged user service inside the user's own graphical
+    // session, so no runuser/SUDO_USER hop is needed (and none is reachable —
+    // the unit has no User=). Kept as `npx clipboardy` rather than a static
+    // import: clipboardy 5 is ESM-only ("type": "module") and this package
+    // compiles to CommonJS, so require() would fail on the supported Node 20.
+    execFile('npx', ['clipboardy'], { timeout: 3000 }, (err, stdout) => {
+      resolve(err ? '' : stdout.trim());
+    });
   });
 }
 

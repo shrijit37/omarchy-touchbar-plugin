@@ -18,7 +18,7 @@ log.info('hardware profile:',
     TOUCHBAR_DRM_DRIVERS,
     USB: `${TOUCHBAR_USB_VENDOR_ID}:${TOUCHBAR_USB_PRODUCT_ID}`,
     TOUCHBAR_USB_BRIDGE,
-    BOOT_LOGO: process.env.REACT_DRM_BOOT_LOGO || '(unset)',
+    BOOT_LOGO: process.env.OMARCHY_TOUCHBAR_BOOT_LOGO || '(unset)',
   }, null, 2));
 
 // The app owns the Touch Bar lifecycle in every run mode — manual `npm run
@@ -26,7 +26,7 @@ log.info('hardware profile:',
 // sleep, re-attach + resume after. SLEEP.enabled in config.ts turns it off.
 // None of this applies to the browser preview backend — there's no physical
 // Touch Bar to attach/detach, and waiting on one would just stall startup.
-const isPreview = process.env.REACT_DRM_BACKEND === 'preview';
+const isPreview = process.env.OMARCHY_TOUCHBAR_BACKEND === 'preview';
 
 async function main() {
   if (SLEEP.enabled && !isPreview) {

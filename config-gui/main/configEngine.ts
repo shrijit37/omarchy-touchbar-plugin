@@ -25,7 +25,7 @@ export interface ConfigPaths {
 // The installed control center lives under ~/.local/share/omarchy-touchbar
 // (install.sh's INSTALL_DIR). The older ~/omarchy-touchbar default pointed at
 // a nonexistent dir and the editor showed "Couldn't find … at the default
-// install path"; REACT_DRM_REPO_DIR still overrides this for the installer GUI.
+// install path"; OMARCHY_TOUCHBAR_REPO_DIR still overrides this for the installer GUI.
 const DEFAULT_REPO_DIR = path.join(os.homedir(), '.local', 'share', 'omarchy-touchbar', 'linux-touchbar-control-center');
 
 export function defaultConfigPaths(repoDir: string = DEFAULT_REPO_DIR): ConfigPaths {
@@ -400,7 +400,9 @@ function syncCompiledConfig(configPath: string): void {
 
 export function restartService(): Promise<{ ok: boolean; message: string }> {
   return new Promise(resolve => {
-    exec('systemctl --user restart omarchy-touchbar.service', (err, _stdout, stderr) => {
+    // A hung systemctl (systemd busy, D-Bus stall) must still resolve, or the
+    // renderer's Restart button spins forever — 20s is past any honest restart.
+    exec('systemctl --user restart omarchy-touchbar.service', { timeout: 20000 }, (err, _stdout, stderr) => {
       if (err) resolve({ ok: false, message: stderr.trim() || err.message });
       else resolve({ ok: true, message: 'omarchy-touchbar restarted' });
     });

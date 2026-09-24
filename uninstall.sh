@@ -3,7 +3,9 @@
 # Removes the system integration installed by omarchy-touchbar.
 # Project files, dependencies and user group memberships are left unchanged.
 #
+# Project: Omarchy Touch Bar — https://github.com/shrijit37/omarchy-touchbar-plugin
 # Author: André Eikmeyer (dev@deqrocks)
+# Upstream renderer: Muhammad Adel — https://github.com/dev-muhammad-adel/react-drm
 # Date: 2026-06-14
 #
 # This script is provided without warranty. Use it at your own risk.
@@ -165,7 +167,7 @@ launch_wizard() {
   [[ -x "$SCRIPT_DIR/node_modules/.bin/electron" && -f "$SCRIPT_DIR/install-gui/dist/main/main.js" ]] ||
     fail "the graphical installer isn't built yet; run './install.sh wizard' once first, or use the terminal flow: ./uninstall.sh"
   info "Launching the graphical uninstaller"
-  REACT_DRM_REPO_DIR="$SCRIPT_DIR" exec "$SCRIPT_DIR/node_modules/.bin/electron" "$SCRIPT_DIR/install-gui" --mode=uninstall
+  OMARCHY_TOUCHBAR_REPO_DIR="$SCRIPT_DIR" exec "$SCRIPT_DIR/node_modules/.bin/electron" "$SCRIPT_DIR/install-gui" --mode=uninstall
 }
 
 main() {
@@ -180,7 +182,13 @@ main() {
       remove_install_dir
       info "Uninstallation completed successfully"
       gui_phase uninstall done
-      [[ $GUI_MODE -eq 1 ]] && printf '{"type":"done"}\n'
+      # `if`, not `[[ ]] &&`: under `set -Eeuo pipefail` a false `[[ ]]` as the
+      # last statement of a case arm fires the ERR trap and exits 1 — a
+      # successful plain `./uninstall.sh uninstall` reported failure.
+      # install.sh:903 already uses this form.
+      if [[ $GUI_MODE -eq 1 ]]; then
+        printf '{"type":"done"}\n'
+      fi
       ;;
     wizard) launch_wizard ;;
     *) printf 'usage: %s [uninstall|wizard]\n' "${0##*/}" >&2; return 2 ;;

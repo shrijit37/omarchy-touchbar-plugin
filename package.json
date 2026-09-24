@@ -4,7 +4,16 @@
   "private": true,
   "description": "React renderer targeting Linux DRM/KMS via libdrm + Cairo",
   "license": "GPL-3.0-or-later",
-  "author": "Muhammad Adel",
+  "author": {
+    "name": "Muhammad Adel",
+    "url": "https://github.com/dev-muhammad-adel"
+  },
+  "contributors": [
+    {
+      "name": "shrijit37",
+      "url": "https://github.com/shrijit37"
+    }
+  ],
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "exports": {
@@ -24,6 +33,7 @@
     "build:native": "node-gyp configure build",
     "build:ts": "tsc && mkdir -p dist/src/dev && cp src/dev/preview-page.html dist/src/dev/preview-page.html",
     "build": "npm run build:native && npm run build:ts",
+    "test": "tsx --test src/**/*.test.ts",
     "preview:window": "python3 preview-app/gtk_layer_app.py"
   },
   "dependencies": {

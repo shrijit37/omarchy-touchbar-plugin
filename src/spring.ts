@@ -18,7 +18,7 @@ const LAYOUT_STYLE_KEYS = new Set([
 
 const LAYOUT_PROP_KEYS = new Set(['x', 'y', 'width', 'height']);
 
-const DEBUG_MOTION = process.env.REACT_DRM_LOG_LEVEL === 'debug';
+const DEBUG_MOTION = process.env.OMARCHY_TOUCHBAR_LOG_LEVEL === 'debug';
 const debugLastWidth = new WeakMap<object, number>();
 
 // Node has no requestAnimationFrame — drive react-spring's frame loop with a
